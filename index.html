@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{{GAME_NAME}}</title>
+    <meta name="description" content="{{GAME_DESCRIPTION}}" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="{{PAPER_COLOR}}" />
+    <!-- Dành cho iPhone: chạy toàn màn hình khi mở từ màn hình chính -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="{{GAME_NAME}}" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Không để iOS biến số tiền như 4,000,000 thành số điện thoại -->
+    <meta name="format-detection" content="telephone=no" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

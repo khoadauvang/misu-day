@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+/* Bảng màu + font của game. Dùng như class Tailwind: bg-paper, text-plum, font-display… */
+@theme {
+  --font-sans: 'Nunito Variable', ui-rounded, system-ui, sans-serif;
+  --font-display: 'Baloo 2 Variable', 'Nunito Variable', ui-rounded, sans-serif;
+
+  --color-paper: #fff7f9; /* nền */
+  --color-petal: #ffe4ec; /* mảng nền phụ, tab đang chọn */
+  --color-peony: #f4a6bd; /* màu chính: nút, thanh tiến trình */
+  --color-peony-deep: #d9708f; /* viền focus, chi tiết cần đậm hơn */
+  --color-plum: #5a3a4a; /* chữ chính (không dùng đen) */
+  --color-plum-soft: #8a6877; /* chữ phụ */
+  --color-hydrangea: #b4c6f2; /* năng lượng */
+  --color-lavender: #d6c4f2; /* XP */
+  --color-butter: #ffe7a6; /* tiền */
+  --color-peach: #ffd9c9; /* màu phụ cho quận */
+
+  --shadow-float: 0 12px 32px -10px rgb(90 58 74 / 0.24);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden; /* chỉ vùng nội dung bên trong được cuộn */
+    overscroll-behavior: none; /* tắt hiệu ứng "nảy" cả trang trên iOS */
+    background-color: var(--color-paper);
+    color: var(--color-plum);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-user-select: none; /* chạm giữ không bôi đen chữ, giống app thật */
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation; /* tắt chạm-đúp-để-zoom */
+  }
+
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+    font-size: 16px; /* nhỏ hơn 16px thì iOS tự zoom khi gõ */
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-peony-deep);
+    outline-offset: 2px;
+  }
+}
+
+/* Giấy planner: chấm bi rất nhạt */
+@utility paper-dots {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(rgb(244 166 189 / 0.32) 1.2px, transparent 1.4px);
+  background-size: 20px 20px;
+}
+
+/* Sticker cắt bế: viền trắng quanh emoji/hình + bóng màu mận */
+@utility sticker {
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 4px rgb(90 58 74 / 0.22));
+}
+
+/* Nhấn vào thì "lún" nhẹ như sticker được bóc ra */
+@utility press {
+  transition: transform 120ms ease-out;
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

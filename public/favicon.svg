@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#FFF3F7"/>
+      <stop offset="1" stop-color="#FFD3E0"/>
+    </radialGradient>
+    
+  <filter id="sticker-shadow" x="-30%" y="-30%" width="160%" height="170%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="11"/>
+    <feOffset dy="10" result="blur"/>
+    <feFlood flood-color="#5A3A4A" flood-opacity="0.2"/>
+    <feComposite in2="blur" operator="in" result="shadow"/>
+    <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <g transform="translate(256 262) scale(1) translate(-256 -262)">
+  <g filter="url(#sticker-shadow)" fill="#fff" stroke="#fff" stroke-width="40" stroke-linejoin="round">
+    <ellipse cx="200" cy="170" rx="40" ry="96" transform="rotate(-14 200 170)"/><ellipse cx="318" cy="180" rx="38" ry="84" transform="rotate(22 318 180)"/><ellipse cx="256" cy="318" rx="150" ry="124"/>
+  </g>
+  <g stroke="#5A3A4A" stroke-width="9" fill="#FFFDFB">
+    <ellipse cx="200" cy="170" rx="40" ry="96" transform="rotate(-14 200 170)"/><ellipse cx="318" cy="180" rx="38" ry="84" transform="rotate(22 318 180)"/>
+  </g>
+  <ellipse cx="200" cy="182" rx="19" ry="62" transform="rotate(-14 200 170)" fill="#F6A9BF"/>
+  <ellipse cx="318" cy="190" rx="18" ry="52" transform="rotate(22 318 180)" fill="#F6A9BF"/>
+  <ellipse cx="256" cy="318" rx="150" ry="124" fill="#FFFDFB" stroke="#5A3A4A" stroke-width="9"/>
+  <ellipse cx="170" cy="362" rx="25" ry="14" fill="#F7A8BE" opacity="0.8"/>
+  <ellipse cx="342" cy="362" rx="25" ry="14" fill="#F7A8BE" opacity="0.8"/>
+  <ellipse cx="203" cy="326" rx="12.5" ry="16.5" fill="#5A3A4A"/>
+  <ellipse cx="309" cy="326" rx="12.5" ry="16.5" fill="#5A3A4A"/>
+  <circle cx="207.5" cy="319" r="4.6" fill="#fff"/>
+  <circle cx="313.5" cy="319" r="4.6" fill="#fff"/>
+  <path d="M256 366 C246 358 240 352 240 346 C240 340 245 336 250 337 C253 337.5 255 339.5 256 342 C257 339.5 259 337.5 262 337 C267 336 272 340 272 346 C272 352 266 358 256 366 Z" fill="#EE8AA6"/>
+  <path d="M243 377 Q249.5 386 256 377 Q262.5 386 269 377" fill="none" stroke="#5A3A4A" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>
