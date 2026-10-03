@@ -2,11 +2,16 @@ import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
 import { ENERGY_PER_HOUR, MAX_ENERGY } from '../data/economy.ts'
 import { noteForDay } from '../data/morningNotes.ts'
+import { HOME_ACTIVITIES } from '../data/places.ts'
+import { runActivity } from '../game/actions.ts'
 import { gameDayKey } from '../game/clock.ts'
-import { currentEnergy, diaryForDay } from '../game/engine.ts'
+import { currentEnergy } from '../game/energy.ts'
+import { diaryForDay } from '../game/engine.ts'
 import { formatClock, formatDuration, formatMoney } from '../game/format.ts'
 import { levelInfo } from '../game/level.ts'
+import { checkActivity } from '../game/rules.ts'
 import { useGame } from '../game/store.ts'
+import type { Activity, SaveData } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
 
 function greeting(hour: number) {
@@ -28,6 +33,26 @@ function Stat({ emoji, label, value, note, className }: StatProps) {
       <p className="mt-2.5 font-display text-[23px] leading-none font-bold tabular-nums">{value}</p>
       {note && <p className="mt-1.5 text-[12px] font-bold">{note}</p>}
     </div>
+  )
+}
+
+/** Ô hoạt động ở nhà: chạm là làm luôn */
+function HomeTile({ activity, save, now }: { activity: Activity; save: SaveData; now: number }) {
+  const check = checkActivity(save, null, activity, now)
+  const energy = activity.energy > 0 ? `−${activity.energy} ⚡` : `+${-activity.energy} ⚡`
+  return (
+    <button
+      type="button"
+      disabled={!check.ok}
+      onClick={() => runActivity(null, activity)}
+      className="press flex flex-col items-start rounded-[24px] bg-white p-3.5 text-left ring-1 ring-petal disabled:opacity-60"
+    >
+      <Sticker emoji={activity.emoji} className="text-[28px]" />
+      <span className="mt-2 font-display text-[16px] leading-tight font-bold">{activity.name}</span>
+      <span className="mt-1 text-[12px] font-bold text-plum-soft">
+        {check.ok ? `${energy}${activity.xp > 0 ? `  +${activity.xp} XP` : ''}` : `${check.icon} ${check.reason}`}
+      </span>
+    </button>
   )
 }
 
@@ -99,6 +124,17 @@ export function HomeScreen() {
         </section>
       )}
 
+      <section className="mt-7" aria-labelledby="home-activities">
+        <h2 id="home-activities" className="font-display text-[21px] leading-tight font-bold">
+          At home
+        </h2>
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
+          {HOME_ACTIVITIES.map((activity) => (
+            <HomeTile key={activity.id} activity={activity} save={save} now={now} />
+          ))}
+        </div>
+      </section>
+
       <section className="mt-7 rounded-[26px] border-2 border-dashed border-peony/60 px-4 py-5">
         <h2 className="font-display text-[21px] leading-tight font-bold">Today's diary</h2>
         {diary.length === 0 ? (
@@ -109,7 +145,9 @@ export function HomeScreen() {
           <ul className="mt-3 space-y-3">
             {diary.map((entry) => (
               <li key={entry.id} className="flex items-start gap-3">
-                <Sticker emoji={entry.emoji} className="mt-0.5 text-[24px]" />
+                <span className="w-8 shrink-0 text-center">
+                  <Sticker emoji={entry.emoji} className="mt-0.5 text-[24px]" />
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[15px] leading-snug">{entry.text}</p>
                   <p className="mt-0.5 text-[12px] font-bold text-plum-soft">

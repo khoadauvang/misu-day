@@ -117,6 +117,21 @@
   }
 }
 
+/* Quận trên bản đồ: chạm thì "lún" nhẹ, chọn bằng bàn phím thì viền đậm */
+.map-district {
+  cursor: pointer;
+  outline: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 140ms ease-out;
+}
+.map-district:active {
+  transform: scale(0.95);
+}
+.map-district:focus-visible path {
+  stroke: var(--color-peony-deep);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

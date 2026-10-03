@@ -1,13 +1,15 @@
 import { HUSBAND_NAME } from '../config.ts'
-import { DAILY_ALLOWANCE, DIARY_LIMIT, ENERGY_PER_HOUR, MAX_ENERGY } from '../data/economy.ts'
+import { DAILY_ALLOWANCE, DIARY_LIMIT, MAX_ENERGY } from '../data/economy.ts'
+import { ITEM_BY_ID } from '../data/items.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
+import { currentEnergy } from './energy.ts'
 import { formatMoney } from './format.ts'
-import type { DiaryEntry, SaveData } from './types.ts'
+import { levelInfo } from './level.ts'
+import { activityKey, checkActivity } from './rules.ts'
+import type { Activity, ActivityResult, DiaryEntry, Place, SaveData } from './types.ts'
 
 // Luật chơi viết thành các hàm "thuần": nhận dữ liệu cũ + thời điểm, trả về dữ liệu mới.
 // Không đụng tới giao diện hay bộ nhớ điện thoại, nên dễ đọc và dễ kiểm tra.
-
-const HOUR = 3_600_000
 
 /** Dữ liệu của người chơi mới */
 export function newSave(t: number): SaveData {
@@ -24,12 +26,6 @@ export function newSave(t: number): SaveData {
     doneToday: {},
     stats: { activities: 0, spent: 0 },
   }
-}
-
-/** Năng lượng ở thời điểm t, đã cộng phần hồi theo giờ */
-export function currentEnergy(save: SaveData, t: number): number {
-  const hours = Math.max(0, t - save.energyAt) / HOUR
-  return Math.min(MAX_ENERGY, save.energy + hours * ENERGY_PER_HOUR)
 }
 
 /**
@@ -71,6 +67,60 @@ export function collectAllowance(save: SaveData, t: number): SaveData {
     money: save.money + pending.amount,
     pendingAllowance: null,
     diary: addDiary(save.diary, { at: t, emoji: '💸', text, money: pending.amount }),
+  }
+}
+
+export type ActivityOutcome = { save: SaveData; result?: ActivityResult; error?: string }
+
+/** Misu làm một hoạt động: trừ tiền và năng lượng, cộng XP, nhận đồ, ghi nhật ký */
+export function applyActivity(save: SaveData, place: Place | null, activity: Activity, t: number): ActivityOutcome {
+  const current = applyTick(save, t) // cập nhật năng lượng tới đúng thời điểm này trước
+  const check = checkActivity(current, place, activity, t)
+  if (!check.ok) return { save: current, error: check.reason }
+
+  const energyBefore = currentEnergy(current, t)
+  const energy = Math.min(MAX_ENERGY, Math.max(0, energyBefore - activity.energy))
+  const item = activity.item ? ITEM_BY_ID[activity.item] : undefined
+  const collection = item
+    ? { ...current.collection, [item.id]: (current.collection[item.id] ?? 0) + 1 }
+    : current.collection
+  const text = activity.diary[Math.floor(Math.random() * activity.diary.length)] ?? activity.name
+
+  const next: SaveData = {
+    ...current,
+    money: current.money - activity.cost,
+    energy,
+    energyAt: t,
+    xp: current.xp + activity.xp,
+    collection,
+    doneToday: activity.oncePerDay
+      ? { ...current.doneToday, [activityKey(place, activity)]: gameDayKey(t) }
+      : current.doneToday,
+    diary: addDiary(current.diary, {
+      at: t,
+      emoji: item?.emoji ?? activity.emoji,
+      text,
+      money: activity.cost > 0 ? -activity.cost : undefined,
+      energy: Math.round(energy - energyBefore),
+      xp: activity.xp,
+    }),
+    stats: { activities: current.stats.activities + 1, spent: current.stats.spent + activity.cost },
+  }
+
+  return {
+    save: next,
+    result: {
+      placeName: place?.name ?? 'Home',
+      activity,
+      text,
+      money: -activity.cost,
+      energy: Math.round(energy - energyBefore),
+      xp: activity.xp,
+      item,
+      itemCount: item ? collection[item.id] : undefined,
+      levelBefore: levelInfo(current.xp).level,
+      levelAfter: levelInfo(next.xp).level,
+    },
   }
 }
 

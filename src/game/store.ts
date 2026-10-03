@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { gameNow } from './clock.ts'
-import { applyTick, collectAllowance, newSave } from './engine.ts'
-import type { SaveData } from './types.ts'
+import { applyActivity, applyTick, collectAllowance, newSave, type ActivityOutcome } from './engine.ts'
+import type { Activity, Place, SaveData } from './types.ts'
 
 // Kho dữ liệu của game. Mọi thay đổi đều tự lưu vào localStorage của điện thoại,
 // tắt app mở lại là đọc ra chơi tiếp.
@@ -19,6 +19,8 @@ type GameStore = {
   /** Cập nhật theo giờ thật: hồi năng lượng, qua ngày mới */
   tick: () => void
   collectAllowance: () => void
+  /** Làm một hoạt động; place = null là hoạt động ở nhà */
+  doActivity: (place: Place | null, activity: Activity) => Omit<ActivityOutcome, 'save'>
   /** Chỉ dùng trong chế độ ?dev */
   devPatch: (patch: Partial<SaveData>) => void
 }
@@ -41,10 +43,15 @@ function migrateSave(persisted: unknown, version: number): Persisted {
 
 export const useGame = create<GameStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       save: newSave(gameNow()),
       tick: () => set((s) => ({ save: applyTick(s.save, gameNow()) })),
       collectAllowance: () => set((s) => ({ save: collectAllowance(s.save, gameNow()) })),
+      doActivity: (place, activity) => {
+        const { save, ...outcome } = applyActivity(get().save, place, activity, gameNow())
+        set({ save })
+        return outcome
+      },
       devPatch: (patch) => set((s) => ({ save: { ...s.save, ...patch } })),
     }),
     {

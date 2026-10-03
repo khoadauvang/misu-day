@@ -5,6 +5,7 @@ import { useGameClock } from './game/useGameClock.ts'
 import { isDevMode, shouldShowInstallGate } from './lib/device.ts'
 import { AllowanceModal } from './overlays/AllowanceModal.tsx'
 import { DevPanel } from './overlays/DevPanel.tsx'
+import { ResultModal } from './overlays/ResultModal.tsx'
 import { InstallGate } from './pwa/InstallGate.tsx'
 import { UpdateToast } from './pwa/UpdateToast.tsx'
 import { CollectionScreen } from './screens/CollectionScreen.tsx'
@@ -42,6 +43,7 @@ function Game() {
       <UpdateToast />
       <TabBar current={tab} onChange={changeTab} />
       {isDevMode() && <DevPanel />}
+      <ResultModal />
       <AllowanceModal />
     </div>
   )
