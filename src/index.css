@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
-/* Bảng màu + font của game. Dùng như class Tailwind: bg-paper, text-plum, font-display… */
-@theme {
+/* Bảng màu + font của game. Dùng như class Tailwind: bg-paper, text-plum, font-display…
+   "static" để các màu luôn có sẵn dạng biến CSS (bản đồ SVG dùng var(--color-…)) */
+@theme static {
   --font-sans: 'Nunito Variable', ui-rounded, system-ui, sans-serif;
   --font-display: 'Baloo 2 Variable', 'Nunito Variable', ui-rounded, sans-serif;
 
@@ -15,8 +16,41 @@
   --color-lavender: #d6c4f2; /* XP */
   --color-butter: #ffe7a6; /* tiền */
   --color-peach: #ffd9c9; /* màu phụ cho quận */
+  --color-mint: #cdefe0; /* màu phụ cho quận (Phú Nhuận, trà sữa bạc hà) */
 
   --shadow-float: 0 12px 32px -10px rgb(90 58 74 / 0.24);
+
+  /* Hiệu ứng: sheet trượt lên, nền mờ hiện dần, hộp thoại "bật" ra */
+  --animate-sheet-up: sheet-up 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-pop-in: pop-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1.15);
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 
 @layer base {

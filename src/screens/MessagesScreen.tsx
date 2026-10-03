@@ -1,5 +1,5 @@
 import { Sticker } from '../components/Sticker.tsx'
-import { HUSBAND_NAME } from '../config.ts'
+import { HUSBAND_NAME, MISU_NICKNAME } from '../config.ts'
 
 // Module 1: khung chat mẫu. Module 9 nối vào email thật qua /api/message.
 
@@ -23,7 +23,7 @@ export function MessagesScreen() {
       </header>
 
       <div className="mt-6 space-y-2">
-        <Bubble>Hi love 💗 Our chat opens in Module 9.</Bubble>
+        <Bubble>{`Hi ${MISU_NICKNAME} 💗 Our chat opens in Module 9.`}</Bubble>
         <Bubble>Every message you send here will reach me for real.</Bubble>
       </div>
 

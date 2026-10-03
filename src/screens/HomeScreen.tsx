@@ -1,8 +1,13 @@
-import { useState } from 'react'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
-
-// Module 1: màn hình mẫu với số liệu giả. Module 2–3 sẽ nối vào dữ liệu thật.
+import { ENERGY_PER_HOUR, MAX_ENERGY } from '../data/economy.ts'
+import { noteForDay } from '../data/morningNotes.ts'
+import { gameDayKey } from '../game/clock.ts'
+import { currentEnergy, diaryForDay } from '../game/engine.ts'
+import { formatClock, formatDuration, formatMoney } from '../game/format.ts'
+import { levelInfo } from '../game/level.ts'
+import { useGame } from '../game/store.ts'
+import { useUi } from '../game/ui.ts'
 
 function greeting(hour: number) {
   if (hour < 5) return 'Hey night owl'
@@ -11,9 +16,9 @@ function greeting(hour: number) {
   return 'Good evening'
 }
 
-type StatProps = { emoji: string; label: string; value: string; className: string }
+type StatProps = { emoji: string; label: string; value: string; note?: string; className: string }
 
-function Stat({ emoji, label, value, className }: StatProps) {
+function Stat({ emoji, label, value, note, className }: StatProps) {
   return (
     <div className={`rounded-[26px] p-4 ${className}`}>
       <div className="flex items-center gap-2">
@@ -21,65 +26,101 @@ function Stat({ emoji, label, value, className }: StatProps) {
         <span className="text-[14px] font-bold">{label}</span>
       </div>
       <p className="mt-2.5 font-display text-[23px] leading-none font-bold tabular-nums">{value}</p>
+      {note && <p className="mt-1.5 text-[12px] font-bold">{note}</p>}
     </div>
   )
 }
 
 export function HomeScreen() {
-  // Module 3 sẽ thay bằng đồng hồ game chạy theo giờ thật
-  const [now] = useState(() => new Date())
-  const today = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const now = useUi((s) => s.now)
+  const save = useGame((s) => s.save)
+
+  const { level, into, needed } = levelInfo(save.xp)
+  const energy = currentEnergy(save, now)
+  const energyNote =
+    energy >= MAX_ENERGY
+      ? 'Full'
+      : `Full in ${formatDuration(((MAX_ENERGY - energy) / ENERGY_PER_HOUR) * 3_600_000)}`
+  const today = gameDayKey(now)
+  const diary = diaryForDay(save.diary, today).reverse()
+  const date = new Date(now).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   return (
     <div className="mx-auto max-w-md">
       <header>
-        <p className="flex items-center gap-2 text-[14px] font-bold text-plum-soft">
-          {today}
-          <span className="rounded-full bg-white/85 px-2.5 py-0.5 text-[12px] font-extrabold ring-1 ring-petal">
-            Preview
-          </span>
-        </p>
+        <p className="text-[14px] font-bold text-plum-soft">{date}</p>
         <h1 className="mt-1 font-display text-[34px] leading-[1.02] font-bold text-balance">
-          {greeting(now.getHours())}, {PLAYER_NAME}
+          {greeting(new Date(now).getHours())}, {PLAYER_NAME}
         </h1>
       </header>
 
       <section className="mt-6 flex items-center gap-4" aria-label="Level">
         <img src="/stickers/bunny.svg" alt={`${PLAYER_NAME}'s avatar`} className="h-32 w-32 shrink-0" />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-[26px] leading-none font-bold">Level 1</p>
+          <p className="font-display text-[26px] leading-none font-bold">Level {level}</p>
           <div
             role="progressbar"
             aria-label="XP"
             aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={0}
+            aria-valuemax={needed}
+            aria-valuenow={into}
             className="mt-3 h-3.5 overflow-hidden rounded-full bg-white ring-1 ring-lavender"
           >
-            <div className="h-full w-0 rounded-full bg-lavender" />
+            <div
+              className="h-full rounded-full bg-lavender transition-[width] duration-500"
+              style={{ width: `${(into / needed) * 100}%` }}
+            />
           </div>
-          <p className="mt-2 text-[13px] font-bold text-plum-soft">0 of 100 XP to Level 2</p>
+          <p className="mt-2 text-[13px] font-bold text-plum-soft">
+            {into} of {needed} XP to Level {level + 1}
+          </p>
         </div>
       </section>
 
       <section className="mt-6 grid grid-cols-[1.3fr_1fr] gap-3" aria-label="Wallet and energy">
-        <Stat emoji="💰" label="Wallet" value="4,000,000₫" className="bg-butter" />
-        <Stat emoji="⚡" label="Energy" value="100" className="bg-hydrangea/60" />
+        <Stat emoji="💰" label="Wallet" value={formatMoney(save.money)} className="bg-butter" />
+        <Stat
+          emoji="⚡"
+          label="Energy"
+          value={String(Math.floor(energy))}
+          note={energyNote}
+          className="bg-hydrangea/60"
+        />
       </section>
 
-      <section className="mt-6 flex items-center gap-3 rounded-[26px] bg-white/85 p-4 ring-1 ring-petal">
-        <Sticker emoji="🤵🏻" className="text-[38px]" />
-        <div className="min-w-0">
-          <p className="font-display text-[20px] leading-tight font-bold">{HUSBAND_NAME}</p>
-          <p className="text-[14px] font-semibold text-plum-soft">Live status arrives in Module 8.</p>
-        </div>
-      </section>
+      {save.lastAllowanceDay === today && !save.pendingAllowance && (
+        <section className="relative mt-8 -rotate-1 rounded-[22px] bg-white px-5 pt-6 pb-5 shadow-[0_10px_24px_-14px_rgb(90_58_74/0.4)] ring-1 ring-petal">
+          <span
+            aria-hidden
+            className="absolute -top-3 left-1/2 h-6 w-24 -translate-x-1/2 rotate-3 rounded-md bg-peony/45"
+          />
+          <p className="text-[13px] font-extrabold text-plum-soft">From {HUSBAND_NAME}</p>
+          <p className="mt-1.5 text-[16px] leading-relaxed">{noteForDay(today)}</p>
+        </section>
+      )}
 
-      <section className="mt-6 rounded-[26px] border-2 border-dashed border-peony/60 px-4 py-5">
+      <section className="mt-7 rounded-[26px] border-2 border-dashed border-peony/60 px-4 py-5">
         <h2 className="font-display text-[21px] leading-tight font-bold">Today's diary</h2>
-        <p className="mt-1.5 text-[15px] leading-relaxed text-plum-soft">
-          Nothing yet. Pick a place on the map to start your day.
-        </p>
+        {diary.length === 0 ? (
+          <p className="mt-1.5 text-[15px] leading-relaxed text-plum-soft">
+            Nothing yet. Pick a place on the map to start your day.
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-3">
+            {diary.map((entry) => (
+              <li key={entry.id} className="flex items-start gap-3">
+                <Sticker emoji={entry.emoji} className="mt-0.5 text-[24px]" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[15px] leading-snug">{entry.text}</p>
+                  <p className="mt-0.5 text-[12px] font-bold text-plum-soft">
+                    {formatClock(entry.at)}
+                    {entry.money ? ` · ${entry.money > 0 ? '+' : '−'}${formatMoney(Math.abs(entry.money))}` : ''}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )

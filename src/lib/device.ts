@@ -19,6 +19,11 @@ export function isPreview(): boolean {
   return new URLSearchParams(window.location.search).has('preview')
 }
 
+/** Thêm ?dev vào link để hiện bảng công cụ thử nghiệm (tua giờ, thêm tiền…) */
+export function isDevMode(): boolean {
+  return new URLSearchParams(window.location.search).has('dev')
+}
+
 /**
  * Dữ liệu của app trên màn hình chính tách riêng với tab Safari.
  * Vì vậy trên iPhone, game chỉ cho chơi khi đã "Add to Home Screen",
