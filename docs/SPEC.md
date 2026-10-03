@@ -1,14 +1,17 @@
-# Misu's Day — Spec v1.0
+# Misu's Day — Spec v1.1
 
-*Chốt 01/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+*Cập nhật 03/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+
+- **Link game:** https://misuxinhdep.vercel.app (đã chốt, không đổi sau 9/10)
+- **Code:** GitHub `khoadauvang/misu-day`, nhánh `main` → Vercel tự deploy
 
 ## 0. Tóm tắt
 
-Game PWA trên iPhone mô phỏng cuộc sống thường ngày của Misu ở Sài Gòn. Mỗi sáng **Hubby** (chồng NPC) chuyển 4 triệu kèm một lời nhắn. Misu chọn đi đâu, làm gì, sưu tầm đồ, lên level để mở khóa nơi mới và các chuyến du lịch. Quà sinh nhật 09/10/2026.
+Game PWA trên iPhone mô phỏng cuộc sống thường ngày của Misu ở Sài Gòn. Mỗi sáng **Chằm Chằm** (chồng NPC) chuyển 4 triệu kèm một lời nhắn. Misu chọn đi đâu, làm gì, sưu tầm đồ, lên level để mở khóa nơi mới và các chuyến du lịch. Quà sinh nhật 09/10/2026.
 
 ## 1. Nguyên tắc (không đổi)
 
-1. **100% tiếng Anh** trong game: giao diện, nội dung, tin nhắn.
+1. **100% tiếng Anh** trong game: giao diện, nội dung, tin nhắn. Tên riêng tiếng Việt giữ nguyên (Chằm Chằm, bè chẽ, Phú Nhuận, Bánh Tráng Trộn A Lâm).
 2. **Chỉ iPhone.** Misu chơi từ icon trên màn hình chính, mỗi lần vài phút. Không cần hỗ trợ Mac.
 3. **Thế giới chạy theo giờ thật 24/7.** Khi mở app, game tính bù mọi thứ đã xảy ra lúc tắt.
 4. **Nội dung là dữ liệu.** Địa điểm, hoạt động, giá, sự kiện, lời nhắn nằm trong `src/data/`. Thêm nội dung không phải sửa logic.
@@ -23,75 +26,81 @@ App giống một cuốn sổ planner pastel. Mọi thứ Misu làm hoặc mua �
 | Token | Hex | Dùng cho |
 |---|---|---|
 | paper | `#FFF7F9` | nền |
-| petal | `#FFE4EC` | mảng nền phụ, tab đang chọn |
-| peony | `#F4A6BD` | màu chính: nút, thanh tiến trình |
+| petal | `#FFE4EC` | mảng nền phụ, tab đang chọn, District 1 |
+| peony | `#F4A6BD` | màu chính: nút, District 9 |
 | plum | `#5A3A4A` | chữ (thay cho màu đen) |
-| hydrangea | `#B4C6F2` | năng lượng |
-| lavender | `#D6C4F2` | XP |
-| butter | `#FFE7A6` | tiền |
-| peach | `#FFD9C9` | màu phụ để phân biệt các quận |
+| hydrangea | `#B4C6F2` | năng lượng, sông Sài Gòn, District 7 |
+| lavender | `#D6C4F2` | XP, District 2 |
+| butter | `#FFE7A6` | tiền, District 3 |
+| peach | `#FFD9C9` | District 5 |
+| mint | `#CDEFE0` | Phú Nhuận, nhãn "Free" |
 
-- **Font:** Baloo 2 cho tiêu đề và con số, Nunito cho chữ thường. Cả hai có dấu tiếng Việt cho tên riêng như "Bánh Tráng Trộn A Lâm".
-- **Hình:** dùng emoji iOS dạng sticker. Chỉ cần vẽ riêng: chibi Misu, chibi Hubby, chó Golden. Bản đồ Sài Gòn vẽ bằng SVG trong code.
+- **Font:** Baloo 2 cho tiêu đề và con số, Nunito cho chữ thường. Cả hai có dấu tiếng Việt.
+- **Hình:** emoji iOS dạng sticker. Chỉ cần vẽ riêng: chibi Misu, chibi Chằm Chằm, chó Golden. Bản đồ Sài Gòn vẽ bằng SVG trong code.
 
 ## 3. Màn hình và cách chơi
 
 Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 
-### Home
-- Lời chào theo giờ + ngày; chibi Misu; Level + thanh XP; ví tiền 💰; năng lượng ⚡.
-- Thẻ trạng thái Hubby theo giờ thật (mục 7).
-- Lời nhắn buổi sáng của Hubby, kèm khoản 4 triệu.
-- Nhật ký hôm nay (Today's diary).
-- Thú cưng, khi đã nhận nuôi.
-- Hoạt động ở nhà, miễn phí: xem series, xem rom-com, đọc sách đã mua, tập ở nhà, chợp mắt.
+### Mỗi sáng
+- 6:00 sáng là ngày mới. Lần mở app đầu tiên trong ngày hiện hộp **Today's allowance**: lời nhắn của Chằm Chằm + 4,000,000₫, Misu bấm **Collect** để nhận.
+- Vắng nhiều ngày: hộp **While you were away** cộng dồn tiền các buổi sáng đã lỡ.
 
-### Map: luồng tương tác
+### Home ✅
+- Lời chào theo giờ + ngày; avatar; Level + thanh XP; ví tiền 💰; năng lượng ⚡ (kèm "Full in 2h 30m").
+- Lời nhắn hôm nay của Chằm Chằm, dạng tờ giấy dán băng keo.
+- **At home:** hoạt động miễn phí ở nhà — xem sitcom, rom-com, tập ở nhà, đọc sách (cần mua sách trước), chợp mắt (1 lần/ngày, hồi 30 năng lượng).
+- **Today's diary:** nhật ký trong ngày, mới nhất ở trên.
+- *Sẽ thêm:* trạng thái của Chằm Chằm theo giờ (M8), thú cưng (sau khi nhận nuôi).
+
+### Map ✅
 
 ```
-Map picker (Saigon ▾)
- ├─ Saigon (mở) → bản đồ 6 quận → chạm quận → sheet danh sách POI
- │                                    → chạm POI → sheet hoạt động
- │                                        → "Do it" → popup kết quả
- │                                           (+ sự kiện ngẫu nhiên, diary, sticker)
+[Saigon | World]
+ ├─ Saigon → bản đồ 7 quận → chạm quận → sheet danh sách địa điểm
+ │                              → chạm địa điểm → các hoạt động
+ │                                  → "Do it" → popup kết quả
+ │                                     (tiền, năng lượng, XP, sticker, nhật ký)
  └─ World: Vietnam · Asia · Europe · Americas (khóa)
         → chạm → yêu cầu (Level + vé máy bay) + "This trip opens in a future update"
 ```
 
-- POI bị khóa hiện ổ khóa + "Lv X".
-- Mỗi hoạt động ghi rõ giá ₫, năng lượng ⚡, XP ✨, có thể kèm item.
-- Một số nơi có giờ mở cửa: bar 17:00–02:00, concert tối thứ Sáu và thứ Bảy. Ngoài giờ hiện "Opens at 5 PM".
+- Địa điểm chưa mở hiện ổ khóa "Lv X"; vào xem vẫn được, nút "Do it" mờ kèm lý do.
+- Lý do không làm được: Reach Level X · Open 5 PM – 2 AM · Done for today · Buy a book first · Not enough money · Need more energy · Coming soon.
+- Giờ mở cửa: Riverside Bar 17:00–02:00; Concert Park tối thứ Sáu và thứ Bảy 19:00–23:00.
 
 ### Messages
-- Chat kiểu iMessage với Hubby.
+- Chat kiểu iMessage với Chằm Chằm (M9).
 - Tin nhanh: "I miss you 🥺", "I'm hungry 🍜", "Can I have a little extra? 💸" (1 lần/ngày), "Come home early tonight 🏠", "Look what I bought 🛍️". Misu cũng tự gõ được.
-- Hubby trả lời ngay bằng câu viết sẵn, tùy trạng thái (đang họp, đang lái xe, ở nhà…).
+- Chằm Chằm trả lời ngay bằng câu viết sẵn, tùy trạng thái.
 - Mỗi tin Misu gửi đi thành một email thật về hộp thư của bạn (mục 9).
 
-### Collection
-- Lưới sticker những thứ đã mua hoặc nhận, chia nhóm: Bags · Shoes · Beauty · Jewelry & watches · Tech · Plushies · Flowers · Books · Home decor · Souvenirs.
-- Love Coupons cũng nằm ở đây, nếu chốt làm MFe4.
+### Collection ✅
+- Sổ sticker theo nhóm: Bags · Shoes · Beauty · Jewelry & watches · Tech · Plushies · Flowers · Books · Home decor · Souvenirs.
+- Món đã có hiện màu (mua lại thì ×2, ×3…), món chưa có là ô trống viền đứt. Hiện tại có 33 món.
+- Love Coupons cũng sẽ nằm ở đây, nếu chốt làm MFe4.
 
 ## 4. Bản đồ Sài Gòn: quy luật chia quận
 
-Mỗi quận một chủ đề, dựa theo tính chất quận ngoài đời nhưng không bắt buộc đúng 100%. Sở thích nào của Misu cũng có chỗ.
+Mỗi quận một chủ đề, dựa theo tính chất quận ngoài đời nhưng không bắt buộc đúng 100%.
 
-| Quận | Chủ đề | POI (Level mở khóa, đề xuất) |
+| Quận | Chủ đề | Địa điểm (Level mở khóa) |
 |---|---|---|
-| D1 · Downtown | 👜 Luxury & fashion | Sneaker & Lifestyle Store: Onitsuka Tiger Mexico 66, Birkenstock, sneakers trắng/hồng (Lv1) · Beauty Counter: makeup (Lv1) · Tech Store: Apple, Sony (Lv3) · Luxury Boulevard: Chanel, Gucci (Lv5) · Watch & Jewelry House: Rolex, vòng cổ, vòng tay, nhẫn kim cương (Lv7) |
-| D3 · Old Quarter | ☕ Cafés, books & beauty | Garden Café: view đẹp (Lv1) · Bookstore (Lv1) · Beauty Salon: nail, cắt/nhuộm tóc, gội đầu dưỡng sinh (Lv1) · Flower Market: lavender, cẩm tú cầu, hồng, tulip, baby's breath, mẫu đơn (Lv1) · ⭐ GMI Tea: trà sữa bạc hà (Lv1) · ⭐ Bánh Tráng Trộn A Lâm (Lv1) · Spa & Massage (Lv2) · City Library & History Museum (Lv4) |
-| D7 · Phú Mỹ Hưng | 🍣 Japan & Korea town | Japanese Corner: sushi, sashimi, cơm lươn, soba lạnh (Lv1) · Korea Town: gà rán Hàn, mì lạnh, mì tương đen lạnh (Lv1) · Dairy Queen (Lv1) · RMIT Campus: học, tự học, làm nhóm; miễn phí, +XP (Lv1, optional) |
-| D5 · Chinatown | 🥟 Chinese food | Dim Sum House (Lv1) · Hot Pot (Lv3) · Roast Duck & Noodles (Lv4) |
-| D2 · Thảo Điền | 🍸 Expat chill | Fitness Club: gym (Lv1) · Riverside Bar: cocktail, wine, view hoàng hôn, 17:00–02:00 (Lv3) · Home Decor Studio: modern giản dị, pastel (Lv4) · Pet Shop: Golden Retriever (Lv5) |
-| D9 · Grand Park | 🎤 Entertainment | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (Lv1) · Cinema: phim mới, rom-com night (Lv2) · Concert Park: tối thứ Sáu và thứ Bảy (Lv5) |
+| D1 | 👜 Luxury & fashion | Sneaker & Lifestyle Store (1) · Beauty Counter (1) · Tech Store (3) · Luxury Boulevard (5) · Watch & Jewelry House (7) |
+| D3 | ☕ Cafés, books & beauty | Garden Café (1) · Bookstore (1) · Beauty Salon: nail, nhuộm tóc, gội đầu dưỡng sinh (1) · Flower Market (1) · Spa & Massage (2) · City Library & History Museum (4) |
+| Phú Nhuận | 🧋 Street snacks | ⭐ GMI Tea: trà sữa bạc hà (1) · ⭐ Bánh Tráng Trộn A Lâm (1) |
+| D7 | 🍣 Japan & Korea town | Japanese Corner (1) · Korea Town (1) · Dairy Queen (1) · RMIT Campus: miễn phí, +XP (1) |
+| D5 | 🥟 Chinatown eats | Dim Sum House (1) · Hot Pot (3) · Roast Duck & Noodles (4) |
+| D2 | 🍸 Thảo Điền chill | Fitness Club (1) · Riverside Bar (3) · Home Decor Studio (4) · Pet Shop (5) |
+| D9 | 🎤 Concerts & cinema | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (1) · Cinema (2) · Concert Park (5) |
 
-Tổng cộng 27 POI. Nếu trễ lịch, v1.0 có thể ra với khoảng 18 POI, phần còn lại thêm qua bản cập nhật.
+Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
 
 ## 5. World: các map khác
 
-| Vùng | Điểm đến | Mở khóa (đề xuất) | Vé máy bay |
+| Vùng | Điểm đến | Mở khóa | Vé máy bay |
 |---|---|---|---|
-| Vietnam | Đà Lạt 🌸 (đồi cẩm tú cầu, vườn lavender). *Đề xuất thêm.* | Lv 7 | 3,000,000₫ |
+| Vietnam | Đà Lạt 🇻🇳 (đồi cẩm tú cầu, vườn lavender) | Lv 7 | 3,000,000₫ |
 | Asia | Seoul 🇰🇷 | Lv 8 | 12,000,000₫ |
 | Asia | Tokyo 🇯🇵 | Lv 10 | 15,000,000₫ |
 | Europe | Paris 🇫🇷 | Lv 14 | 35,000,000₫ |
@@ -99,22 +108,24 @@ Tổng cộng 27 POI. Nếu trễ lịch, v1.0 có thể ra với khoảng 18 PO
 | Europe | Milan 🇮🇹 | Lv 16 | 38,000,000₫ |
 | Americas | New York 🇺🇸 | Lv 20 | 45,000,000₫ |
 
-Ở v1.0, tất cả điểm đến đều hiện trong World. Chạm vào sẽ thấy yêu cầu + "This trip opens in a future update". Từng map mở dần qua các bản cập nhật sau sinh nhật.
+Ở v1.0, chạm vào điểm đến sẽ thấy yêu cầu (đánh dấu đã đạt/chưa) + "This trip opens in a future update". Khi làm xong nội dung một nơi, đổi `open: true` trong `src/data/destinations.ts`.
 
-## 6. Kinh tế và tiến trình (số liệu chốt lại ngày 7/10)
+## 6. Kinh tế và tiến trình
 
-- **Allowance:** 4,000,000₫ lúc 6:00 sáng mỗi ngày, kèm lời nhắn của Hubby. Vắng N ngày thì khi quay lại nhận đủ N lần ("While you were away…").
-- **Energy:** tối đa 100, hồi +10 mỗi giờ, kể cả khi tắt app. Mỗi hoạt động tốn 10–40.
+- **Giá tạm:** mọi sản phẩm/dịch vụ đều **500,000₫** (`PRICE` trong `src/data/economy.ts`). Bạn sẽ sửa giá từng món sau trong `src/data/places.ts`. Hoạt động miễn phí giữ nguyên 0₫: học ở RMIT, đọc ở thư viện, đọc sách ở góc nhà sách, ngắm đồ ở Luxury Boulevard, chơi với cún ở Pet Shop, hoạt động ở nhà.
+- **Allowance:** 4,000,000₫ lúc 6:00 sáng, Misu bấm Collect. Vắng N ngày thì nhận đủ N lần.
+- **Energy:** tối đa 100, hồi +10 mỗi giờ kể cả khi tắt app. Ăn uống 5–10, mua sắm 10–15, gym 25, concert 30. Massage, gội đầu dưỡng sinh và chợp mắt thì **hồi** năng lượng.
 - **XP / Level:** từ level n lên n+1 cần 100 × n XP. Chơi đều thì khoảng 1 tuần tới Lv5, 3–4 tuần tới Lv10.
-- **Lên level:** Hubby thưởng Level × 500,000₫, gửi tin chúc mừng, kèm danh sách thứ vừa mở khóa.
-- **"Can I have a little extra? 💸":** 1 lần/ngày, Hubby gửi một khoản ngẫu nhiên.
-- **Hoạt động miễn phí** (ở nhà, gym, RMIT, thư viện) để Misu vẫn lên level khi để dành tiền.
-- **Mục tiêu để dành:** đồ hiệu (Chanel, Rolex, kim cương), MacBook, chó Golden, vé máy bay.
+- **Lên level:** hiện tại popup báo "Level up!". M6 sẽ thêm thưởng của Chằm Chằm (Level × 500,000₫) và danh sách nơi vừa mở khóa.
+- **"Can I have a little extra? 💸":** 1 lần/ngày (M9).
 - Chế độ 28 triệu/tuần để sau.
 
-## 7. Hubby (chồng NPC)
+## 7. Chằm Chằm (chồng NPC)
 
-| Thời gian | Trạng thái |
+- **Xưng hô:** Misu gọi chồng là **Chằm Chằm**, chồng gọi Misu là **bè chẽ** (`src/config.ts`).
+- **Lời nhắn buổi sáng:** hiện có 2 câu mẫu trong `src/data/morningNotes.ts`, quay vòng mỗi ngày. Bạn tự viết thêm.
+
+| Thời gian | Trạng thái (M8) |
 |---|---|
 | T2–T6, 6:00–8:30 | Getting ready for work ☕ |
 | T2–T6, 8:30–9:00 | Driving to the office 🚗 |
@@ -125,54 +136,45 @@ Tổng cộng 27 POI. Nếu trễ lịch, v1.0 có thể ra với khoảng 18 PO
 | T7–CN | Weekend with you 💗 |
 | Cách 1 tuần, T7 hoặc CN (ngẫu nhiên nhưng cố định trong tuần đó), 14:00–18:00 | At band practice 🥁 |
 
-- **Lời nhắn buổi sáng:** khoảng 30 câu tiếng Anh, không lặp trong 1 tháng. Mình soạn nháp, bạn sửa lại theo giọng của bạn.
-- **Tên trong game:** mặc định "Hubby", đổi ở `src/config.ts`.
 - **Con cái:** chưa có trong v1.
 
 ## 8. Thú cưng
 
-- Pet Shop (D2, Lv5): nhận nuôi Golden Retriever, một mục tiêu lớn (khoảng 15,000,000₫).
-- Nhận nuôi xong, Misu đặt tên, chó hiện ở Home. Mỗi ngày có "Walk the dog" (miễn phí, +XP); Pet Spa thì tốn tiền.
+- Pet Shop (D2, Lv5): "Adopt a Golden Retriever" đang hiện **Coming soon**. Sẽ làm cùng M9–M10: nhận nuôi, đặt tên, chó hiện ở Home, "Walk the dog" mỗi ngày.
 - Mèo và các giống chó khác: sau v1.
 
 ## 9. Tin nhắn thành email thật (MFe2–MFe3)
 
-- Misu gửi tin trong game → `POST /api/message` (Vercel Function) → Resend → email về hộp thư của bạn. Email kèm snapshot: Level, ví tiền, đang ở đâu, vừa làm gì.
-- Resend gói Free: 3.000 email/tháng, tối đa 100/ngày. Gửi từ `onboarding@resend.dev` thì chỉ tới được email chủ tài khoản Resend. Người nhận chính là bạn nên không cần mua domain.
-- API key đặt trong Environment Variables của Vercel, không để trong code.
-- Giới hạn số tin mỗi ngày. Email từ địa chỉ mặc định dễ vào spam, nên lần đầu nhớ đánh dấu "Not spam".
+- Misu gửi tin trong game → `POST /api/message` (Vercel Function) → Resend → email về hộp thư của bạn, kèm snapshot: Level, ví tiền, vừa làm gì.
+- Resend gói Free: 3.000 email/tháng, tối đa 100/ngày. Gửi từ `onboarding@resend.dev` thì chỉ tới được email chủ tài khoản Resend, mà người nhận chính là bạn nên không cần mua domain.
+- API key đặt trong Environment Variables của Vercel, không để trong code. Giới hạn số tin mỗi ngày. Lần đầu nhớ đánh dấu "Not spam".
 
 ## 10. MFe4: Love Coupons (chờ bạn chốt)
 
 **Là gì:** "phiếu quà" trong game, đổi được thành một việc thật ngoài đời do bạn làm.
 
-**Ví dụ:** Misu lên Level 3 thì mở khóa phiếu "🍣 Sushi date — Hubby's treat". Cô ấy bấm **Use**, bạn nhận email "Misu used: Sushi date", rồi bạn dẫn cô ấy đi ăn thật.
+**Ví dụ:** Misu lên Level 3 thì mở khóa phiếu "🍣 Sushi date — Chằm Chằm's treat". Cô ấy bấm **Use**, bạn nhận email "Misu used: Sushi date", rồi bạn dẫn cô ấy đi ăn thật.
 
-**Mốc mở phiếu:** lên level, chơi 7 ngày liên tiếp, lần đầu làm một việc nào đó…
-
-**Danh sách gợi ý (theo sở thích của Misu):**
-1. 🧋 A GMI mint milk tea, delivered by Hubby
+**Danh sách gợi ý:**
+1. 🧋 A GMI mint milk tea, delivered by Chằm Chằm
 2. 🍦 A Dairy Queen run, any time
-3. 🍣 Sushi date — Hubby's treat
+3. 🍣 Sushi date — Chằm Chằm's treat
 4. 🎬 Movie night — you pick, no complaints
 5. 💐 A bouquet of your favorite flowers
 6. 💆 A 20-minute shoulder massage
-7. 🛍️ Shopping buddy — Hubby carries every bag
-8. 🍽️ Hubby does the dishes for a week
+7. 🛍️ Shopping buddy — Chằm Chằm carries every bag
+8. 🍽️ Chằm Chằm does the dishes for a week
 9. 🏋️ Gym date together
 10. ☕ Breakfast in bed
 
-**Bạn cần trả lời:** có làm không, và gạch hoặc sửa danh sách, chỉ giữ những việc bạn chắc chắn làm được.
+## 11. Lưu dữ liệu ✅
 
-## 11. Lưu dữ liệu (cách game "tự lưu")
-
-- Trên iPhone, trình duyệt cho mỗi trang web một "hộp lưu trữ" riêng (localStorage). Mỗi lần Misu làm gì, game ghi toàn bộ trạng thái (tiền, level, đồ, nhật ký…) vào hộp đó. Mở lại thì game đọc ra và chơi tiếp. Không cần server, không cần tài khoản.
-- Hộp này gắn với **địa chỉ web**. Phải chốt tên miền Vercel trước 9/10 và không đổi sau đó.
-- App trên màn hình chính và tab Safari có **dữ liệu tách riêng**. Vì vậy game chặn chơi trong tab Safari và hiện hướng dẫn "Add to Home Screen".
-- WebKit miễn quy tắc tự xóa dữ liệu sau 7 ngày cho app đã thêm vào màn hình chính.
+- Toàn bộ dữ liệu nằm trong localStorage của app trên iPhone (key `misu-day:save`), tự lưu sau mỗi thay đổi. Tắt app hay tải lại vẫn còn.
+- Gắn với địa chỉ **misuxinhdep.vercel.app**, không đổi địa chỉ sau 9/10.
+- App trên màn hình chính và tab Safari có dữ liệu tách riêng, nên game chặn chơi trong tab Safari.
+- WebKit miễn quy tắc tự xóa dữ liệu sau 7 ngày cho app trên màn hình chính. Game cũng xin trình duyệt giữ dữ liệu lâu dài.
 - Xóa icon khỏi màn hình chính là mất dữ liệu.
-- Save có số phiên bản (`version`) và hàm `migrate()`, để bản cập nhật sau vẫn đọc được save cũ.
-- Sau v1: sao lưu lên cloud.
+- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định.
 
 ## 12. Nội dung sinh nhật
 
@@ -183,52 +185,30 @@ Lần mở đầu tiên: thư chúc mừng (bạn tự viết, bằng tiếng An
 - Vite 8 + React 19 + TypeScript + Tailwind CSS 4 + vite-plugin-pwa + Zustand.
 - Vercel (gói Hobby, miễn phí) để host, Vercel Functions (`/api`) và Resend để gửi email.
 
-```ts
-type DistrictId = 'd1' | 'd2' | 'd3' | 'd5' | 'd7' | 'd9'
-
-type Activity = {
-  id: string; name: string; emoji: string
-  cost: number; energy: number; xp: number
-  item?: string                 // id sticker thêm vào Collection
-  unlockLevel?: number
-  openHours?: [number, number]  // ví dụ [17, 2] cho bar
-  days?: number[]               // 0 = CN … 6 = T7
-  diary: string[]               // câu nhật ký, chọn ngẫu nhiên
-}
-
-type Place = {
-  id: string; name: string; emoji: string; district: DistrictId
-  tagline: string; unlockLevel: number; special?: boolean
-  activities: Activity[]
-}
-
-type Destination = {
-  id: string; name: string; region: 'vietnam' | 'asia' | 'europe' | 'americas'
-  flag: string; unlockLevel: number; flightCost: number; open: boolean
-}
-
-type GameState = {
-  version: number
-  money: number; energy: number; xp: number   // level tính từ xp
-  lastSeenAt: string; lastAllowanceDate: string
-  diary: DiaryEntry[]; inbox: Message[]; collection: Record<string, number>
-  pet?: { kind: 'golden'; name: string }
-  coupons: string[]
-}
 ```
+src/
+├─ config.ts       tên game, Misu, Chằm Chằm, bè chẽ
+├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số
+├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, lưu dữ liệu
+├─ components/     nút, sheet, hộp thoại, sticker, thanh tab
+├─ overlays/       hộp tiền buổi sáng, popup kết quả, công cụ dev
+└─ screens/        Home, Map (+ map/), Messages, Collection
+```
+
+**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game.
 
 ## 14. Lộ trình
 
-| Ngày | Module | Xong khi |
+| Ngày | Module | Trạng thái |
 |---|---|---|
-| T5 1/10 | Chốt scope · **M1** khung app + PWA | Link Vercel cài được lên iPhone, mở toàn màn hình |
-| T6 2/10 | **M2** game state + lưu · **M3** đồng hồ thế giới | Tắt app mở lại vẫn còn dữ liệu; qua 6:00 nhận 4 triệu; energy hồi |
-| T7 3/10 | **M4** bản đồ (quận, POI, World) · **M5** hoạt động, kinh tế, diary, Collection | Chơi được trọn một vòng |
-| CN 4/10 | **M6** level + mở khóa · **M7** sự kiện · **M8** Hubby | Có lên level, có sự kiện, Hubby đổi trạng thái theo giờ |
-| T2 5/10 | **M9** tin nhắn → email · **M10** Love Coupons (nếu chốt) · nhận nuôi Golden | Gửi tin trong game → email về bạn |
-| T3 6/10 | Hình, giao diện, hiệu ứng | Nhìn ra "game" |
-| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật | Đủ nội dung cho 1–2 tuần đầu |
-| T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | Bản chốt |
+| T5 1/10 | Chốt scope · **M1** khung app + PWA | ✅ (deploy 3/10) |
+| T6 2/10 | **M2** game state + lưu · **M3** đồng hồ thế giới | ✅ 3/10 |
+| T7 3/10 | **M4** bản đồ (quận, địa điểm, World) · **M5** hoạt động, kinh tế, nhật ký, Collection | ✅ 3/10 |
+| CN 4/10 | **M6** level + thưởng + mở khóa · **M7** sự kiện ngẫu nhiên · **M8** trạng thái Chằm Chằm | |
+| T2 5/10 | **M9** tin nhắn → email · **M10** Love Coupons (nếu chốt) · nhận nuôi Golden | |
+| T3 6/10 | Hình, giao diện, hiệu ứng | |
+| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật | |
+| T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
 
 Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ngày khóa code.
@@ -251,8 +231,8 @@ Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ng�
 ## 16. Đang chờ bạn
 
 - [ ] MFe4 Love Coupons: có làm không, và sửa danh sách phiếu
-- [ ] Tên game + tên project Vercel (cũng là địa chỉ web; chốt trước 9/10)
-- [ ] GMI Tea và A Lâm ngoài đời ở quận nào, để đặt đúng chỗ (mặc định D3)
-- [ ] Misu gọi bạn là gì (mặc định "Hubby")
-- [ ] Hình: chibi Misu, chibi Hubby (Golden để sau)
+- [ ] Viết thêm lời nhắn buổi sáng (`src/data/morningNotes.ts`)
+- [ ] Giá thật cho từng món (`src/data/places.ts`), trước ngày 7/10
+- [ ] Hình: chibi Misu, chibi Chằm Chằm (Golden để sau), trước ngày 6/10
 - [ ] Thư sinh nhật (bạn tự viết)
+- [ ] Tên game hiển thị (tạm "Misu's Day"; đổi tên không ảnh hưởng địa chỉ web)

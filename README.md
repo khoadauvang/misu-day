@@ -1,70 +1,58 @@
 # Misu's Day 🐰
 
-Game PWA làm quà sinh nhật cho Misu. Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
+Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** đã xong Module 1 (khung app + PWA). Tiếp theo là Module 2–3.
+**Trạng thái:** xong Module 1–5 (khung app, lưu dữ liệu, đồng hồ thế giới, bản đồ, hoạt động + Collection). Tiếp theo là Module 6–8.
 
-## 1. Cài môi trường dev trên Mac (làm 1 lần, khoảng 20 phút)
+## Sửa nội dung thường gặp
+
+| Muốn sửa | Mở file | Ghi chú |
+|---|---|---|
+| Giá một món | `src/data/places.ts` | Thay `cost: PRICE` bằng số, ví dụ `cost: 65_000` |
+| Đổi giá tạm cho tất cả | `src/data/economy.ts` | `PRICE = 500_000` |
+| Lời nhắn buổi sáng | `src/data/morningNotes.ts` | Thêm câu vào cuối danh sách, viết tiếng Anh |
+| Tên gọi (Chằm Chằm, bè chẽ, tên game) | `src/config.ts` | |
+| Tiền mỗi sáng, năng lượng, nhịp lên level | `src/data/economy.ts` | |
+| Thêm món đồ sưu tầm | `src/data/items.ts` | Rồi gắn `item: 'id-món'` vào một hoạt động |
+| Chuyến đi World | `src/data/destinations.ts` | |
+
+Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
+
+> **Trước khi sửa code trên Mac, luôn bấm Sync Changes** để kéo phần Claude đã đẩy lên về máy trước, tránh hai bên sửa chồng lên nhau.
+
+## Chế độ thử (không ảnh hưởng app thật)
+
+Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc trên Mac). Dữ liệu ở đó tách riêng với app đã cài trên màn hình chính. Nút **🛠 Dev** ở góc trái có:
+
+- **+1 hour / Next morning:** tua giờ để thử năng lượng hồi và tiền buổi sáng
+- **+10,000,000₫ / +500 XP / Refill energy:** để thử đồ đắt và nơi bị khóa
+- **Reset time / Reset game**
+
+## 1. Cài môi trường dev trên Mac (làm 1 lần)
 
 | Công cụ | Cách cài | Kiểm tra (gõ trong Terminal) |
 |---|---|---|
-| Node.js | Tải bản **LTS** ở [nodejs.org](https://nodejs.org), cài như app bình thường | `node -v` ra v22.12 trở lên |
+| Node.js | Tải bản **LTS** ở [nodejs.org](https://nodejs.org) | `node -v` ra v22.12 trở lên |
 | Git | Gõ `git --version`. Nếu Mac hỏi cài "command line developer tools", bấm **Install** | `git --version` |
 | VS Code | Tải ở [code.visualstudio.com](https://code.visualstudio.com) | |
-
-Khai báo tên cho Git (chỉ 1 lần):
 
 ```bash
 git config --global user.name "Tên của bạn"
 git config --global user.email "email-dùng-cho-github@example.com"
 ```
 
-Cần thêm hai tài khoản: **GitHub** ([github.com](https://github.com)) và **Vercel** ([vercel.com](https://vercel.com): Sign Up → Continue with GitHub → chọn gói Hobby, miễn phí).
-
 ## 2. Chạy game trên Mac
 
-1. Giải nén `misu-day.zip`, để thư mục `misu-day` ở chỗ dễ tìm, ví dụ `~/Projects/misu-day`.
-2. Mở VS Code → **File → Open Folder…** → chọn thư mục `misu-day`. Nếu VS Code gợi ý cài extension (Tailwind CSS, Oxc), bấm **Install**.
-3. Vào **Terminal → New Terminal**, chạy:
+```bash
+npm install
+npm run dev
+```
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+Mở http://localhost:5173. Mỗi lần lưu file, trang tự cập nhật. Xem thử trên iPhone (cùng Wi-Fi): `npm run dev:phone` rồi mở địa chỉ ở dòng `Network:` bằng Safari.
 
-4. Mở http://localhost:5173 trên Mac. Mỗi lần sửa code và lưu file, trang tự cập nhật.
+## 3. Deploy
 
-**Xem thử trên iPhone** (iPhone và Mac cùng Wi-Fi): chạy `npm run dev:phone`, rồi mở địa chỉ ở dòng `Network: http://192.168.x.x:5173` bằng Safari trên iPhone. Cách này chỉ để xem nhanh; muốn cài thật thì dùng link Vercel ở bước 4.
-
-## 3. Đưa code lên GitHub
-
-1. Trong VS Code, bấm biểu tượng **Source Control** (hình nhánh cây ở thanh bên trái).
-2. Bấm **Publish to GitHub** → chọn **private repository**.
-3. Lần đầu, VS Code mở trình duyệt để bạn đăng nhập GitHub và bấm cho phép.
-
-## 4. Deploy lên Vercel
-
-1. Vào [vercel.com](https://vercel.com) → **Add New… → Project** → **Import** repo `misu-day`.
-2. Đặt **Project Name**. Tên này cũng là địa chỉ web: `<tên>.vercel.app`.
-
-   > ⚠️ Dữ liệu game của Misu gắn với địa chỉ này. Chốt tên trước 9/10 và không đổi sau ngày đó.
-
-3. Framework Preset tự nhận là **Vite**. Bấm **Deploy**, khoảng 1 phút là có link.
-
-## 5. Cài lên iPhone
-
-1. Mở link Vercel bằng **Safari**.
-2. Bấm **•••** cạnh thanh địa chỉ → **Share**. Trên iOS cũ, nút Share nằm ở thanh dưới.
-3. Bấm **Add to Home Screen**, giữ **Open as Web App** bật, rồi bấm **Add**.
-4. Mở icon con thỏ trên màn hình chính, game sẽ chạy toàn màn hình.
-
-Muốn xem nhanh trong Safari mà không cài, thêm `?preview` vào cuối link.
-
-## 6. Mỗi lần sửa code
-
-1. Sửa xong, vào **Source Control** → gõ mô tả ngắn → **Commit** → **Sync Changes**.
-2. Vercel tự build lại, mất khoảng 1 phút.
-3. Lần tới mở app trên iPhone sẽ hiện **A new update is ready → Update now**.
+Mỗi lần push lên nhánh `main` (Sync Changes), Vercel tự build lại trong khoảng 1 phút. Nếu build lỗi, Vercel giữ nguyên bản đang chạy.
 
 ## Lệnh
 
@@ -80,28 +68,31 @@ Muốn xem nhanh trong Safari mà không cài, thêm `?preview` vào cuối link
 
 ```
 misu-day/
-├─ index.html          trang gốc + thẻ meta cho iPhone
-├─ vite.config.ts      cấu hình build + PWA (tên app, icon, chạy offline)
-├─ public/             icon app, sticker thỏ
-├─ docs/SPEC.md        spec game
+├─ index.html            trang gốc + thẻ meta cho iPhone
+├─ vite.config.ts        cấu hình build + PWA (tên app, icon, chạy offline)
+├─ public/               icon app, sticker thỏ
+├─ docs/SPEC.md          spec game
 └─ src/
-   ├─ config.ts        tên game, tên Misu, tên chồng (sửa ở đây)
-   ├─ index.css        bảng màu, font, kiểu sticker
-   ├─ App.tsx          khung app: 4 tab + màn hướng dẫn cài
-   ├─ components/      thanh tab, sticker
-   ├─ pwa/             màn hướng dẫn cài, thông báo cập nhật
-   ├─ lib/device.ts    nhận biết iPhone, đã cài app hay chưa
-   ├─ screens/         Home, Map, Messages, Collection
-   └─ data/            nội dung game (quận, nhóm đồ…)
+   ├─ config.ts          tên game, Misu, Chằm Chằm, bè chẽ
+   ├─ data/              NỘI DUNG: quận, địa điểm, hoạt động, đồ, World, lời nhắn, các con số
+   ├─ game/              LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, lưu dữ liệu
+   │  ├─ engine.ts       các phép tính chính (qua ngày, nhận tiền, làm hoạt động)
+   │  ├─ rules.ts        khi nào làm được/không được một hoạt động
+   │  └─ store.ts        nơi giữ dữ liệu + tự lưu vào điện thoại
+   ├─ components/        nút, sheet, hộp thoại, sticker, thanh tab
+   ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
+   ├─ screens/           Home, Map (+ map/), Messages, Collection
+   ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
+   └─ lib/device.ts      nhận biết iPhone, đã cài app chưa, chế độ dev
 ```
 
 ## Lộ trình module
 
-| Module | Nội dung | Ngày |
+| Module | Nội dung | Trạng thái |
 |---|---|---|
-| M1 | Khung app + PWA ✅ | 1/10 |
-| M2–M3 | Lưu dữ liệu, đồng hồ thế giới | 2/10 |
-| M4–M5 | Bản đồ, hoạt động, kinh tế, nhật ký, Collection | 3/10 |
-| M6–M8 | Level, sự kiện ngẫu nhiên, Hubby | 4/10 |
+| M1 | Khung app + PWA | ✅ |
+| M2–M3 | Lưu dữ liệu, đồng hồ thế giới (tiền 6:00 sáng, năng lượng hồi) | ✅ |
+| M4–M5 | Bản đồ 7 quận, địa điểm, hoạt động, nhật ký, Collection, World | ✅ |
+| M6–M8 | Thưởng khi lên level, sự kiện ngẫu nhiên, trạng thái Chằm Chằm | 4/10 |
 | M9–M10 | Tin nhắn thành email, Love Coupons, nhận nuôi Golden | 5/10 |
 | | Hình + giao diện · Nội dung · Test + khóa code | 6–8/10 |
