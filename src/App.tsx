@@ -1,6 +1,7 @@
-import { useRef, useState, type ComponentType } from 'react'
+import { useEffect, useRef, useState, type ComponentType } from 'react'
 import { TabBar } from './components/TabBar.tsx'
 import type { TabId } from './components/tabs.ts'
+import { retryUndelivered } from './game/actions.ts'
 import { useGameClock } from './game/useGameClock.ts'
 import { isDevMode, shouldShowInstallGate } from './lib/device.ts'
 import { AllowanceModal } from './overlays/AllowanceModal.tsx'
@@ -25,6 +26,14 @@ function Game() {
   const [tab, setTab] = useState<TabId>('home')
   const scrollRef = useRef<HTMLElement>(null)
   useGameClock()
+
+  // Module 9: tin nào chưa tới hộp thư của Chằm Chằm thì gửi lại khi mở app và khi có mạng lại
+  useEffect(() => {
+    const retry = () => void retryUndelivered()
+    retry()
+    window.addEventListener('online', retry)
+    return () => window.removeEventListener('online', retry)
+  }, [])
 
   const Screen = SCREENS[tab]
   const changeTab = (next: TabId) => {

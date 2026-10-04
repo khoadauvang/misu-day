@@ -110,6 +110,31 @@ export type PendingAllowance = {
   day: string
 }
 
+/** Loại tin Misu gửi: tin nhanh (chạm là gửi) hoặc tự gõ ('text') */
+export type MessageKind = 'miss-you' | 'hungry' | 'extra' | 'come-home' | 'look-bought' | 'text'
+
+/** Trạng thái gửi email của một tin Misu gửi */
+export type Delivery = 'sending' | 'sent' | 'failed'
+
+/** Một tin nhắn trong khung chat với Chằm Chằm */
+export type ChatMessage = {
+  id: string
+  /** Thời điểm (mili giây) */
+  at: number
+  from: 'misu' | 'husband'
+  text: string
+  /** Chỉ tin của Misu */
+  kind?: MessageKind
+  /** id món đồ gửi kèm ("Look what I bought") */
+  item?: string
+  /** Tiền Chằm Chằm gửi kèm câu trả lời ("Can I have a little extra?") */
+  money?: number
+  /** Email đã tới hộp thư của Chằm Chằm ngoài đời chưa (chỉ tin của Misu) */
+  delivery?: Delivery
+  /** Lần thử gửi email gần nhất (mili giây) */
+  deliveryAt?: number
+}
+
 /** Toàn bộ dữ liệu được lưu trên điện thoại */
 export type SaveData = {
   startedAt: number
@@ -127,4 +152,10 @@ export type SaveData = {
   /** Hoạt động chỉ làm được 1 lần/ngày: mã hoạt động → ngày làm gần nhất */
   doneToday: Record<string, string>
   stats: { activities: number; spent: number }
+  /** Module 9: lịch sử chat với Chằm Chằm */
+  messages: ChatMessage[]
+  /** Ngày gần nhất Misu đã xin "a little extra" (mỗi ngày 1 lần) */
+  extraDay: string | null
+  /** id món đồ nhận được gần nhất (để "Look what I bought" gửi kèm) */
+  lastItem: string | null
 }

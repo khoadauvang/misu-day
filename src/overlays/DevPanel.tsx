@@ -46,7 +46,7 @@ export function DevPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="press fixed bottom-[calc(max(env(safe-area-inset-bottom),14px)_+_86px)] left-4 z-30 rounded-full bg-plum px-3.5 py-2 text-[13px] font-extrabold text-paper shadow-float"
+        className="press fixed top-[max(env(safe-area-inset-top),12px)] right-4 z-30 rounded-full bg-plum px-3.5 py-2 text-[13px] font-extrabold text-paper shadow-float"
       >
         🛠 Dev
       </button>

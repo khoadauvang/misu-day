@@ -24,6 +24,8 @@
   --animate-sheet-up: sheet-up 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-fade-in: fade-in 200ms ease-out;
   --animate-pop-in: pop-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1.15);
+  /* Ba chấm "đang gõ…" trong khung chat */
+  --animate-typing: typing 1s ease-in-out infinite;
 
   @keyframes sheet-up {
     from {
@@ -39,6 +41,18 @@
     }
     to {
       opacity: 1;
+    }
+  }
+  @keyframes typing {
+    0%,
+    60%,
+    100% {
+      opacity: 0.35;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
     }
   }
   @keyframes pop-in {
@@ -107,6 +121,14 @@
 @utility sticker {
   filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
     drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 4px rgb(90 58 74 / 0.22));
+}
+
+/* Hàng cuộn ngang không hiện thanh cuộn (hàng tin nhanh) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Nhấn vào thì "lún" nhẹ như sticker được bóc ra */

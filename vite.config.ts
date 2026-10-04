@@ -1,15 +1,40 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, type Connect } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { GAME_DESCRIPTION, GAME_NAME, PAPER_COLOR } from './src/config.ts'
 
 const escapeHtml = (text: string) =>
   text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 
+/**
+ * Chạy thử trên Mac (npm run dev / preview) thì không có hàm Vercel /api/message.
+ * Đường này giả lập: in tin nhắn ra Terminal và báo "đã gửi", không gửi email thật.
+ */
+const fakeMessageApi: Connect.NextHandleFunction = (req, res, next) => {
+  if (req.method !== 'POST') return next()
+  let body = ''
+  req.on('data', (chunk) => (body += chunk))
+  req.on('end', () => {
+    try {
+      const { text, reply } = JSON.parse(body) as { text?: string; reply?: string }
+      console.log(`\n📨 (local, no email) Misu: ${text}\n   Chằm Chằm: ${reply}`)
+    } catch {
+      // bỏ qua
+    }
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({ ok: true, local: true }))
+  })
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    {
+      name: 'local-message-api',
+      configureServer: (server) => void server.middlewares.use('/api/message', fakeMessageApi),
+      configurePreviewServer: (server) => void server.middlewares.use('/api/message', fakeMessageApi),
+    },
     react(),
     tailwindcss(),
     {

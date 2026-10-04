@@ -71,10 +71,14 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - Lý do không làm được: Reach Level X · Open 5 PM – 2 AM · Done for today · Buy a book first · Not enough money · Need more energy · Coming soon.
 - Giờ mở cửa: Riverside Bar 17:00–02:00; Concert Park tối thứ Sáu và thứ Bảy 19:00–23:00.
 
-### Messages
-- Chat kiểu iMessage với Chằm Chằm (M9).
-- Tin nhanh: "I miss you 🥺", "I'm hungry 🍜", "Can I have a little extra? 💸" (1 lần/ngày), "Come home early tonight 🏠", "Look what I bought 🛍️". Misu cũng tự gõ được.
-- Chằm Chằm trả lời ngay bằng câu viết sẵn, tùy trạng thái.
+### Messages ✅
+- Chat kiểu iMessage với Chằm Chằm (M9). Lần đầu hiện lời chào "Hi bè chẽ 💗 Text me anytime…".
+- Tin nhanh (hàng chip trên ô nhập): "I miss you 🥺", "I'm hungry 🍜", "Can I have a little extra? 💸", "Come home early tonight 🏠", "Look what I bought 🛍️". Misu cũng tự gõ được (tối đa 500 ký tự).
+- "Look what I bought" tự gửi kèm sticker món đồ mua gần nhất.
+- "Can I have a little extra?" 1 lần/ngày: Chằm Chằm gửi thêm 1,000,000₫ (`EXTRA_MONEY`), hiện thẻ "+1,000,000₫ added to your wallet" và ghi nhật ký. Dùng rồi thì chip đổi thành "Extra again tomorrow 💸".
+- Chằm Chằm "đang gõ…" (3 chấm) rồi trả lời bằng câu viết sẵn, tùy loại tin và việc anh đang làm (sáng sớm, ở công ty, ăn trưa, lái xe, ở nhà/cuối tuần, tập band, ngủ). Câu trả lời sửa trong `src/data/messages.ts`.
+- Dưới tin của Misu: "Sending…" → "Delivered" khi email đã đi; lỗi thì "Not delivered · Tap to retry". Mở app lại hoặc có mạng lại thì tự gửi lại các tin chưa tới (trong 3 ngày).
+- Tối đa 30 tin/ngày (`DAILY_MESSAGE_LIMIT`), quá thì hiện "That's a lot of love for one day 💌 More tomorrow!".
 - Mỗi tin Misu gửi đi thành một email thật về hộp thư của bạn (mục 9).
 
 ### Collection ✅
@@ -119,7 +123,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - **Energy:** tối đa 100, hồi +10 mỗi giờ kể cả khi tắt app. Ăn uống 5–10, mua sắm 10–15, gym 25, concert 30. Massage, gội đầu dưỡng sinh và chợp mắt thì **hồi** năng lượng.
 - **XP / Level:** từ level n lên n+1 cần 100 × n XP. Chơi đều thì khoảng 1 tuần tới Lv5, 3–4 tuần tới Lv10.
 - **Lên level (M6 ✅):** Chằm Chằm thưởng Level × 500,000₫ (`LEVEL_REWARD_STEP`), tự vào ví + ghi nhật ký. Popup kết quả hiện "Level up!", số tiền thưởng và danh sách "Now open" (địa điểm, hoạt động, chuyến đi vừa mở). Lên nhiều level một lúc thì nhận thưởng từng level. Danh sách mở khóa đọc thẳng từ `unlockLevel` trong dữ liệu (`src/game/unlocks.ts`).
-- **"Can I have a little extra? 💸":** 1 lần/ngày (M9).
+- **"Can I have a little extra? 💸" (M9 ✅):** 1 lần/ngày, Chằm Chằm gửi thêm 1,000,000₫ (`EXTRA_MONEY` trong `src/data/economy.ts`).
 - Chế độ 28 triệu/tuần để sau.
 
 ## 7. Chằm Chằm (chồng NPC)
@@ -145,9 +149,14 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - Pet Shop (D2, Lv5): "Adopt a Golden Retriever" đang hiện **Coming soon**. Sẽ làm cùng M9–M10: nhận nuôi, đặt tên, chó hiện ở Home, "Walk the dog" mỗi ngày.
 - Mèo và các giống chó khác: sau v1.
 
-## 9. Tin nhắn thành email thật (MFe2–MFe3)
+## 9. Tin nhắn thành email thật (MFe2–MFe3) ✅
 
-- Misu gửi tin trong game → `POST /api/message` (Vercel Function) → Resend → email về hộp thư của bạn, kèm snapshot: Level, ví tiền, vừa làm gì.
+- Misu gửi tin trong game → `POST /api/message` (Vercel Function, file `api/message.js`) → Resend → email về hộp thư của bạn.
+- Email gồm: tin của Misu, sticker gửi kèm, tiền xin thêm, câu Chằm Chằm trả lời trong game, Misu đang ra sao (Level, ví, năng lượng, số sticker), Chằm Chằm trong game đang làm gì, nhật ký hôm nay (5 dòng mới nhất), giờ gửi theo giờ Việt Nam.
+- Biến môi trường trên Vercel (Production): `RESEND_API_KEY`, `MESSAGE_TO`. **Dùng email của bạn**, không dùng email của Misu, kẻo lộ quà.
+- Gửi từ chế độ `?dev` thì tiêu đề email có "🧪 [Test]".
+- Chỉ nhận yêu cầu từ trang misuxinhdep.vercel.app (kiểm tra Origin), tin tối đa 500 ký tự, chữ trong tin được escape trước khi đưa vào email.
+- Chạy `npm run dev` / `npm run preview` trên Mac thì `/api/message` là bản giả: in tin ra Terminal, không gửi email.
 - Resend gói Free: 3.000 email/tháng, tối đa 100/ngày. Gửi từ `onboarding@resend.dev` thì chỉ tới được email chủ tài khoản Resend, mà người nhận chính là bạn nên không cần mua domain.
 - API key đặt trong Environment Variables của Vercel, không để trong code. Giới hạn số tin mỗi ngày. Lần đầu nhớ đánh dấu "Not spam".
 
@@ -188,16 +197,18 @@ Lần mở đầu tiên: thư chúc mừng (bạn tự viết, bằng tiếng An
 - Vercel (gói Hobby, miễn phí) để host, Vercel Functions (`/api`) và Resend để gửi email.
 
 ```
+api/message.js     Vercel Function: tin nhắn → email (Resend)
 src/
 ├─ config.ts       tên game, Misu, Chằm Chằm, bè chẽ
 ├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số
 ├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, lưu dữ liệu
 ├─ components/     nút, sheet, hộp thoại, sticker, thanh tab
 ├─ overlays/       hộp tiền buổi sáng, popup kết quả, công cụ dev
+├─ lib/            nhận biết iPhone, gọi /api, đo bàn phím
 └─ screens/        Home, Map (+ map/), Messages, Collection
 ```
 
-**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game.
+**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game. Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
 
 ## 14. Lộ trình
 
@@ -208,7 +219,7 @@ src/
 | T7 3/10 | **M4** bản đồ (quận, địa điểm, World) · **M5** hoạt động, kinh tế, nhật ký, Collection | ✅ 3/10 |
 | CN 4/10 | (lỡ, dồn sang T2) | |
 | T2 5/10 | **M8** trạng thái Chằm Chằm · **M6** thưởng level + mở khóa | ✅ 5/10 |
-| T2 5/10 | **M9** tin nhắn → email | |
+| T2 5/10 | **M9** tin nhắn → email | ✅ 5/10 |
 | T3 6/10 | Nhận nuôi Golden · Hình, giao diện, hiệu ứng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
 | T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật · **M10** Love Coupons bản rút gọn (nếu chốt) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |

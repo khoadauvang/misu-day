@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–5 (khung app, lưu dữ liệu, đồng hồ thế giới, bản đồ, hoạt động + Collection). Tiếp theo là Module 6–8.
+**Trạng thái:** xong Module 1–6, 8, 9 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email). Tiếp theo: nhận nuôi Golden, hình + giao diện, M7.
 
 ## Sửa nội dung thường gặp
 
@@ -15,6 +15,9 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Tiền mỗi sáng, năng lượng, nhịp lên level | `src/data/economy.ts` | |
 | Thêm món đồ sưu tầm | `src/data/items.ts` | Rồi gắn `item: 'id-món'` vào một hoạt động |
 | Chuyến đi World | `src/data/destinations.ts` | |
+| Lịch của Chằm Chằm, việc ở công ty | `src/data/husband.ts` | |
+| Tin nhanh, câu trả lời của Chằm Chằm | `src/data/messages.ts` | Mỗi loại tin có câu riêng theo việc anh đang làm |
+| Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
 
 Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
 
@@ -22,11 +25,13 @@ Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau
 
 ## Chế độ thử (không ảnh hưởng app thật)
 
-Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc trên Mac). Dữ liệu ở đó tách riêng với app đã cài trên màn hình chính. Nút **🛠 Dev** ở góc trái có:
+Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc trên Mac). Dữ liệu ở đó tách riêng với app đã cài trên màn hình chính. Nút **🛠 Dev** ở góc phải trên có:
 
 - **+1 hour / Next morning:** tua giờ để thử năng lượng hồi và tiền buổi sáng
 - **+10,000,000₫ / +500 XP / Refill energy:** để thử đồ đắt và nơi bị khóa
 - **Reset time / Reset game**
+
+Tin nhắn gửi ở chế độ này vẫn thành email thật, tiêu đề có **🧪 [Test]**.
 
 ## 1. Cài môi trường dev trên Mac (làm 1 lần)
 
@@ -54,6 +59,10 @@ Mở http://localhost:5173. Mỗi lần lưu file, trang tự cập nhật. Xem 
 
 Mỗi lần push lên nhánh `main` (Sync Changes), Vercel tự build lại trong khoảng 1 phút. Nếu build lỗi, Vercel giữ nguyên bản đang chạy.
 
+Tin nhắn → email cần 2 biến trong Vercel → Settings → Environment Variables (Production): `RESEND_API_KEY` (key của Resend) và `MESSAGE_TO` (email của bạn, trùng email đăng ký Resend). Email đầu tiên có thể vào Spam: đánh dấu "Not spam".
+
+> Vercel gói Hobby chặn deploy nếu email tác giả commit không gắn với tài khoản GitHub của bạn. Trên Mac, đặt `git config user.email` đúng email GitHub của bạn.
+
 ## Lệnh
 
 | Lệnh | Làm gì |
@@ -72,6 +81,7 @@ misu-day/
 ├─ vite.config.ts        cấu hình build + PWA (tên app, icon, chạy offline)
 ├─ public/               icon app, sticker thỏ
 ├─ docs/SPEC.md          spec game
+├─ api/message.js        hàm Vercel: tin nhắn trong game → email (Resend)
 └─ src/
    ├─ config.ts          tên game, Misu, Chằm Chằm, bè chẽ
    ├─ data/              NỘI DUNG: quận, địa điểm, hoạt động, đồ, World, lời nhắn, các con số
@@ -83,7 +93,7 @@ misu-day/
    ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
    ├─ screens/           Home, Map (+ map/), Messages, Collection
    ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
-   └─ lib/device.ts      nhận biết iPhone, đã cài app chưa, chế độ dev
+   └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, đo bàn phím
 ```
 
 ## Lộ trình module
@@ -93,6 +103,8 @@ misu-day/
 | M1 | Khung app + PWA | ✅ |
 | M2–M3 | Lưu dữ liệu, đồng hồ thế giới (tiền 6:00 sáng, năng lượng hồi) | ✅ |
 | M4–M5 | Bản đồ 7 quận, địa điểm, hoạt động, nhật ký, Collection, World | ✅ |
-| M6–M8 | Thưởng khi lên level, sự kiện ngẫu nhiên, trạng thái Chằm Chằm | 4/10 |
-| M9–M10 | Tin nhắn thành email, Love Coupons, nhận nuôi Golden | 5/10 |
+| M6, M8 | Thưởng khi lên level, trạng thái Chằm Chằm | ✅ |
+| M7 | Sự kiện ngẫu nhiên | 6/10 nếu kịp |
+| M9 | Tin nhắn thành email | ✅ |
+| M10 | Love Coupons (nếu chốt), nhận nuôi Golden | 6–7/10 |
 | | Hình + giao diện · Nội dung · Test + khóa code | 6–8/10 |

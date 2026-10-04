@@ -22,3 +22,6 @@ export const DIARY_LIMIT = 300
 
 /** Lên level L thì Chằm Chằm thưởng L × LEVEL_REWARD_STEP (Level 2 = 1,000,000₫, Level 5 = 2,500,000₫…) */
 export const LEVEL_REWARD_STEP = 500_000
+
+/** "Can I have a little extra? 💸": Chằm Chằm gửi thêm bao nhiêu (mỗi ngày 1 lần) */
+export const EXTRA_MONEY = 1_000_000

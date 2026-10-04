@@ -1,13 +1,16 @@
 import { HUSBAND_NAME } from '../config.ts'
-import { DAILY_ALLOWANCE, DIARY_LIMIT, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
+import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
+import { MESSAGE_HISTORY_LIMIT, MESSAGE_MAX_LENGTH, QUICK_MESSAGES } from '../data/messages.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { formatMoney } from './format.ts'
+import { husbandStatus } from './husband.ts'
 import { levelInfo } from './level.ts'
+import { askedExtraToday, canSendMore, pickReply } from './messages.ts'
 import { activityKey, checkActivity } from './rules.ts'
 import { unlocksBetween } from './unlocks.ts'
-import type { Activity, ActivityResult, DiaryEntry, Place, SaveData } from './types.ts'
+import type { Activity, ActivityResult, ChatMessage, Delivery, DiaryEntry, MessageKind, Place, SaveData } from './types.ts'
 
 // Luật chơi viết thành các hàm "thuần": nhận dữ liệu cũ + thời điểm, trả về dữ liệu mới.
 // Không đụng tới giao diện hay bộ nhớ điện thoại, nên dễ đọc và dễ kiểm tra.
@@ -26,6 +29,9 @@ export function newSave(t: number): SaveData {
     collection: {},
     doneToday: {},
     stats: { activities: 0, spent: 0 },
+    messages: [],
+    extraDay: null,
+    lastItem: null,
   }
 }
 
@@ -94,6 +100,7 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
     energyAt: t,
     xp: current.xp + activity.xp,
     collection,
+    lastItem: item ? item.id : current.lastItem,
     doneToday: activity.oncePerDay
       ? { ...current.doneToday, [activityKey(place, activity)]: gameDayKey(t) }
       : current.doneToday,
@@ -169,4 +176,77 @@ export function addDiary(diary: DiaryEntry[], entry: Omit<DiaryEntry, 'id'>): Di
 /** Các dòng nhật ký của một ngày */
 export function diaryForDay(diary: DiaryEntry[], day: string): DiaryEntry[] {
   return diary.filter((entry) => gameDayKey(entry.at) === day)
+}
+
+// --- Module 9: tin nhắn với Chằm Chằm ---
+
+export type MessageInput = { kind: MessageKind; text?: string }
+export type MessageOutcome = { save: SaveData; message?: ChatMessage; reply?: ChatMessage; error?: string }
+
+function messageId(t: number): string {
+  return `${t.toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+}
+
+/**
+ * Misu gửi một tin. Chằm Chằm trả lời ngay bằng câu viết sẵn, tùy việc anh đang làm.
+ * "Can I have a little extra?" thì anh gửi thêm tiền (mỗi ngày 1 lần).
+ * Tin của Misu ở trạng thái "sending"; việc gửi email thật nằm ở src/game/actions.ts.
+ */
+export function applyMessage(save: SaveData, input: MessageInput, t: number): MessageOutcome {
+  const quick = QUICK_MESSAGES.find((q) => q.kind === input.kind)
+  const text = (input.kind === 'text' ? (input.text ?? '') : (quick?.text ?? '')).trim().slice(0, MESSAGE_MAX_LENGTH)
+  if (!text) return { save, error: 'Type a message first' }
+  if (!canSendMore(save, t)) return { save, error: 'That’s a lot of love for one day 💌 More tomorrow!' }
+
+  const extra = input.kind === 'extra'
+  if (extra && askedExtraToday(save, t)) return { save, error: 'One little extra a day 💸 Ask again tomorrow!' }
+
+  const status = husbandStatus(t)
+  const item = input.kind === 'look-bought' && save.lastItem ? ITEM_BY_ID[save.lastItem] : undefined
+  const money = extra ? EXTRA_MONEY : 0
+
+  const message: ChatMessage = {
+    id: messageId(t),
+    at: t,
+    from: 'misu',
+    kind: input.kind,
+    text,
+    item: item?.id,
+    delivery: 'sending',
+    deliveryAt: t,
+  }
+  const reply: ChatMessage = {
+    id: messageId(t + 1),
+    at: t + 1,
+    from: 'husband',
+    text: pickReply(input.kind, { item, money, status }),
+    money: money > 0 ? money : undefined,
+  }
+
+  let next: SaveData = {
+    ...save,
+    messages: [...save.messages, message, reply].slice(-MESSAGE_HISTORY_LIMIT),
+  }
+  if (extra) {
+    next = {
+      ...next,
+      money: next.money + money,
+      extraDay: gameDayKey(t),
+      diary: addDiary(next.diary, {
+        at: t,
+        emoji: '💸',
+        text: `Asked ${HUSBAND_NAME} for a little extra. He sent ${formatMoney(money)}.`,
+        money,
+      }),
+    }
+  }
+  return { save: next, message, reply }
+}
+
+/** Cập nhật trạng thái gửi email của một tin */
+export function setDelivery(save: SaveData, id: string, delivery: Delivery, t: number): SaveData {
+  return {
+    ...save,
+    messages: save.messages.map((m) => (m.id === id ? { ...m, delivery, deliveryAt: t } : m)),
+  }
 }

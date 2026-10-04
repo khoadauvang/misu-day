@@ -1,8 +1,18 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { gameNow } from './clock.ts'
-import { applyActivity, applyTick, collectAllowance, newSave, type ActivityOutcome } from './engine.ts'
-import type { Activity, Place, SaveData } from './types.ts'
+import {
+  applyActivity,
+  applyMessage,
+  applyTick,
+  collectAllowance,
+  newSave,
+  setDelivery,
+  type ActivityOutcome,
+  type MessageInput,
+  type MessageOutcome,
+} from './engine.ts'
+import type { Activity, Delivery, Place, SaveData } from './types.ts'
 
 // Kho dữ liệu của game. Mọi thay đổi đều tự lưu vào localStorage của điện thoại,
 // tắt app mở lại là đọc ra chơi tiếp.
@@ -21,6 +31,9 @@ type GameStore = {
   collectAllowance: () => void
   /** Làm một hoạt động; place = null là hoạt động ở nhà */
   doActivity: (place: Place | null, activity: Activity) => Omit<ActivityOutcome, 'save'>
+  /** Misu gửi tin cho Chằm Chằm (Module 9) */
+  sendMessage: (input: MessageInput) => Omit<MessageOutcome, 'save'>
+  setDelivery: (id: string, delivery: Delivery) => void
   /** Chỉ dùng trong chế độ ?dev */
   devPatch: (patch: Partial<SaveData>) => void
 }
@@ -52,6 +65,12 @@ export const useGame = create<GameStore>()(
         set({ save })
         return outcome
       },
+      sendMessage: (input) => {
+        const { save, ...outcome } = applyMessage(get().save, input, gameNow())
+        set({ save })
+        return outcome
+      },
+      setDelivery: (id, delivery) => set((s) => ({ save: setDelivery(s.save, id, delivery, gameNow()) })),
       devPatch: (patch) => set((s) => ({ save: { ...s.save, ...patch } })),
     }),
     {
