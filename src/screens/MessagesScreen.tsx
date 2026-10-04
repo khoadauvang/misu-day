@@ -1,5 +1,7 @@
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME, MISU_NICKNAME } from '../config.ts'
+import { husbandStatus } from '../game/husband.ts'
+import { useUi } from '../game/ui.ts'
 
 // Module 1: khung chat mẫu. Module 9 nối vào email thật qua /api/message.
 
@@ -12,13 +14,15 @@ function Bubble({ children }: { children: string }) {
 }
 
 export function MessagesScreen() {
+  const now = useUi((s) => s.now)
+  const status = husbandStatus(now)
   return (
     <div className="mx-auto max-w-md">
       <header className="flex items-center gap-3">
         <Sticker emoji="🤵🏻" className="text-[42px]" />
         <div>
           <h1 className="font-display text-[30px] leading-none font-bold">{HUSBAND_NAME}</h1>
-          <p className="mt-1 text-[14px] font-semibold text-plum-soft">Usually replies right away</p>
+          <p className="mt-1 text-[14px] font-semibold text-plum-soft">{status.emoji} {status.label}</p>
         </div>
       </header>
 

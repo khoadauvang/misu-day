@@ -1,5 +1,7 @@
 // Kiểu dữ liệu của game
 
+import type { Unlocks } from './unlocks.ts'
+
 export type DistrictId = 'pn' | 'd1' | 'd2' | 'd3' | 'd5' | 'd7' | 'd9'
 
 export type CategoryId =
@@ -81,6 +83,10 @@ export type ActivityResult = {
   itemCount?: number
   levelBefore: number
   levelAfter: number
+  /** Tiền Chằm Chằm thưởng khi lên level (0 nếu không lên level) */
+  levelReward: number
+  /** Những gì vừa mở khóa khi lên level */
+  unlocked?: Unlocks
 }
 
 /** Một dòng trong nhật ký của Misu */

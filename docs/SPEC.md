@@ -1,6 +1,6 @@
-# Misu's Day — Spec v1.1
+# Misu's Day — Spec v1.2
 
-*Cập nhật 03/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+*Cập nhật 05/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
 - **Link game:** https://misuxinhdep.vercel.app (đã chốt, không đổi sau 9/10)
 - **Code:** GitHub `khoadauvang/misu-day`, nhánh `main` → Vercel tự deploy
@@ -51,7 +51,9 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - Lời nhắn hôm nay của Chằm Chằm, dạng tờ giấy dán băng keo.
 - **At home:** hoạt động miễn phí ở nhà — xem sitcom, rom-com, tập ở nhà, đọc sách (cần mua sách trước), chợp mắt (1 lần/ngày, hồi 30 năng lượng).
 - **Today's diary:** nhật ký trong ngày, mới nhất ở trên.
-- *Sẽ thêm:* trạng thái của Chằm Chằm theo giờ (M8), thú cưng (sau khi nhận nuôi).
+- Thẻ trạng thái của Chằm Chằm theo giờ (M8 ✅): đang làm gì + "until 5:45 PM"; nền mint khi đang ở bên Misu.
+- Dưới thanh XP: "🔓 New places at Level X" (level kế tiếp có mở khóa).
+- *Sẽ thêm:* thú cưng (sau khi nhận nuôi).
 
 ### Map ✅
 
@@ -116,7 +118,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - **Allowance:** 4,000,000₫ lúc 6:00 sáng, Misu bấm Collect. Vắng N ngày thì nhận đủ N lần.
 - **Energy:** tối đa 100, hồi +10 mỗi giờ kể cả khi tắt app. Ăn uống 5–10, mua sắm 10–15, gym 25, concert 30. Massage, gội đầu dưỡng sinh và chợp mắt thì **hồi** năng lượng.
 - **XP / Level:** từ level n lên n+1 cần 100 × n XP. Chơi đều thì khoảng 1 tuần tới Lv5, 3–4 tuần tới Lv10.
-- **Lên level:** hiện tại popup báo "Level up!". M6 sẽ thêm thưởng của Chằm Chằm (Level × 500,000₫) và danh sách nơi vừa mở khóa.
+- **Lên level (M6 ✅):** Chằm Chằm thưởng Level × 500,000₫ (`LEVEL_REWARD_STEP`), tự vào ví + ghi nhật ký. Popup kết quả hiện "Level up!", số tiền thưởng và danh sách "Now open" (địa điểm, hoạt động, chuyến đi vừa mở). Lên nhiều level một lúc thì nhận thưởng từng level. Danh sách mở khóa đọc thẳng từ `unlockLevel` trong dữ liệu (`src/game/unlocks.ts`).
 - **"Can I have a little extra? 💸":** 1 lần/ngày (M9).
 - Chế độ 28 triệu/tuần để sau.
 
@@ -125,7 +127,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - **Xưng hô:** Misu gọi chồng là **Chằm Chằm**, chồng gọi Misu là **bè chẽ** (`src/config.ts`).
 - **Lời nhắn buổi sáng:** hiện có 2 câu mẫu trong `src/data/morningNotes.ts`, quay vòng mỗi ngày. Bạn tự viết thêm.
 
-| Thời gian | Trạng thái (M8) |
+| Thời gian | Trạng thái (M8 ✅, sửa chữ/giờ trong `src/data/husband.ts`) |
 |---|---|
 | T2–T6, 6:00–8:30 | Getting ready for work ☕ |
 | T2–T6, 8:30–9:00 | Driving to the office 🚗 |
@@ -204,10 +206,11 @@ src/
 | T5 1/10 | Chốt scope · **M1** khung app + PWA | ✅ (deploy 3/10) |
 | T6 2/10 | **M2** game state + lưu · **M3** đồng hồ thế giới | ✅ 3/10 |
 | T7 3/10 | **M4** bản đồ (quận, địa điểm, World) · **M5** hoạt động, kinh tế, nhật ký, Collection | ✅ 3/10 |
-| CN 4/10 | **M6** level + thưởng + mở khóa · **M7** sự kiện ngẫu nhiên · **M8** trạng thái Chằm Chằm | |
-| T2 5/10 | **M9** tin nhắn → email · **M10** Love Coupons (nếu chốt) · nhận nuôi Golden | |
-| T3 6/10 | Hình, giao diện, hiệu ứng | |
-| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật | |
+| CN 4/10 | (lỡ, dồn sang T2) | |
+| T2 5/10 | **M8** trạng thái Chằm Chằm · **M6** thưởng level + mở khóa | ✅ 5/10 |
+| T2 5/10 | **M9** tin nhắn → email | |
+| T3 6/10 | Nhận nuôi Golden · Hình, giao diện, hiệu ứng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
+| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật · **M10** Love Coupons bản rút gọn (nếu chốt) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
 

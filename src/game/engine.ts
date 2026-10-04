@@ -1,11 +1,12 @@
 import { HUSBAND_NAME } from '../config.ts'
-import { DAILY_ALLOWANCE, DIARY_LIMIT, MAX_ENERGY } from '../data/economy.ts'
+import { DAILY_ALLOWANCE, DIARY_LIMIT, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { formatMoney } from './format.ts'
 import { levelInfo } from './level.ts'
 import { activityKey, checkActivity } from './rules.ts'
+import { unlocksBetween } from './unlocks.ts'
 import type { Activity, ActivityResult, DiaryEntry, Place, SaveData } from './types.ts'
 
 // Luật chơi viết thành các hàm "thuần": nhận dữ liệu cũ + thời điểm, trả về dữ liệu mới.
@@ -107,8 +108,12 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
     stats: { activities: current.stats.activities + 1, spent: current.stats.spent + activity.cost },
   }
 
+  const levelBefore = levelInfo(current.xp).level
+  const levelAfter = levelInfo(next.xp).level
+  const leveled = applyLevelUps(next, levelBefore, levelAfter, t)
+
   return {
-    save: next,
+    save: leveled.save,
     result: {
       placeName: place?.name ?? 'Home',
       activity,
@@ -118,10 +123,41 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
       xp: activity.xp,
       item,
       itemCount: item ? collection[item.id] : undefined,
-      levelBefore: levelInfo(current.xp).level,
-      levelAfter: levelInfo(next.xp).level,
+      levelBefore,
+      levelAfter,
+      levelReward: leveled.reward,
+      unlocked: levelAfter > levelBefore ? unlocksBetween(levelBefore, levelAfter) : undefined,
     },
   }
+}
+
+/** Thưởng của Chằm Chằm khi lên level L */
+export function levelReward(level: number): number {
+  return level * LEVEL_REWARD_STEP
+}
+
+/**
+ * Module 6: lên level thì Chằm Chằm thưởng tiền (Level × 500,000₫), ghi vào nhật ký.
+ * Lên nhiều level một lúc thì nhận thưởng của từng level.
+ */
+export function applyLevelUps(save: SaveData, from: number, to: number, t: number): { save: SaveData; reward: number } {
+  let next = save
+  let reward = 0
+  for (let level = from + 1; level <= to; level++) {
+    const amount = levelReward(level)
+    reward += amount
+    next = {
+      ...next,
+      money: next.money + amount,
+      diary: addDiary(next.diary, {
+        at: t,
+        emoji: '🎉',
+        text: `Reached Level ${level}! ${HUSBAND_NAME} sent ${formatMoney(amount)} to celebrate.`,
+        money: amount,
+      }),
+    }
+  }
+  return { save: next, reward }
 }
 
 /** Thêm một dòng nhật ký (giữ tối đa DIARY_LIMIT dòng) */

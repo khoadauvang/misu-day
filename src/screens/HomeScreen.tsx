@@ -8,7 +8,9 @@ import { gameDayKey } from '../game/clock.ts'
 import { currentEnergy } from '../game/energy.ts'
 import { diaryForDay } from '../game/engine.ts'
 import { formatClock, formatDuration, formatMoney } from '../game/format.ts'
+import { husbandStatus, isWithMisu } from '../game/husband.ts'
 import { levelInfo } from '../game/level.ts'
+import { nextUnlockLevel } from '../game/unlocks.ts'
 import { checkActivity } from '../game/rules.ts'
 import { useGame } from '../game/store.ts'
 import type { Activity, SaveData } from '../game/types.ts'
@@ -33,6 +35,28 @@ function Stat({ emoji, label, value, note, className }: StatProps) {
       <p className="mt-2.5 font-display text-[23px] leading-none font-bold tabular-nums">{value}</p>
       {note && <p className="mt-1.5 text-[12px] font-bold">{note}</p>}
     </div>
+  )
+}
+
+/** Module 8: giờ này Chằm Chằm đang làm gì */
+function HusbandCard({ now }: { now: number }) {
+  const status = husbandStatus(now)
+  return (
+    <section
+      aria-label={`What ${HUSBAND_NAME} is doing`}
+      className={`mt-3 flex items-center gap-3.5 rounded-[26px] px-4 py-3.5 ring-1 ${
+        isWithMisu(status) ? 'bg-mint/70 ring-mint' : 'bg-white ring-petal'
+      }`}
+    >
+      <Sticker emoji={status.emoji} className="text-[32px]" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-extrabold text-plum-soft">
+          {HUSBAND_NAME} · until {formatClock(status.until)}
+        </p>
+        <p className="font-display text-[18px] leading-tight font-bold">{status.label}</p>
+        {status.detail && <p className="mt-0.5 text-[14px] leading-snug text-plum-soft">{status.detail}</p>}
+      </div>
+    </section>
   )
 }
 
@@ -61,6 +85,7 @@ export function HomeScreen() {
   const save = useGame((s) => s.save)
 
   const { level, into, needed } = levelInfo(save.xp)
+  const nextUnlock = nextUnlockLevel(level)
   const energy = currentEnergy(save, now)
   const energyNote =
     energy >= MAX_ENERGY
@@ -99,6 +124,9 @@ export function HomeScreen() {
           <p className="mt-2 text-[13px] font-bold text-plum-soft">
             {into} of {needed} XP to Level {level + 1}
           </p>
+          {nextUnlock && (
+            <p className="mt-0.5 text-[13px] font-bold text-plum-soft">🔓 New places at Level {nextUnlock}</p>
+          )}
         </div>
       </section>
 
@@ -112,6 +140,8 @@ export function HomeScreen() {
           className="bg-hydrangea/60"
         />
       </section>
+
+      <HusbandCard now={now} />
 
       {save.lastAllowanceDay === today && !save.pendingAllowance && (
         <section className="relative mt-8 -rotate-1 rounded-[22px] bg-white px-5 pt-6 pb-5 shadow-[0_10px_24px_-14px_rgb(90_58_74/0.4)] ring-1 ring-petal">

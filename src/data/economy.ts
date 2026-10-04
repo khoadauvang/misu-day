@@ -19,3 +19,6 @@ export const XP_STEP = 100
 
 /** Nhật ký giữ tối đa bao nhiêu dòng (dòng cũ nhất bị xóa trước) */
 export const DIARY_LIMIT = 300
+
+/** Lên level L thì Chằm Chằm thưởng L × LEVEL_REWARD_STEP (Level 2 = 1,000,000₫, Level 5 = 2,500,000₫…) */
+export const LEVEL_REWARD_STEP = 500_000
