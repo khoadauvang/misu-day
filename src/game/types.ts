@@ -87,6 +87,8 @@ export type ActivityResult = {
   levelReward: number
   /** Những gì vừa mở khóa khi lên level */
   unlocked?: Unlocks
+  /** id các Love Coupon vừa nhận khi lên level */
+  newCoupons?: string[]
 }
 
 /** Một dòng trong nhật ký của Misu */
@@ -135,6 +137,21 @@ export type ChatMessage = {
   deliveryAt?: number
 }
 
+/** Một Love Coupon Misu đã nhận (Module 10) */
+export type CouponState = {
+  /** Thời điểm nhận phiếu (mili giây) */
+  gotAt: number
+  /** Nhận ở level mấy */
+  level: number
+  /** Misu bấm Use lúc nào (chưa dùng thì không có) */
+  usedAt?: number
+  /** Misu đánh dấu "It happened" lúc nào */
+  doneAt?: number
+  /** Email báo Chằm Chằm đã đi chưa */
+  delivery?: Delivery
+  deliveryAt?: number
+}
+
 /** Toàn bộ dữ liệu được lưu trên điện thoại */
 export type SaveData = {
   startedAt: number
@@ -158,4 +175,6 @@ export type SaveData = {
   extraDay: string | null
   /** id món đồ nhận được gần nhất (để "Look what I bought" gửi kèm) */
   lastItem: string | null
+  /** Module 10: Love Coupons đã nhận, theo id phiếu (xem src/data/coupons.ts) */
+  coupons: Record<string, CouponState>
 }

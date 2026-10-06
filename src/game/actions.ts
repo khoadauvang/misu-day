@@ -1,4 +1,5 @@
 import { GAME_NAME, HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
+import { COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { postMessage, type MessagePayload } from '../lib/api.ts'
 import { isDevMode } from '../lib/device.ts'
@@ -8,9 +9,9 @@ import { diaryForDay, type MessageInput } from './engine.ts'
 import { formatClock } from './format.ts'
 import { husbandStatus } from './husband.ts'
 import { levelInfo } from './level.ts'
-import { shownDelivery } from './messages.ts'
+import { SENDING_TIMEOUT_MS, shownDelivery } from './messages.ts'
 import { useGame } from './store.ts'
-import type { Activity, ChatMessage, Place, SaveData } from './types.ts'
+import type { Activity, ChatMessage, Delivery, Place, SaveData } from './types.ts'
 import { useUi } from './ui.ts'
 
 // Các việc có "tác dụng phụ": hiện popup, gọi mạng… Luật chơi thuần nằm ở engine.ts.
@@ -24,10 +25,25 @@ export function runActivity(place: Place | null, activity: Activity) {
 
 // --- Module 9: tin nhắn thành email thật ---
 
+/** Misu đang ra sao: gửi kèm mọi email */
+function snapshot(save: SaveData, t: number): MessagePayload['snapshot'] {
+  const status = husbandStatus(t)
+  return {
+    level: levelInfo(save.xp).level,
+    money: save.money,
+    energy: currentEnergy(save, t),
+    stickers: Object.values(save.collection).filter((count) => count > 0).length,
+    status: `${status.label} ${status.emoji}${status.detail ? ` (${status.detail})` : ''}`,
+    diary: diaryForDay(save.diary, gameDayKey(t))
+      .reverse()
+      .slice(0, 5)
+      .map((entry) => ({ time: formatClock(entry.at), text: entry.text })),
+  }
+}
+
 /** Gom thông tin gửi kèm email: tin nhắn, câu trả lời, Misu đang ra sao */
 function buildPayload(save: SaveData, message: ChatMessage, reply: ChatMessage | undefined, t: number): MessagePayload {
   const item = message.item ? ITEM_BY_ID[message.item] : undefined
-  const status = husbandStatus(t)
   return {
     test: isDevMode(),
     game: GAME_NAME,
@@ -39,17 +55,7 @@ function buildPayload(save: SaveData, message: ChatMessage, reply: ChatMessage |
     money: reply?.money ?? 0,
     reply: reply?.text ?? '',
     sentAt: message.at,
-    snapshot: {
-      level: levelInfo(save.xp).level,
-      money: save.money,
-      energy: currentEnergy(save, t),
-      stickers: Object.values(save.collection).filter((count) => count > 0).length,
-      status: `${status.label} ${status.emoji}${status.detail ? ` (${status.detail})` : ''}`,
-      diary: diaryForDay(save.diary, gameDayKey(t))
-        .reverse()
-        .slice(0, 5)
-        .map((entry) => ({ time: formatClock(entry.at), text: entry.text })),
-    },
+    snapshot: snapshot(save, t),
   }
 }
 
@@ -87,4 +93,53 @@ export async function retryUndelivered() {
     .getState()
     .save.messages.filter((m) => m.from === 'misu' && shownDelivery(m, t) === 'failed' && t - m.at < 3 * 86_400_000)
   for (const message of pending.slice(-5)) await deliverMessage(message.id)
+
+  // Love Coupons đã bấm Use mà email chưa đi
+  const coupons = useGame.getState().save.coupons
+  for (const [id, coupon] of Object.entries(coupons)) {
+    if (coupon.usedAt && couponDelivery(coupon.delivery, coupon.deliveryAt, t) === 'failed') await deliverCoupon(id)
+  }
+}
+
+// --- Module 10: Love Coupons ---
+
+/** Phiếu "Sending…" quá lâu (tắt app giữa chừng) thì coi như chưa gửi được */
+export function couponDelivery(delivery: Delivery | undefined, at: number | undefined, t: number) {
+  if (delivery === 'sending' && t - (at ?? 0) > SENDING_TIMEOUT_MS) return 'failed'
+  return delivery
+}
+
+/** Gửi email báo Chằm Chằm: Misu vừa dùng phiếu (cũng dùng khi bấm "Tap to retry") */
+export async function deliverCoupon(id: string) {
+  const key = `coupon:${id}`
+  if (inFlight.has(key)) return
+  const { save, setCouponDelivery } = useGame.getState()
+  const coupon = save.coupons[id]
+  const info = COUPON_BY_ID[id]
+  if (!coupon?.usedAt || !info) return
+
+  inFlight.add(key)
+  setCouponDelivery(id, 'sending')
+  const t = gameNow()
+  const ok = await postMessage({
+    test: isDevMode(),
+    game: GAME_NAME,
+    player: PLAYER_NAME,
+    husband: HUSBAND_NAME,
+    kind: 'coupon',
+    text: info.title,
+    item: { emoji: info.emoji, name: info.title },
+    money: 0,
+    reply: '',
+    sentAt: coupon.usedAt,
+    snapshot: snapshot(save, t),
+  })
+  inFlight.delete(key)
+  useGame.getState().setCouponDelivery(id, ok ? 'sent' : 'failed')
+}
+
+/** Misu bấm Use một phiếu */
+export function redeemLoveCoupon(id: string) {
+  useGame.getState().redeemCoupon(id)
+  void deliverCoupon(id)
 }

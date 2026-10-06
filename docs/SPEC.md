@@ -1,6 +1,6 @@
 # Misu's Day — Spec v1.2
 
-*Cập nhật 05/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+*Cập nhật 07/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
 - **Link game:** https://misuxinhdep.vercel.app (đã chốt, không đổi sau 9/10)
 - **Code:** GitHub `khoadauvang/misu-day`, nhánh `main` → Vercel tự deploy
@@ -160,13 +160,19 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - Resend gói Free: 3.000 email/tháng, tối đa 100/ngày. Gửi từ `onboarding@resend.dev` thì chỉ tới được email chủ tài khoản Resend, mà người nhận chính là bạn nên không cần mua domain.
 - API key đặt trong Environment Variables của Vercel, không để trong code. Giới hạn số tin mỗi ngày. Lần đầu nhớ đánh dấu "Not spam".
 
-## 10. MFe4: Love Coupons (chờ bạn chốt)
+## 10. MFe4: Love Coupons ✅
 
 **Là gì:** "phiếu quà" trong game, đổi được thành một việc thật ngoài đời do bạn làm.
 
-**Ví dụ:** Misu lên Level 3 thì mở khóa phiếu "🍣 Sushi date — Chằm Chằm's treat". Cô ấy bấm **Use**, bạn nhận email "Misu used: Sushi date", rồi bạn dẫn cô ấy đi ăn thật.
+**Cách chơi:**
+- Mỗi lần lên level, game tặng ngẫu nhiên 1 phiếu Misu chưa có (hết phiếu thì thôi). Popup "Level up!" hiện "New Love Coupon", nhật ký ghi lại.
+- Phiếu nằm ở đầu tab Collection, mục **Love Coupons 🎟️**, đi qua 3 bước:
+  1. **Ready** (nền vàng): bấm **Use this coupon** → hỏi lại "Use this coupon?" → **Use it 💗**.
+  2. **Waiting**: bạn nhận email "🎟️ Misu used a Love Coupon: …". Dưới phiếu hiện "Chằm Chằm got the message 💌" (lỗi thì "Tap to retry", mở app lại cũng tự gửi lại).
+  3. **Done** (nền mint, dấu DONE): Misu bấm **It happened 💗** sau khi bạn làm thật.
+- Mỗi phiếu dùng 1 lần.
 
-**Danh sách gợi ý:**
+**Danh sách (sửa/thêm trong `src/data/coupons.ts`, không đổi `id` phiếu cũ):**
 1. 🧋 A GMI mint milk tea, delivered by Chằm Chằm
 2. 🍦 A Dairy Queen run, any time
 3. 🍣 Sushi date — Chằm Chằm's treat
@@ -176,7 +182,6 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 7. 🛍️ Shopping buddy — Chằm Chằm carries every bag
 8. 🍽️ Chằm Chằm does the dishes for a week
 9. 🏋️ Gym date together
-10. ☕ Breakfast in bed
 
 ## 11. Lưu dữ liệu ✅
 
@@ -221,7 +226,8 @@ src/
 | T2 5/10 | **M8** trạng thái Chằm Chằm · **M6** thưởng level + mở khóa | ✅ 5/10 |
 | T2 5/10 | **M9** tin nhắn → email | ✅ 5/10 |
 | T3 6/10 | Nhận nuôi Golden · Hình, giao diện, hiệu ứng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
-| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật · **M10** Love Coupons bản rút gọn (nếu chốt) | |
+| T4 7/10 | **M10** Love Coupons | ✅ 7/10 |
+| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
 

@@ -2,6 +2,7 @@ import { Sticker } from '../components/Sticker.tsx'
 import { CATEGORIES } from '../data/categories.ts'
 import { ITEMS } from '../data/items.ts'
 import { useGame } from '../game/store.ts'
+import { CouponsSection } from './CouponsSection.tsx'
 
 // Sổ sticker: mỗi món đã mua/nhận hiện màu, món chưa có là ô trống viền đứt.
 
@@ -17,6 +18,8 @@ export function CollectionScreen() {
           ? 'Everything you buy or win turns into a sticker here.'
           : `${owned} of ${ITEMS.length} stickers collected`}
       </p>
+
+      <CouponsSection />
 
       {CATEGORIES.map((category) => {
         const items = ITEMS.filter((item) => item.category === category.id)

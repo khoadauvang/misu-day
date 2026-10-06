@@ -6,8 +6,11 @@ import {
   applyMessage,
   applyTick,
   collectAllowance,
+  markCouponDone,
   newSave,
+  setCouponDelivery,
   setDelivery,
+  redeemCoupon,
   type ActivityOutcome,
   type MessageInput,
   type MessageOutcome,
@@ -34,6 +37,10 @@ type GameStore = {
   /** Misu gửi tin cho Chằm Chằm (Module 9) */
   sendMessage: (input: MessageInput) => Omit<MessageOutcome, 'save'>
   setDelivery: (id: string, delivery: Delivery) => void
+  /** Love Coupons (Module 10) */
+  redeemCoupon: (id: string) => void
+  markCouponDone: (id: string) => void
+  setCouponDelivery: (id: string, delivery: Delivery) => void
   /** Chỉ dùng trong chế độ ?dev */
   devPatch: (patch: Partial<SaveData>) => void
 }
@@ -71,6 +78,9 @@ export const useGame = create<GameStore>()(
         return outcome
       },
       setDelivery: (id, delivery) => set((s) => ({ save: setDelivery(s.save, id, delivery, gameNow()) })),
+      redeemCoupon: (id) => set((s) => ({ save: redeemCoupon(s.save, id, gameNow()) })),
+      markCouponDone: (id) => set((s) => ({ save: markCouponDone(s.save, id, gameNow()) })),
+      setCouponDelivery: (id, delivery) => set((s) => ({ save: setCouponDelivery(s.save, id, delivery, gameNow()) })),
       devPatch: (patch) => set((s) => ({ save: { ...s.save, ...patch } })),
     }),
     {

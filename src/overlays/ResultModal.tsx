@@ -2,6 +2,7 @@ import { Chip } from '../components/Chip.tsx'
 import { Modal } from '../components/Modal.tsx'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME } from '../config.ts'
+import { COUPON_BY_ID } from '../data/coupons.ts'
 import { DISTRICT_BY_ID } from '../data/districts.ts'
 import { formatMoney } from '../game/format.ts'
 import type { ActivityResult } from '../game/types.ts'
@@ -10,6 +11,7 @@ import { useUi } from '../game/ui.ts'
 /** Module 6: lên level → thưởng của Chằm Chằm + những nơi vừa mở khóa */
 function LevelUpBox({ result }: { result: ActivityResult }) {
   const { unlocked } = result
+  const coupons = (result.newCoupons ?? []).map((id) => COUPON_BY_ID[id]).filter(Boolean)
   const rows = [
     ...(unlocked?.places ?? []).map((p) => ({
       key: `p-${p.id}`,
@@ -39,6 +41,14 @@ function LevelUpBox({ result }: { result: ActivityResult }) {
           {HUSBAND_NAME} sent you <span className="font-extrabold">{formatMoney(result.levelReward)}</span> to celebrate 💸
         </p>
       )}
+      {coupons.map((coupon) => (
+        <div key={coupon.id} className="mt-3 rounded-[20px] border-2 border-dashed border-peony bg-butter/80 px-3 py-2.5">
+          <p className="text-[12px] font-extrabold text-plum-soft">New Love Coupon 🎟️ · in your Collection</p>
+          <p className="mt-0.5 text-[15px] leading-snug font-extrabold">
+            {coupon.emoji} {coupon.title}
+          </p>
+        </div>
+      ))}
       {rows.length > 0 && (
         <>
           <p className="mt-3.5 text-[13px] font-extrabold text-plum-soft">Now open</p>

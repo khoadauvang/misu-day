@@ -1,5 +1,5 @@
 // @ts-check
-// Module 9: Misu gửi tin trong game → hàm này (chạy trên Vercel) → Resend → email về hộp thư của Chằm Chằm.
+// Module 9 + 10: Misu gửi tin (hoặc dùng Love Coupon) trong game → hàm này (chạy trên Vercel) → Resend → email về hộp thư của Chằm Chằm.
 //
 // Cần 2 biến môi trường trên Vercel (Settings → Environment Variables):
 // - RESEND_API_KEY: API key của Resend
@@ -13,6 +13,8 @@ const TIME_ZONE = 'Asia/Ho_Chi_Minh'
 /** Chỉ nhận yêu cầu gửi từ trang game (và máy dev) */
 const ALLOWED_HOSTS = ['misuxinhdep.vercel.app', 'localhost', '127.0.0.1']
 const MAX_BODY_BYTES = 20_000
+/** kind = 'coupon': Misu bấm Use một Love Coupon, text là tên phiếu */
+const COUPON_KIND = 'coupon'
 
 /**
  * Dữ liệu game gửi lên (xem src/lib/api.ts)
@@ -60,7 +62,7 @@ export function parsePayload(body) {
     husband: name(body.husband, 'Chằm Chằm'),
     kind: str(body.kind, 20),
     text,
-    item: item && str(item.name, 60) ? { emoji: str(item.emoji, 8), name: str(item.name, 60) } : null,
+    item: item && str(item.name, 80) ? { emoji: str(item.emoji, 8), name: str(item.name, 80) } : null,
     money: Math.max(0, num(body.money)),
     reply: str(body.reply, 300),
     sentAt: num(body.sentAt) || Date.now(),
@@ -111,11 +113,17 @@ export function buildEmail(p) {
     minute: '2-digit',
   })
   const s = p.snapshot
-  const subject = `${p.test ? '🧪 [Test] ' : ''}💌 ${p.player}: ${shorten(p.text, 60)}`
+  const coupon = p.kind === COUPON_KIND
+  const subject = coupon
+    ? `${p.test ? '🧪 [Test] ' : ''}🎟️ ${p.player} used a Love Coupon: ${shorten(p.text, 60)}`
+    : `${p.test ? '🧪 [Test] ' : ''}💌 ${p.player}: ${shorten(p.text, 60)}`
+  const heading = coupon
+    ? `🎟️ ${p.player} used a Love Coupon in ${p.game}. Time to make it happen for real!`
+    : `💌 ${p.player} sent you a message in ${p.game}`
   const e = escapeHtml
 
   const extras = []
-  if (p.item) extras.push(`📎 ${e(p.player)} showed you a sticker: ${e(p.item.emoji)} <b>${e(p.item.name)}</b>`)
+  if (p.item && !coupon) extras.push(`📎 ${e(p.player)} showed you a sticker: ${e(p.item.emoji)} <b>${e(p.item.name)}</b>`)
   if (p.money > 0) extras.push(`💸 In the game, ${e(p.husband)} sent her <b>${money(p.money)}</b> extra.`)
 
   const diaryHtml = s.diary.length
@@ -129,8 +137,8 @@ export function buildEmail(p) {
 <body style="margin:0;padding:24px 12px;background:#FFF7F9;color:#5A3A4A;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
-<tr><td style="padding:0 4px 10px;font-size:14px;font-weight:700;color:#8A6877;">${p.test ? '🧪 Test message · ' : ''}💌 ${e(p.player)} sent you a message in ${e(p.game)}</td></tr>
-<tr><td style="background:#F4A6BD;border-radius:22px 22px 6px 22px;padding:14px 18px;font-size:18px;line-height:1.45;">${e(p.text)}</td></tr>
+<tr><td style="padding:0 4px 10px;font-size:14px;font-weight:700;color:#8A6877;">${p.test ? '🧪 Test message · ' : ''}${e(heading)}</td></tr>
+<tr><td style="background:${coupon ? '#FFE7A6' : '#F4A6BD'};border-radius:${coupon ? '22px' : '22px 22px 6px 22px'};padding:14px 18px;font-size:18px;line-height:1.45;${coupon ? 'border:2px dashed #D9708F;font-weight:700;' : ''}">${coupon && p.item ? `${e(p.item.emoji)} ` : ''}${e(p.text)}</td></tr>
 ${extras.map((x) => `<tr><td style="padding:10px 4px 0;font-size:15px;line-height:1.45;">${x}</td></tr>`).join('\n')}
 ${
   p.reply
@@ -149,10 +157,10 @@ ${diaryHtml}
 </body></html>`
 
   const textLines = [
-    `${p.player} sent you a message in ${p.game}${p.test ? ' (test)' : ''}:`,
+    `${heading}${p.test ? ' (test)' : ''}`,
     '',
-    `"${p.text}"`,
-    ...(p.item ? [`Sticker: ${p.item.emoji} ${p.item.name}`] : []),
+    coupon ? `${p.item ? `${p.item.emoji} ` : ''}${p.text}` : `"${p.text}"`,
+    ...(p.item && !coupon ? [`Sticker: ${p.item.emoji} ${p.item.name}`] : []),
     ...(p.money > 0 ? [`In the game, ${p.husband} sent her ${money(p.money)} extra.`] : []),
     ...(p.reply ? ['', `${p.husband} in the game replied: "${p.reply}"`] : []),
     '',

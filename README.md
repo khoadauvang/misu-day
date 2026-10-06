@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8, 9 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email). Tiếp theo: nhận nuôi Golden, hình + giao diện, M7.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons). Tiếp theo: nhận nuôi Golden, hình + giao diện, M7.
 
 ## Sửa nội dung thường gặp
 
@@ -17,6 +17,7 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Chuyến đi World | `src/data/destinations.ts` | |
 | Lịch của Chằm Chằm, việc ở công ty | `src/data/husband.ts` | |
 | Tin nhanh, câu trả lời của Chằm Chằm | `src/data/messages.ts` | Mỗi loại tin có câu riêng theo việc anh đang làm |
+| Love Coupons | `src/data/coupons.ts` | Thêm dòng mới ở cuối; không đổi `id` phiếu cũ |
 | Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
 
 Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
@@ -106,5 +107,6 @@ misu-day/
 | M6, M8 | Thưởng khi lên level, trạng thái Chằm Chằm | ✅ |
 | M7 | Sự kiện ngẫu nhiên | 6/10 nếu kịp |
 | M9 | Tin nhắn thành email | ✅ |
-| M10 | Love Coupons (nếu chốt), nhận nuôi Golden | 6–7/10 |
+| M10 | Love Coupons | ✅ |
+| | Nhận nuôi Golden | |
 | | Hình + giao diện · Nội dung · Test + khóa code | 6–8/10 |

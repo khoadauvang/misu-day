@@ -1,5 +1,6 @@
 import { HUSBAND_NAME } from '../config.ts'
 import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
+import { COUPONS, COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { MESSAGE_HISTORY_LIMIT, MESSAGE_MAX_LENGTH, QUICK_MESSAGES } from '../data/messages.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
@@ -32,6 +33,7 @@ export function newSave(t: number): SaveData {
     messages: [],
     extraDay: null,
     lastItem: null,
+    coupons: {},
   }
 }
 
@@ -133,6 +135,7 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
       levelBefore,
       levelAfter,
       levelReward: leveled.reward,
+      newCoupons: leveled.coupons.length > 0 ? leveled.coupons : undefined,
       unlocked: levelAfter > levelBefore ? unlocksBetween(levelBefore, levelAfter) : undefined,
     },
   }
@@ -145,11 +148,19 @@ export function levelReward(level: number): number {
 
 /**
  * Module 6: lên level thì Chằm Chằm thưởng tiền (Level × 500,000₫), ghi vào nhật ký.
+ * Module 10: mỗi level còn tặng ngẫu nhiên 1 Love Coupon chưa có (hết phiếu thì thôi).
  * Lên nhiều level một lúc thì nhận thưởng của từng level.
  */
-export function applyLevelUps(save: SaveData, from: number, to: number, t: number): { save: SaveData; reward: number } {
+export function applyLevelUps(
+  save: SaveData,
+  from: number,
+  to: number,
+  t: number,
+  random: () => number = Math.random,
+): { save: SaveData; reward: number; coupons: string[] } {
   let next = save
   let reward = 0
+  const coupons: string[] = []
   for (let level = from + 1; level <= to; level++) {
     const amount = levelReward(level)
     reward += amount
@@ -163,8 +174,18 @@ export function applyLevelUps(save: SaveData, from: number, to: number, t: numbe
         money: amount,
       }),
     }
+    const left = COUPONS.filter((c) => !next.coupons[c.id])
+    if (left.length > 0) {
+      const coupon = left[Math.floor(random() * left.length)]
+      coupons.push(coupon.id)
+      next = {
+        ...next,
+        coupons: { ...next.coupons, [coupon.id]: { gotAt: t, level } },
+        diary: addDiary(next.diary, { at: t, emoji: '🎟️', text: `New Love Coupon: ${coupon.title}` }),
+      }
+    }
   }
-  return { save: next, reward }
+  return { save: next, reward, coupons }
 }
 
 /** Thêm một dòng nhật ký (giữ tối đa DIARY_LIMIT dòng) */
@@ -249,4 +270,32 @@ export function setDelivery(save: SaveData, id: string, delivery: Delivery, t: n
     ...save,
     messages: save.messages.map((m) => (m.id === id ? { ...m, delivery, deliveryAt: t } : m)),
   }
+}
+
+// --- Module 10: Love Coupons ---
+
+/** Misu bấm Use: phiếu chuyển sang "đang chờ Chằm Chằm", email đi ngầm (xem actions.ts) */
+export function redeemCoupon(save: SaveData, id: string, t: number): SaveData {
+  const coupon = save.coupons[id]
+  if (!coupon || coupon.usedAt) return save
+  const info = COUPON_BY_ID[id]
+  return {
+    ...save,
+    coupons: { ...save.coupons, [id]: { ...coupon, usedAt: t, delivery: 'sending', deliveryAt: t } },
+    diary: addDiary(save.diary, { at: t, emoji: info?.emoji ?? '🎟️', text: `Used a Love Coupon: ${info?.title ?? id}` }),
+  }
+}
+
+/** Misu đánh dấu "It happened 💗": Chằm Chằm đã làm xong việc ngoài đời */
+export function markCouponDone(save: SaveData, id: string, t: number): SaveData {
+  const coupon = save.coupons[id]
+  if (!coupon?.usedAt || coupon.doneAt) return save
+  return { ...save, coupons: { ...save.coupons, [id]: { ...coupon, doneAt: t } } }
+}
+
+/** Cập nhật trạng thái email của một phiếu */
+export function setCouponDelivery(save: SaveData, id: string, delivery: Delivery, t: number): SaveData {
+  const coupon = save.coupons[id]
+  if (!coupon) return save
+  return { ...save, coupons: { ...save.coupons, [id]: { ...coupon, delivery, deliveryAt: t } } }
 }
