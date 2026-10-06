@@ -52,8 +52,34 @@ export type Activity = {
   requires?: { category: CategoryId; hint: string }
   /** Tính năng chưa làm xong, hiện "Coming soon" */
   comingSoon?: boolean
-  /** Câu ghi vào nhật ký, chọn ngẫu nhiên một câu */
+  /** Hoạt động liên quan tới cún Golden (nhận nuôi, mua đồ ăn, cho ăn, đi dạo…) */
+  pet?: PetEffect
+  /** Câu ghi vào nhật ký, chọn ngẫu nhiên một câu. {pet} = tên cún */
   diary: string[]
+}
+
+/** Tác dụng của một hoạt động lên cún (xem src/data/pet.ts) */
+export type PetEffect = {
+  /** Nhận nuôi: Misu đặt tên trước khi bấm (xem AdoptModal) */
+  adopt?: boolean
+  /** Mua đồ ăn: thêm số phần vào tủ đồ ăn */
+  buy?: { food: string; servings: number }
+  /** Cho ăn 1 phần đồ ăn trong tủ (id trong PET_FOODS) */
+  feed?: string
+  /** Cộng thẳng vào độ no / độ vui (đi dạo, chơi, spa) */
+  fullness?: number
+  happiness?: number
+}
+
+/** Cún Golden của Misu (Module Pet) */
+export type PetState = {
+  name: string
+  /** Ngày nhận nuôi (mili giây) */
+  adoptedAt: number
+  /** Độ no và độ vui (0–100) tại thời điểm statsAt; giảm dần theo giờ thật */
+  fullness: number
+  happiness: number
+  statsAt: number
 }
 
 export type Place = {
@@ -89,6 +115,21 @@ export type ActivityResult = {
   unlocked?: Unlocks
   /** id các Love Coupon vừa nhận khi lên level */
   newCoupons?: string[]
+  /** Hoạt động có cún: cún sau khi làm + phần thay đổi */
+  pet?: PetChange
+}
+
+export type PetChange = {
+  name: string
+  fullness: number
+  happiness: number
+  /** Độ no / độ vui tăng thêm bao nhiêu */
+  fullnessGain: number
+  happinessGain: number
+  /** Vừa nhận nuôi */
+  adopted?: boolean
+  /** Vừa mua đồ ăn: id đồ ăn + số phần */
+  bought?: { food: string; servings: number }
 }
 
 /** Một dòng trong nhật ký của Misu */
@@ -177,4 +218,10 @@ export type SaveData = {
   lastItem: string | null
   /** Module 10: Love Coupons đã nhận, theo id phiếu (xem src/data/coupons.ts) */
   coupons: Record<string, CouponState>
+  /** Lúc Misu đọc xong thư sinh nhật và nhận quà (null = chưa mở lần nào) */
+  birthdayAt: number | null
+  /** Cún Golden (null = chưa nhận nuôi) */
+  pet: PetState | null
+  /** Tủ đồ ăn của cún: id đồ ăn → số phần còn lại */
+  pantry: Record<string, number>
 }

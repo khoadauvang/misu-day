@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Avatar } from '../components/Avatar.tsx'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME } from '../config.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
@@ -154,7 +155,7 @@ export function MessagesScreen() {
   return (
     <div className="mx-auto max-w-md">
       <header className="flex items-center gap-3">
-        <Sticker emoji="🤵🏻" className="text-[42px]" />
+        <Avatar who="husband" className="h-13 w-13" />
         <div>
           <h1 className="font-display text-[30px] leading-none font-bold">{HUSBAND_NAME}</h1>
           <p className="mt-1 text-[14px] font-semibold text-plum-soft">

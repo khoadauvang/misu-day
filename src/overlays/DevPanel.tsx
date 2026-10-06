@@ -77,6 +77,27 @@ export function DevPanel() {
             Reset time
           </DevButton>
         </div>
+
+        <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Birthday & puppy</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {/* Xem lại màn mở đầu như lần đầu (quà nhận lại được, chỉ ở chế độ dev) */}
+          <DevButton
+            onClick={() => {
+              setOpen(false)
+              devPatch({ birthdayAt: null })
+            }}
+          >
+            Replay birthday 🎂
+          </DevButton>
+          <DevButton
+            onClick={() =>
+              save.pet && devPatch({ pet: { ...save.pet, fullness: 10, happiness: 20, statsAt: gameNow() } })
+            }
+          >
+            Puppy hungry 🥺
+          </DevButton>
+          <DevButton onClick={() => devPatch({ pet: null, pantry: {} })}>Remove puppy</DevButton>
+        </div>
         <button
           type="button"
           onClick={() => {

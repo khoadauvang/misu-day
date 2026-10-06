@@ -114,10 +114,15 @@ function PlaceView({ district, place, onBack }: { district: District; place: Pla
   )
 }
 
-type DistrictSheetProps = { districtId: DistrictId | null; onClose: () => void }
+type DistrictSheetProps = {
+  districtId: DistrictId | null
+  /** Mở thẳng vào một địa điểm (ví dụ Pet Shop) thay vì danh sách */
+  initialPlaceId?: string
+  onClose: () => void
+}
 
-export function DistrictSheet({ districtId, onClose }: DistrictSheetProps) {
-  const [placeId, setPlaceId] = useState<string | null>(null)
+export function DistrictSheet({ districtId, initialPlaceId, onClose }: DistrictSheetProps) {
+  const [placeId, setPlaceId] = useState<string | null>(initialPlaceId ?? null)
   const district = districtId ? DISTRICT_BY_ID[districtId] : null
   const place = placeId ? PLACE_BY_ID[placeId] : null
 

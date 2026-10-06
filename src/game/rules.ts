@@ -1,8 +1,10 @@
 import { ITEM_BY_ID } from '../data/items.ts'
+import { PET_FOOD_BY_ID, PET_FULL_AT } from '../data/pet.ts'
 import { gameDayKey } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { formatHour } from './format.ts'
 import { levelInfo } from './level.ts'
+import { petStats } from './pet.ts'
 import type { Activity, CategoryId, OpenHours, Place, SaveData } from './types.ts'
 
 // Luật: khi nào Misu làm được một hoạt động, khi nào không (và vì sao).
@@ -48,6 +50,23 @@ function ownsCategory(save: SaveData, category: CategoryId): boolean {
 
 export type Check = { ok: true } | { ok: false; icon: string; reason: string }
 
+/** Luật riêng cho các hoạt động có cún (nhận nuôi, mua đồ ăn, cho ăn…). Không vướng gì thì trả về null */
+function checkPet(save: SaveData, activity: Activity, t: number): Check | null {
+  const effect = activity.pet
+  if (!effect) return null
+  const pet = save.pet
+  if (effect.adopt) return pet ? { ok: false, icon: '🐶', reason: `${pet.name} already lives with you` } : null
+  if (!pet) return { ok: false, icon: '🐶', reason: 'Adopt a puppy first' }
+  if (effect.feed) {
+    if ((save.pantry[effect.feed] ?? 0) <= 0) return { ok: false, icon: '🛒', reason: 'Buy more at the Pet Shop' }
+    const food = PET_FOOD_BY_ID[effect.feed]
+    if (food && food.fullness > 0 && petStats(pet, t).fullness >= PET_FULL_AT) {
+      return { ok: false, icon: '😋', reason: `${pet.name} is full` }
+    }
+  }
+  return null
+}
+
 /** Misu có làm được hoạt động này lúc t không; không được thì kèm lý do để hiện lên */
 export function checkActivity(save: SaveData, place: Place | null, activity: Activity, t: number): Check {
   if (activity.comingSoon) return { ok: false, icon: '🎀', reason: 'Coming soon' }
@@ -64,6 +83,8 @@ export function checkActivity(save: SaveData, place: Place | null, activity: Act
   if (activity.requires && !ownsCategory(save, activity.requires.category)) {
     return { ok: false, icon: '🛍️', reason: activity.requires.hint }
   }
+  const pet = checkPet(save, activity, t)
+  if (pet) return pet
   if (save.money < activity.cost) return { ok: false, icon: '💸', reason: 'Not enough money' }
   if (activity.energy > 0 && currentEnergy(save, t) < activity.energy) {
     return { ok: false, icon: '⚡', reason: 'Need more energy' }

@@ -1,6 +1,7 @@
 import { GAME_NAME, HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
 import { COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
+import { PLACES } from '../data/places.ts'
 import { postMessage, type MessagePayload } from '../lib/api.ts'
 import { isDevMode } from '../lib/device.ts'
 import { gameDayKey, gameNow } from './clock.ts'
@@ -10,6 +11,7 @@ import { formatClock } from './format.ts'
 import { husbandStatus } from './husband.ts'
 import { levelInfo } from './level.ts'
 import { SENDING_TIMEOUT_MS, shownDelivery } from './messages.ts'
+import { petStats } from './pet.ts'
 import { useGame } from './store.ts'
 import type { Activity, ChatMessage, Delivery, Place, SaveData } from './types.ts'
 import { useUi } from './ui.ts'
@@ -23,12 +25,50 @@ export function runActivity(place: Place | null, activity: Activity) {
   return outcome
 }
 
+// --- Cún Golden ---
+
+/** Chăm cún ở Home (cho ăn, đi dạo, chơi): cún phản ứng ngay trên thẻ; lên level thì mới hiện popup */
+export function runPetCare(activity: Activity) {
+  const outcome = useGame.getState().doActivity(null, activity)
+  const result = outcome.result
+  if (!result) return outcome
+  if (result.levelAfter > result.levelBefore) useUi.getState().showResult(result)
+  else useUi.getState().showPetReaction({ emoji: activity.emoji, text: result.xp > 0 ? `+${result.xp} XP` : '💛' })
+  return outcome
+}
+
+/** Hoạt động "nhận nuôi" ở Pet Shop (tìm trong places.ts) */
+export function findAdoptActivity(): { place: Place; activity: Activity } | undefined {
+  for (const place of PLACES) {
+    const activity = place.activities.find((a) => a.pet?.adopt)
+    if (activity) return { place, activity }
+  }
+  return undefined
+}
+
+/** Misu đặt tên xong và bấm Adopt */
+export function adoptGolden(name: string) {
+  const found = findAdoptActivity()
+  if (!found) return { error: 'Coming soon' }
+  const outcome = useGame.getState().doActivity(found.place, found.activity, { petName: name })
+  if (outcome.result) {
+    useUi.getState().setAdoptOpen(false)
+    useUi.getState().showResult(outcome.result)
+  }
+  return outcome
+}
+
 // --- Module 9: tin nhắn thành email thật ---
 
 /** Misu đang ra sao: gửi kèm mọi email */
 function snapshot(save: SaveData, t: number): MessagePayload['snapshot'] {
   const status = husbandStatus(t)
+  const pet = save.pet ? petStats(save.pet, t) : null
   return {
+    pet:
+      save.pet && pet
+        ? `${save.pet.name} · ${Math.round(pet.fullness)}% full · ${Math.round(pet.happiness)}% happy`
+        : undefined,
     level: levelInfo(save.xp).level,
     money: save.money,
     energy: currentEnergy(save, t),

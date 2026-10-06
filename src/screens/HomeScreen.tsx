@@ -1,5 +1,8 @@
+import { useState } from 'react'
+import { Avatar } from '../components/Avatar.tsx'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
+import { ART } from '../data/art.ts'
 import { ENERGY_PER_HOUR, MAX_ENERGY } from '../data/economy.ts'
 import { noteForDay } from '../data/morningNotes.ts'
 import { HOME_ACTIVITIES } from '../data/places.ts'
@@ -15,6 +18,7 @@ import { checkActivity } from '../game/rules.ts'
 import { useGame } from '../game/store.ts'
 import type { Activity, SaveData } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+import { PetSection } from './home/PetSection.tsx'
 
 function greeting(hour: number) {
   if (hour < 5) return 'Hey night owl'
@@ -48,7 +52,7 @@ function HusbandCard({ now }: { now: number }) {
         isWithMisu(status) ? 'bg-mint/70 ring-mint' : 'bg-white ring-petal'
       }`}
     >
-      <Sticker emoji={status.emoji} className="text-[32px]" />
+      <Avatar who="husband" className="h-14 w-14" badge={status.emoji} badgeClassName="text-[22px]" />
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-extrabold text-plum-soft">
           {HUSBAND_NAME} · until {formatClock(status.until)}
@@ -57,6 +61,22 @@ function HusbandCard({ now }: { now: number }) {
         {status.detail && <p className="mt-0.5 text-[14px] leading-snug text-plum-soft">{status.detail}</p>}
       </div>
     </section>
+  )
+}
+
+/** Chibi Misu: chạm vào thì nhún nhảy một cái */
+function MisuChibi() {
+  const [hops, setHops] = useState(0)
+  return (
+    <button type="button" onClick={() => setHops((n) => n + 1)} aria-label={PLAYER_NAME} className="shrink-0">
+      <img
+        key={hops}
+        src={ART.misu.full}
+        alt=""
+        draggable={false}
+        className={`sticker-art h-44 w-auto -rotate-2 ${hops > 0 ? 'animate-hop' : ''}`}
+      />
+    </button>
   )
 }
 
@@ -104,8 +124,8 @@ export function HomeScreen() {
         </h1>
       </header>
 
-      <section className="mt-6 flex items-center gap-4" aria-label="Level">
-        <img src="/stickers/bunny.svg" alt={`${PLAYER_NAME}'s avatar`} className="h-32 w-32 shrink-0" />
+      <section className="mt-5 flex items-center gap-4" aria-label="Level">
+        <MisuChibi />
         <div className="min-w-0 flex-1">
           <p className="font-display text-[26px] leading-none font-bold">Level {level}</p>
           <div
@@ -153,6 +173,8 @@ export function HomeScreen() {
           <p className="mt-1.5 text-[16px] leading-relaxed">{noteForDay(today)}</p>
         </section>
       )}
+
+      <PetSection />
 
       <section className="mt-7" aria-labelledby="home-activities">
         <h2 id="home-activities" className="font-display text-[21px] leading-tight font-bold">

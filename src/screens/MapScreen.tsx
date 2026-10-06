@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Sticker } from '../components/Sticker.tsx'
 import type { DistrictId } from '../game/types.ts'
+import { useUi } from '../game/ui.ts'
 import { DistrictSheet } from './map/DistrictSheet.tsx'
 import { SaigonMap } from './map/SaigonMap.tsx'
 import { WorldView } from './map/WorldView.tsx'
@@ -14,9 +15,19 @@ const VIEWS: { id: View; label: string; emoji: string }[] = [
 
 /** Tab Map: chọn map (Sài Gòn hoặc World) → chạm quận → địa điểm → hoạt động */
 export function MapScreen() {
+  // Từ tab khác bấm "Go to the Pet Shop": mở sẵn quận + địa điểm đó ngay khi vào tab Map
+  const [target] = useState(() => useUi.getState().mapTarget)
   const [view, setView] = useState<View>('saigon')
-  const [districtId, setDistrictId] = useState<DistrictId | null>(null)
-  const closeSheet = useCallback(() => setDistrictId(null), [])
+  const [districtId, setDistrictId] = useState<DistrictId | null>(target?.district ?? null)
+  const [placeId, setPlaceId] = useState<string | undefined>(target?.place)
+  const closeSheet = useCallback(() => {
+    setDistrictId(null)
+    setPlaceId(undefined)
+  }, [])
+
+  useEffect(() => {
+    if (target) useUi.getState().clearMapTarget()
+  }, [target])
 
   return (
     <div className="mx-auto max-w-md">
@@ -47,8 +58,13 @@ export function MapScreen() {
 
       {view === 'saigon' ? <SaigonMap onPick={setDistrictId} /> : <WorldView />}
 
-      {/* key: đổi quận thì sheet mở lại từ danh sách địa điểm */}
-      <DistrictSheet key={districtId ?? 'none'} districtId={districtId} onClose={closeSheet} />
+      {/* key: đổi quận thì sheet mở lại từ danh sách địa điểm (hoặc từ địa điểm được chọn sẵn) */}
+      <DistrictSheet
+        key={`${districtId ?? 'none'}/${placeId ?? ''}`}
+        districtId={districtId}
+        initialPlaceId={placeId}
+        onClose={closeSheet}
+      />
     </div>
   )
 }

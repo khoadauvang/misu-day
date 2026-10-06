@@ -1,4 +1,4 @@
-# Misu's Day — Spec v1.2
+# Misu's Day — Spec v1.3
 
 *Cập nhật 07/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
@@ -11,7 +11,7 @@ Game PWA trên iPhone mô phỏng cuộc sống thường ngày của Misu ở S
 
 ## 1. Nguyên tắc (không đổi)
 
-1. **100% tiếng Anh** trong game: giao diện, nội dung, tin nhắn. Tên riêng tiếng Việt giữ nguyên (Chằm Chằm, bè chẽ, Phú Nhuận, Bánh Tráng Trộn A Lâm).
+1. **100% tiếng Anh** trong game: giao diện, nội dung, tin nhắn. Tên riêng tiếng Việt giữ nguyên (Chằm Chằm, bè chẽ, Phú Nhuận, Bánh Tráng Trộn A Lâm). Ngoại lệ duy nhất: **thư sinh nhật** giữ nguyên lời bạn viết (mục 12).
 2. **Chỉ iPhone.** Misu chơi từ icon trên màn hình chính, mỗi lần vài phút. Không cần hỗ trợ Mac.
 3. **Thế giới chạy theo giờ thật 24/7.** Khi mở app, game tính bù mọi thứ đã xảy ra lúc tắt.
 4. **Nội dung là dữ liệu.** Địa điểm, hoạt động, giá, sự kiện, lời nhắn nằm trong `src/data/`. Thêm nội dung không phải sửa logic.
@@ -35,8 +35,11 @@ App giống một cuốn sổ planner pastel. Mọi thứ Misu làm hoặc mua �
 | peach | `#FFD9C9` | District 5 |
 | mint | `#CDEFE0` | Phú Nhuận, nhãn "Free" |
 
-- **Font:** Baloo 2 cho tiêu đề và con số, Nunito cho chữ thường. Cả hai có dấu tiếng Việt.
-- **Hình:** emoji iOS dạng sticker. Chỉ cần vẽ riêng: chibi Misu, chibi Chằm Chằm, chó Golden. Bản đồ Sài Gòn vẽ bằng SVG trong code.
+- **Font:** Baloo 2 cho tiêu đề và con số, Nunito cho chữ thường, Mali (chữ viết tay, `font-hand`) cho thư sinh nhật. Cả ba có dấu tiếng Việt.
+- **Hình:** emoji iOS dạng sticker, cộng thêm hình riêng:
+  - Chibi Misu, chibi Chằm Chằm ✅ (ảnh của bạn, đã tách nền + viền trắng kiểu sticker): `public/chibi/` (`misu.webp`, `husband.webp` toàn thân; `*-head.webp` phần đầu cho avatar tròn). Đường dẫn khai báo ở `src/data/art.ts`. Muốn đổi hình: chép file mới đè lên, giữ tên.
+  - Cún Golden ✅ vẽ bằng SVG trong code, có 5 nét mặt (`src/components/GoldenPup.tsx`). Nếu sau này có hình Golden cùng phong cách chibi thì thay được.
+  - Bánh kem nến "19" (`src/components/BirthdayCake.tsx`), bản đồ Sài Gòn: SVG trong code.
 
 ## 3. Màn hình và cách chơi
 
@@ -47,13 +50,13 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - Vắng nhiều ngày: hộp **While you were away** cộng dồn tiền các buổi sáng đã lỡ.
 
 ### Home ✅
-- Lời chào theo giờ + ngày; avatar; Level + thanh XP; ví tiền 💰; năng lượng ⚡ (kèm "Full in 2h 30m").
+- Lời chào theo giờ + ngày; chibi Misu (chạm vào thì nhún nhảy); Level + thanh XP; ví tiền 💰; năng lượng ⚡ (kèm "Full in 2h 30m").
 - Lời nhắn hôm nay của Chằm Chằm, dạng tờ giấy dán băng keo.
 - **At home:** hoạt động miễn phí ở nhà — xem sitcom, rom-com, tập ở nhà, đọc sách (cần mua sách trước), chợp mắt (1 lần/ngày, hồi 30 năng lượng).
 - **Today's diary:** nhật ký trong ngày, mới nhất ở trên.
-- Thẻ trạng thái của Chằm Chằm theo giờ (M8 ✅): đang làm gì + "until 5:45 PM"; nền mint khi đang ở bên Misu.
+- Thẻ trạng thái của Chằm Chằm theo giờ (M8 ✅): avatar chibi + emoji trạng thái, đang làm gì + "until 5:45 PM"; nền mint khi đang ở bên Misu.
 - Dưới thanh XP: "🔓 New places at Level X" (level kế tiếp có mở khóa).
-- *Sẽ thêm:* thú cưng (sau khi nhận nuôi).
+- Thẻ cún Golden ✅ (mục 8): chưa đủ Lv5 thì hiện mờ "Someone fluffy is waiting"; đủ level thì "A puppy is waiting for you" + nút sang Pet Shop; nhận nuôi rồi thì hiện thẻ chăm cún.
 
 ### Map ✅
 
@@ -72,7 +75,7 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - Giờ mở cửa: Riverside Bar 17:00–02:00; Concert Park tối thứ Sáu và thứ Bảy 19:00–23:00.
 
 ### Messages ✅
-- Chat kiểu iMessage với Chằm Chằm (M9). Lần đầu hiện lời chào "Hi bè chẽ 💗 Text me anytime…".
+- Chat kiểu iMessage với Chằm Chằm (M9), đầu trang là avatar chibi của anh. Lần đầu hiện lời chào "Hi bè chẽ 💗 Text me anytime…".
 - Tin nhanh (hàng chip trên ô nhập): "I miss you 🥺", "I'm hungry 🍜", "Can I have a little extra? 💸", "Come home early tonight 🏠", "Look what I bought 🛍️". Misu cũng tự gõ được (tối đa 500 ký tự).
 - "Look what I bought" tự gửi kèm sticker món đồ mua gần nhất.
 - "Can I have a little extra?" 1 lần/ngày: Chằm Chằm gửi thêm 1,000,000₫ (`EXTRA_MONEY`), hiện thẻ "+1,000,000₫ added to your wallet" và ghi nhật ký. Dùng rồi thì chip đổi thành "Extra again tomorrow 💸".
@@ -82,9 +85,10 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - Mỗi tin Misu gửi đi thành một email thật về hộp thư của bạn (mục 9).
 
 ### Collection ✅
+- Đầu trang: thẻ **Your birthday letter 💌** để đọc lại thư sinh nhật (hiện sau khi đã mở thư lần đầu).
+- Love Coupons 🎟️ (mục 10).
 - Sổ sticker theo nhóm: Bags · Shoes · Beauty · Jewelry & watches · Tech · Plushies · Flowers · Books · Home decor · Souvenirs.
-- Món đã có hiện màu (mua lại thì ×2, ×3…), món chưa có là ô trống viền đứt. Hiện tại có 33 món.
-- Love Coupons cũng sẽ nằm ở đây, nếu chốt làm MFe4.
+- Món đã có hiện màu (mua lại thì ×2, ×3…), món chưa có là ô trống viền đứt. Hiện tại có 34 món (thêm sticker đặc biệt "19th birthday cake" 🎂).
 
 ## 4. Bản đồ Sài Gòn: quy luật chia quận
 
@@ -97,7 +101,7 @@ Mỗi quận một chủ đề, dựa theo tính chất quận ngoài đời nh�
 | Phú Nhuận | 🧋 Street snacks | ⭐ GMI Tea: trà sữa bạc hà (1) · ⭐ Bánh Tráng Trộn A Lâm (1) |
 | D7 | 🍣 Japan & Korea town | Japanese Corner (1) · Korea Town (1) · Dairy Queen (1) · RMIT Campus: miễn phí, +XP (1) |
 | D5 | 🥟 Chinatown eats | Dim Sum House (1) · Hot Pot (3) · Roast Duck & Noodles (4) |
-| D2 | 🍸 Thảo Điền chill | Fitness Club (1) · Riverside Bar (3) · Home Decor Studio (4) · Pet Shop (5) |
+| D2 | 🍸 Thảo Điền chill | Fitness Club (1) · Riverside Bar (3) · Home Decor Studio (4) · Pet Shop: nhận nuôi Golden, đồ ăn cho cún, spa cho cún (5) |
 | D9 | 🎤 Concerts & cinema | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (1) · Cinema (2) · Concert Park (5) |
 
 Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
@@ -118,7 +122,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 
 ## 6. Kinh tế và tiến trình
 
-- **Giá tạm:** mọi sản phẩm/dịch vụ đều **500,000₫** (`PRICE` trong `src/data/economy.ts`). Bạn sẽ sửa giá từng món sau trong `src/data/places.ts`. Hoạt động miễn phí giữ nguyên 0₫: học ở RMIT, đọc ở thư viện, đọc sách ở góc nhà sách, ngắm đồ ở Luxury Boulevard, chơi với cún ở Pet Shop, hoạt động ở nhà.
+- **Giá tạm:** mọi sản phẩm/dịch vụ đều **500,000₫** (`PRICE` trong `src/data/economy.ts`), trừ Pet Shop đã có giá ước theo thị trường (mục 8). Bạn sẽ soạn file nội dung + giá thật cho từng món/hoạt động rồi sửa trong `src/data/places.ts`. Hoạt động miễn phí giữ nguyên 0₫: học ở RMIT, đọc ở thư viện, đọc sách ở góc nhà sách, ngắm đồ ở Luxury Boulevard, chơi với cún ở Pet Shop, hoạt động ở nhà, chăm cún ở nhà.
 - **Allowance:** 4,000,000₫ lúc 6:00 sáng, Misu bấm Collect. Vắng N ngày thì nhận đủ N lần.
 - **Energy:** tối đa 100, hồi +10 mỗi giờ kể cả khi tắt app. Ăn uống 5–10, mua sắm 10–15, gym 25, concert 30. Massage, gội đầu dưỡng sinh và chợp mắt thì **hồi** năng lượng.
 - **XP / Level:** từ level n lên n+1 cần 100 × n XP. Chơi đều thì khoảng 1 tuần tới Lv5, 3–4 tuần tới Lv10.
@@ -144,15 +148,39 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 
 - **Con cái:** chưa có trong v1.
 
-## 8. Thú cưng
+## 8. Thú cưng: cún Golden Retriever ✅
 
-- Pet Shop (D2, Lv5): "Adopt a Golden Retriever" đang hiện **Coming soon**. Sẽ làm cùng M9–M10: nhận nuôi, đặt tên, chó hiện ở Home, "Walk the dog" mỗi ngày.
-- Mèo và các giống chó khác: sau v1.
+**Nhận nuôi (Pet Shop, D2, Lv5):** "Adopt a Golden Retriever" 8,000,000₫ · −20⚡ · +50 XP → hộp **Name your puppy**: Misu tự gõ tên (tối đa 14 ký tự) hoặc chọn tên gợi ý (Mochi, Bơ, Latte, Honey, Toffee, Butter) → popup "Welcome home, {tên}!" → nút "Go home with {tên} 🏠" về tab Home. Kèm quà: 5 phần kibble + 1 xương gặm. Mỗi người chỉ nuôi 1 cún (v1).
+
+**Độ no 🍖 và độ vui 💛 (0–100):** giảm theo giờ thật kể cả lúc tắt app (no −4/giờ, vui −3/giờ). Dưới 30 no thì cún đói; từ 90 trở lên thì no, không ăn thêm bữa chính (xương gặm vẫn ăn được). **Không phạt:** cún không bao giờ bỏ đi, đói thì chỉ buồn thiu chờ Misu.
+
+**Tâm trạng (nét mặt + câu trên thẻ):** vui · bình thường · đói (mắt long lanh) · buồn, muốn chơi · ngủ (23:00–6:00, vẫn chăm được).
+
+**Thẻ cún ở Home:** hình cún (đuôi vẫy; chạm vào thì cún "nói" Woof!), tên, "Day N together", 2 thanh no/vui, 3 nút:
+- **Feed** → sheet tủ đồ ăn: mỗi món còn bao nhiêu phần, tác dụng, nút Feed. Hết đồ thì có nút "Go to the Pet Shop 🛒" (mở thẳng Pet Shop trên Map).
+- **Go for a walk** (1 lần/ngày): −15⚡ · +20 XP · +40 vui.
+- **Play & cuddle**: −5⚡ · +5 XP · +15 vui.
+- Chăm xong cún nhảy lên + bong bóng "+5 XP". Lên level thì hiện popup đầy đủ như hoạt động khác.
+
+**Pet Shop** (giá ước theo thị trường Sài Gòn, sửa trong `src/data/places.ts`):
+
+| Món | Giá | Vào tủ | Mỗi phần cho ăn |
+|---|---|---|---|
+| Buy puppy kibble | 450,000₫ | 10 phần 🥣 | +40 no · +5 vui · +5 XP |
+| Buy chicken & pumpkin bowls | 150,000₫ | 3 phần 🍗 | +55 no · +15 vui · +8 XP |
+| Buy chew bones | 90,000₫ | 5 phần 🦴 | +20 vui · +5 XP |
+| Buy a pupcake | 120,000₫ | 1 phần 🧁 | +20 no · +40 vui · +10 XP |
+| Puppy spa & grooming (1 lần/ngày) | 400,000₫ | | +35 vui · +20 XP |
+
+- Mua đồ ăn cần có cún trước ("Adopt a puppy first").
+- Nội dung (tên gợi ý, đồ ăn, độ no/vui, câu nhật ký, câu tâm trạng): `src/data/pet.ts`. Luật (giảm theo giờ, tâm trạng, tủ đồ ăn): `src/game/pet.ts` + `checkPet` trong `src/game/rules.ts`.
+- Email Misu gửi có thêm dòng "🐶 Mochi · 84% full · 92% happy".
+- Mèo, các giống chó khác, cún lớn lên, dắt cún đi chơi ở các quận: sau v1.
 
 ## 9. Tin nhắn thành email thật (MFe2–MFe3) ✅
 
 - Misu gửi tin trong game → `POST /api/message` (Vercel Function, file `api/message.js`) → Resend → email về hộp thư của bạn.
-- Email gồm: tin của Misu, sticker gửi kèm, tiền xin thêm, câu Chằm Chằm trả lời trong game, Misu đang ra sao (Level, ví, năng lượng, số sticker), Chằm Chằm trong game đang làm gì, nhật ký hôm nay (5 dòng mới nhất), giờ gửi theo giờ Việt Nam.
+- Email gồm: tin của Misu, sticker gửi kèm, tiền xin thêm, câu Chằm Chằm trả lời trong game, Misu đang ra sao (Level, ví, năng lượng, số sticker, cún ra sao), Chằm Chằm trong game đang làm gì, nhật ký hôm nay (5 dòng mới nhất), giờ gửi theo giờ Việt Nam.
 - Biến môi trường trên Vercel (Production): `RESEND_API_KEY`, `MESSAGE_TO`. **Dùng email của bạn**, không dùng email của Misu, kẻo lộ quà.
 - Gửi từ chế độ `?dev` thì tiêu đề email có "🧪 [Test]".
 - Chỉ nhận yêu cầu từ trang misuxinhdep.vercel.app (kiểm tra Origin), tin tối đa 500 ký tự, chữ trong tin được escape trước khi đưa vào email.
@@ -190,11 +218,21 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - App trên màn hình chính và tab Safari có dữ liệu tách riêng, nên game chặn chơi trong tab Safari.
 - WebKit miễn quy tắc tự xóa dữ liệu sau 7 ngày cho app trên màn hình chính. Game cũng xin trình duyệt giữ dữ liệu lâu dài.
 - Xóa icon khỏi màn hình chính là mất dữ liệu.
-- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định.
+- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định (ví dụ bản 7/10 thêm `birthdayAt`, `pet`, `pantry`).
 
-## 12. Nội dung sinh nhật
+## 12. Nội dung sinh nhật ✅
 
-Lần mở đầu tiên: thư chúc mừng (bạn tự viết, bằng tiếng Anh), quà mở đầu 9,100,000₫ (9/10), một sticker đặc biệt.
+**Lần mở game đầu tiên** (save chưa có `birthdayAt`):
+1. Game phía sau mờ tối đi. Pháo hoa + pháo giấy bắn lên, bánh kem nến "19" nhảy ra ở góc dưới bên trái, chibi Chằm Chằm trượt vào góc dưới bên phải với bong bóng "Happy 19th, bè chẽ! 🎂".
+2. **Bức thư trái tim** đập nhẹ: "A letter for you, bè chẽ 💌 · Tap to open".
+3. Chạm → tim nở ra, tờ thư bung ra. Thư gồm 3 tờ giấy màu (hồng · vàng · tím) chia thành 7 trang. Bấm › hoặc vuốt sang trái để lật: trang cũ bay "xoẹt" sang trái, trang sau nhích lên. Bấm ‹ hoặc vuốt sang phải để xem lại. Bánh kem và Chằm Chằm thu nhỏ, ngồi ở 2 góc dưới.
+4. Tiêu đề ở trang 1 chia 3 dòng: CHÚC MỪNG SN / VỢ EO THƠM THO / CUTE PHÔ MAI QUE NHÓ. Mỗi dòng không bao giờ tự xuống dòng; cỡ chữ tự co cho vừa bề ngang màn hình.
+5. Chữ thư viết tay (Mali) 21px; trang nào dài hoặc máy nhỏ (iPhone SE) thì chữ tự nhỏ dần, tối thiểu 15px.
+6. Trang cuối có ký tên "— Chằm Chằm 💗" và nút **Open your gift 🎁** → quà: **+9,100,000₫** ("For your special day, 9/10 💗") + sticker **19th birthday cake** 🎂 vào Collection, nhật ký ghi "Happy 19th birthday!". Bấm **Start my day 💗** → vào game, sau đó mới hiện hộp tiền buổi sáng.
+- Quà chỉ nhận một lần. Đọc lại thư: Collection → **Your birthday letter** (không nhận quà lần nữa, có nút × để đóng).
+- Sửa chữ, chia trang, số tiền, sticker: `src/data/birthday.ts`. Hiệu ứng: `src/overlays/BirthdayIntro.tsx`.
+- **Cách chia trang:** giữ nguyên lời bạn, chỉ cắt ở chỗ ngắt câu tự nhiên; ở chỗ cắt đổi dấu phẩy thành dấu chấm và viết hoa chữ đầu trang sau ("…vk mạnh hơn. / Ck đã tổng hợp…", "…thông minh thì khỏi bàn. / Vừa có tâm…"). Thư tiếng Anh giữ nguyên từng chữ.
+- App đã cài trên iPhone của bạn cũng sẽ hiện thư một lần ở lần mở tới (save cũ chưa có `birthdayAt`). Muốn xem lại từ đầu: `?preview&dev` → 🛠 Dev → **Replay birthday 🎂**.
 
 ## 13. Kỹ thuật
 
@@ -205,15 +243,17 @@ Lần mở đầu tiên: thư chúc mừng (bạn tự viết, bằng tiếng An
 api/message.js     Vercel Function: tin nhắn → email (Resend)
 src/
 ├─ config.ts       tên game, Misu, Chằm Chằm, bè chẽ
-├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số
-├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, lưu dữ liệu
-├─ components/     nút, sheet, hộp thoại, sticker, thanh tab
-├─ overlays/       hộp tiền buổi sáng, popup kết quả, công cụ dev
+├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số,
+│                  thư sinh nhật (birthday.ts), cún Golden (pet.ts), đường dẫn hình chibi (art.ts)
+├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, cún (pet.ts), lưu dữ liệu
+├─ components/     nút, sheet, hộp thoại, sticker, thanh tab, avatar, cún Golden, bánh kem, pháo hoa
+├─ overlays/       hộp tiền buổi sáng, popup kết quả, thư sinh nhật, đặt tên cún, công cụ dev
 ├─ lib/            nhận biết iPhone, gọi /api, đo bàn phím
-└─ screens/        Home, Map (+ map/), Messages, Collection
+└─ screens/        Home (+ home/ thẻ cún), Map (+ map/), Messages, Collection
+public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 ```
 
-**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game. Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
+**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game, xem lại màn sinh nhật (Replay birthday 🎂), làm cún đói (Puppy hungry 🥺), bỏ cún để thử nhận nuôi lại (Remove puppy). Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
 
 ## 14. Lộ trình
 
@@ -225,9 +265,10 @@ src/
 | CN 4/10 | (lỡ, dồn sang T2) | |
 | T2 5/10 | **M8** trạng thái Chằm Chằm · **M6** thưởng level + mở khóa | ✅ 5/10 |
 | T2 5/10 | **M9** tin nhắn → email | ✅ 5/10 |
-| T3 6/10 | Nhận nuôi Golden · Hình, giao diện, hiệu ứng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
+| T3 6/10 | Nhận nuôi Golden · Hình chibi, hiệu ứng | ✅ 7/10 |
 | T4 7/10 | **M10** Love Coupons | ✅ 7/10 |
-| T4 7/10 | Nội dung thật, cân giá, nội dung sinh nhật | |
+| T4 7/10 | Nội dung sinh nhật: thư + pháo hoa + quà | ✅ 7/10 |
+| T5 8/10 | Giá thật từng món/hoạt động (file của bạn) · lời nhắn buổi sáng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
 
@@ -250,9 +291,11 @@ Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ng�
 
 ## 16. Đang chờ bạn
 
-- [ ] MFe4 Love Coupons: có làm không, và sửa danh sách phiếu
-- [ ] Viết thêm lời nhắn buổi sáng (`src/data/morningNotes.ts`)
-- [ ] Giá thật cho từng món (`src/data/places.ts`), trước ngày 7/10
-- [ ] Hình: chibi Misu, chibi Chằm Chằm (Golden để sau), trước ngày 6/10
-- [ ] Thư sinh nhật (bạn tự viết)
+- [x] MFe4 Love Coupons (sửa/thêm phiếu trong `src/data/coupons.ts`)
+- [x] Hình chibi Misu + Chằm Chằm
+- [x] Thư sinh nhật
+- [ ] Lời nhắn buổi sáng (`src/data/morningNotes.ts`) — 8/10
+- [ ] File nội dung sản phẩm + hoạt động kèm giá thị trường → sửa `src/data/places.ts` — 8/10 (Pet Shop đã có giá ước, xem mục 8)
+- [ ] Đọc lại thư trên iPhone thật, sửa chữ nếu muốn (`src/data/birthday.ts`)
 - [ ] Tên game hiển thị (tạm "Misu's Day"; đổi tên không ảnh hưởng địa chỉ web)
+- [ ] (Tùy chọn) Hình cún Golden cùng phong cách chibi để thay hình SVG

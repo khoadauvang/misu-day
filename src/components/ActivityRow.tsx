@@ -12,7 +12,10 @@ type ActivityRowProps = { place: Place | null; activity: Activity }
 export function ActivityRow({ place, activity }: ActivityRowProps) {
   const now = useUi((s) => s.now)
   const save = useGame((s) => s.save)
+  const setAdoptOpen = useUi((s) => s.setAdoptOpen)
   const check = checkActivity(save, place, activity, now)
+  // Nhận nuôi cún: mở hộp đặt tên trước (xem AdoptModal)
+  const adopt = Boolean(activity.pet?.adopt)
 
   return (
     <li className="rounded-[24px] bg-white p-3.5 ring-1 ring-petal">
@@ -22,11 +25,11 @@ export function ActivityRow({ place, activity }: ActivityRowProps) {
         <button
           type="button"
           disabled={!check.ok}
-          onClick={() => runActivity(place, activity)}
-          aria-label={`Do it: ${activity.name}`}
+          onClick={() => (adopt ? setAdoptOpen(true) : runActivity(place, activity))}
+          aria-label={`${adopt ? 'Adopt' : 'Do it'}: ${activity.name}`}
           className="press shrink-0 rounded-full bg-peony px-4 py-2 text-[14px] font-extrabold disabled:bg-petal disabled:text-plum-soft"
         >
-          Do it
+          {adopt ? 'Adopt' : 'Do it'}
         </button>
       </div>
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pl-[42px]">

@@ -1,5 +1,8 @@
 import '@fontsource-variable/baloo-2'
 import '@fontsource-variable/nunito'
+// Chữ viết tay cho thư sinh nhật
+import '@fontsource/mali/500.css'
+import '@fontsource/mali/600.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'

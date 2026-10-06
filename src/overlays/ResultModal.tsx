@@ -1,12 +1,40 @@
 import { Chip } from '../components/Chip.tsx'
+import { GoldenPup } from '../components/GoldenPup.tsx'
 import { Modal } from '../components/Modal.tsx'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME } from '../config.ts'
 import { COUPON_BY_ID } from '../data/coupons.ts'
 import { DISTRICT_BY_ID } from '../data/districts.ts'
+import { PET_FOOD_BY_ID, PET_STARTER_PANTRY } from '../data/pet.ts'
 import { formatMoney } from '../game/format.ts'
-import type { ActivityResult } from '../game/types.ts'
+import { useGame } from '../game/store.ts'
+import type { ActivityResult, PetChange } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+
+/** Phần của cún trong popup: đồ ăn vừa mua, độ no / độ vui tăng thêm */
+function PetBox({ pet }: { pet: PetChange }) {
+  const pantry = useGame((s) => s.save.pantry)
+  const bought = pet.bought ? PET_FOOD_BY_ID[pet.bought.food] : undefined
+  const starter = Object.entries(PET_STARTER_PANTRY)
+    .map(([id, n]) => `${n} ${PET_FOOD_BY_ID[id]?.name.toLowerCase() ?? id}`)
+    .join(' + ')
+  return (
+    <div className="mt-4 rounded-[20px] bg-white px-4 py-3 text-[14px] leading-snug font-bold ring-1 ring-petal">
+      {pet.adopted && <p>Starter pack in your pantry: {starter} 🎁</p>}
+      {bought && pet.bought && (
+        <p>
+          {bought.emoji} {bought.name} ×{pet.bought.servings} added · {pantry[bought.id] ?? 0} in the pantry
+        </p>
+      )}
+      {!pet.adopted && !bought && (
+        <p>
+          {pet.name}: {pet.fullnessGain > 0 ? `+${pet.fullnessGain} 🍖 ` : ''}
+          {pet.happinessGain > 0 ? `+${pet.happinessGain} 💛` : 'feeling great 💛'}
+        </p>
+      )}
+    </div>
+  )
+}
 
 /** Module 6: lên level → thưởng của Chằm Chằm + những nơi vừa mở khóa */
 function LevelUpBox({ result }: { result: ActivityResult }) {
@@ -73,17 +101,23 @@ function LevelUpBox({ result }: { result: ActivityResult }) {
 export function ResultModal() {
   const result = useUi((s) => s.result)
   const close = useUi((s) => s.closeResult)
+  const setTab = useUi((s) => s.setTab)
   if (!result) return null
 
   const { activity, item, itemCount } = result
   const levelUp = result.levelAfter > result.levelBefore
+  const adopted = result.pet?.adopted ? result.pet : undefined
 
   return (
     <Modal labelledBy="result-title" onClose={close}>
-      <Sticker emoji={item?.emoji ?? activity.emoji} className="text-[64px]" />
+      {adopted ? (
+        <GoldenPup mood="happy" className="mx-auto block h-36 w-36 animate-hop" />
+      ) : (
+        <Sticker emoji={item?.emoji ?? activity.emoji} className="text-[64px]" />
+      )}
       <p className="mt-3 text-[14px] font-bold text-plum-soft">{result.placeName}</p>
       <h2 id="result-title" className="font-display text-[26px] leading-tight font-bold text-balance">
-        {activity.name}
+        {adopted ? `Welcome home, ${adopted.name}!` : activity.name}
       </h2>
       <p className="mt-2.5 text-[16px] leading-relaxed text-pretty">{result.text}</p>
 
@@ -105,14 +139,18 @@ export function ResultModal() {
             : `New sticker: ${item.name}`}
         </p>
       )}
+      {result.pet && <PetBox pet={result.pet} />}
       {levelUp && <LevelUpBox result={result} />}
 
       <button
         type="button"
-        onClick={close}
+        onClick={() => {
+          close()
+          if (adopted) setTab('home') // vừa nhận nuôi: về nhà gặp cún
+        }}
         className="press mt-6 w-full rounded-full bg-peony py-3.5 text-[17px] font-extrabold"
       >
-        Nice!
+        {adopted ? `Go home with ${adopted.name} 🏠` : 'Nice!'}
       </button>
     </Modal>
   )

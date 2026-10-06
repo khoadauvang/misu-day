@@ -1,5 +1,5 @@
+import { Avatar } from '../components/Avatar.tsx'
 import { Modal } from '../components/Modal.tsx'
-import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME } from '../config.ts'
 import { noteForDay } from '../data/morningNotes.ts'
 import { formatMoney } from '../game/format.ts'
@@ -15,7 +15,7 @@ export function AllowanceModal() {
 
   return (
     <Modal labelledBy="allowance-title">
-      <Sticker emoji="💌" className="text-[58px]" />
+      <Avatar who="husband" className="h-20 w-20" badge="💌" badgeClassName="text-[28px]" />
       <p className="mt-3 text-[14px] font-bold text-plum-soft">From {HUSBAND_NAME}</p>
       <h2 id="allowance-title" className="font-display text-[28px] leading-tight font-bold">
         {away ? 'While you were away' : "Today's allowance"}

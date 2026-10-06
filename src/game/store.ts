@@ -5,12 +5,14 @@ import {
   applyActivity,
   applyMessage,
   applyTick,
+  claimBirthday,
   collectAllowance,
   markCouponDone,
   newSave,
   setCouponDelivery,
   setDelivery,
   redeemCoupon,
+  type ActivityOptions,
   type ActivityOutcome,
   type MessageInput,
   type MessageOutcome,
@@ -32,8 +34,10 @@ type GameStore = {
   /** Cập nhật theo giờ thật: hồi năng lượng, qua ngày mới */
   tick: () => void
   collectAllowance: () => void
-  /** Làm một hoạt động; place = null là hoạt động ở nhà */
-  doActivity: (place: Place | null, activity: Activity) => Omit<ActivityOutcome, 'save'>
+  /** Làm một hoạt động; place = null là hoạt động ở nhà (kể cả chăm cún) */
+  doActivity: (place: Place | null, activity: Activity, options?: ActivityOptions) => Omit<ActivityOutcome, 'save'>
+  /** Đọc xong thư sinh nhật: nhận quà (chỉ một lần) */
+  claimBirthday: () => void
   /** Misu gửi tin cho Chằm Chằm (Module 9) */
   sendMessage: (input: MessageInput) => Omit<MessageOutcome, 'save'>
   setDelivery: (id: string, delivery: Delivery) => void
@@ -67,11 +71,12 @@ export const useGame = create<GameStore>()(
       save: newSave(gameNow()),
       tick: () => set((s) => ({ save: applyTick(s.save, gameNow()) })),
       collectAllowance: () => set((s) => ({ save: collectAllowance(s.save, gameNow()) })),
-      doActivity: (place, activity) => {
-        const { save, ...outcome } = applyActivity(get().save, place, activity, gameNow())
+      doActivity: (place, activity, options) => {
+        const { save, ...outcome } = applyActivity(get().save, place, activity, gameNow(), options)
         set({ save })
         return outcome
       },
+      claimBirthday: () => set((s) => ({ save: claimBirthday(s.save, gameNow()) })),
       sendMessage: (input) => {
         const { save, ...outcome } = applyMessage(get().save, input, gameNow())
         set({ save })

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react'
+import { useEffect, useRef, type ComponentType } from 'react'
 import { TabBar } from './components/TabBar.tsx'
 import type { TabId } from './components/tabs.ts'
 import { retryUndelivered } from './game/actions.ts'
+import { useGame } from './game/store.ts'
+import { useUi } from './game/ui.ts'
 import { useGameClock } from './game/useGameClock.ts'
 import { isDevMode, shouldShowInstallGate } from './lib/device.ts'
+import { AdoptModal } from './overlays/AdoptModal.tsx'
 import { AllowanceModal } from './overlays/AllowanceModal.tsx'
+import { BirthdayIntro } from './overlays/BirthdayIntro.tsx'
 import { DevPanel } from './overlays/DevPanel.tsx'
 import { ResultModal } from './overlays/ResultModal.tsx'
 import { InstallGate } from './pwa/InstallGate.tsx'
@@ -23,7 +27,11 @@ const SCREENS: Record<TabId, ComponentType> = {
 
 /** Game chính: 4 tab + các hộp thoại */
 function Game() {
-  const [tab, setTab] = useState<TabId>('home')
+  const tab = useUi((s) => s.tab)
+  const setTab = useUi((s) => s.setTab)
+  const letterOpen = useUi((s) => s.letterOpen)
+  // Lần mở game đầu tiên: thư sinh nhật hiện trước, hộp tiền buổi sáng chờ đọc xong thư
+  const birthdayPending = useGame((s) => s.save.birthdayAt === null)
   const scrollRef = useRef<HTMLElement>(null)
   useGameClock()
 
@@ -35,10 +43,15 @@ function Game() {
     return () => window.removeEventListener('online', retry)
   }, [])
 
+  // Đổi tab (bấm thanh tab, hoặc nút "Go to the Pet Shop") thì cuộn lên đầu
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 })
+  }, [tab])
+
   const Screen = SCREENS[tab]
   const changeTab = (next: TabId) => {
     setTab(next)
-    scrollRef.current?.scrollTo({ top: 0 })
+    scrollRef.current?.scrollTo({ top: 0 }) // bấm lại tab đang mở cũng cuộn lên đầu
   }
 
   return (
@@ -53,7 +66,11 @@ function Game() {
       <TabBar current={tab} onChange={changeTab} />
       {isDevMode() && <DevPanel />}
       <ResultModal />
-      <AllowanceModal />
+      <AdoptModal />
+      {!birthdayPending && <AllowanceModal />}
+      {(birthdayPending || letterOpen) && (
+        <BirthdayIntro key={birthdayPending ? 'first' : 'reread'} mode={birthdayPending ? 'first' : 'reread'} />
+      )}
     </div>
   )
 }

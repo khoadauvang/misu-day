@@ -69,9 +69,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        // Không tải sẵn font chữ Nga/Ấn: game chỉ dùng chữ Latin + tiếng Việt
-        globIgnores: ['**/*-cyrillic*', '**/*-devanagari*'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+        // Không tải sẵn font chữ Nga/Ấn/Thái: game chỉ dùng chữ Latin + tiếng Việt
+        globIgnores: ['**/*-cyrillic*', '**/*-devanagari*', '**/*-thai-*'],
         navigateFallbackDenylist: [/^\/api\//], // chừa đường /api cho Module 9 (gửi email)
         cleanupOutdatedCaches: true,
       },

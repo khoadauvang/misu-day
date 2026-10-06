@@ -5,6 +5,8 @@
 @theme static {
   --font-sans: 'Nunito Variable', ui-rounded, system-ui, sans-serif;
   --font-display: 'Baloo 2 Variable', 'Nunito Variable', ui-rounded, sans-serif;
+  /* Chữ viết tay cho thư sinh nhật (có dấu tiếng Việt) */
+  --font-hand: 'Mali', 'Nunito Variable', ui-rounded, sans-serif;
 
   --color-paper: #fff7f9; /* nền */
   --color-petal: #ffe4ec; /* mảng nền phụ, tab đang chọn */
@@ -65,6 +67,166 @@
       transform: scale(1);
     }
   }
+
+  /* --- Thư sinh nhật --- */
+  /* Trang thư bay "xoẹt" sang trái / trang trước bay về từ bên trái */
+  --animate-swoosh-out: swoosh-out 420ms cubic-bezier(0.45, 0, 0.7, 0.45) forwards;
+  --animate-swoosh-back: swoosh-back 460ms cubic-bezier(0.2, 0.85, 0.3, 1) both;
+  /* Trang bên dưới nhích lên khi trang trên bay đi */
+  --animate-stack-up: stack-up 440ms cubic-bezier(0.2, 0.85, 0.3, 1) both;
+  /* Bánh kem nhảy ra từ góc dưới bên trái */
+  --animate-cake-pop: cake-pop 900ms cubic-bezier(0.2, 1, 0.3, 1) both;
+  /* Chằm Chằm trượt vào từ mép phải */
+  --animate-peek-in: peek-in 850ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+  /* Thư trái tim đập nhẹ, chờ Misu chạm */
+  --animate-heartbeat: heartbeat 1.5s ease-in-out infinite;
+  /* Trái tim nở ra rồi mờ đi khi mở thư; tờ thư bung ra */
+  --animate-heart-burst: heart-burst 420ms ease-in forwards;
+  --animate-letter-open: letter-open 560ms cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
+  /* Lơ lửng nhẹ (bánh kem, quà) */
+  --animate-float: float 3.2s ease-in-out infinite;
+  /* Lửa nến lung linh */
+  --animate-flicker: flicker 0.7s ease-in-out infinite alternate;
+
+  /* --- Cún Golden --- */
+  /* Đuôi vẫy (đặt transform-origin ở gốc đuôi) */
+  --animate-wag: wag 0.45s ease-in-out infinite alternate;
+  /* Nhảy cẫng lên khi được chăm / khi chạm vào chibi */
+  --animate-hop: hop 560ms cubic-bezier(0.3, 1.4, 0.5, 1);
+  /* Bong bóng "+5 XP" bay lên rồi mờ dần */
+  --animate-bubble-up: bubble-up 2.4s ease-out forwards;
+
+  /* Bay hẳn ra khỏi màn hình nên không cần mờ dần (mờ giữa chừng sẽ lộ chữ trang dưới) */
+  @keyframes swoosh-out {
+    from {
+      transform: translateX(0) rotate(0);
+    }
+    to {
+      transform: translateX(-135%) translateY(-4%) rotate(-16deg);
+    }
+  }
+  @keyframes swoosh-back {
+    from {
+      transform: translateX(-135%) translateY(-4%) rotate(-16deg);
+    }
+    to {
+      transform: translateX(0) rotate(0);
+    }
+  }
+  @keyframes stack-up {
+    from {
+      transform: scale(0.94) translateY(10px);
+      opacity: 0.55;
+    }
+    to {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes cake-pop {
+    0% {
+      transform: translate(-60%, 110%) rotate(-30deg) scale(0.6);
+    }
+    60% {
+      transform: translate(4%, -8%) rotate(6deg) scale(1.05);
+    }
+    100% {
+      transform: translate(0, 0) rotate(-4deg) scale(1);
+    }
+  }
+  @keyframes peek-in {
+    from {
+      transform: translateX(115%) rotate(8deg);
+    }
+    to {
+      transform: translateX(0) rotate(-3deg);
+    }
+  }
+  @keyframes heartbeat {
+    0%,
+    40%,
+    100% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scale(1.07);
+    }
+    30% {
+      transform: scale(0.98);
+    }
+  }
+  @keyframes heart-burst {
+    to {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  @keyframes letter-open {
+    from {
+      transform: scale(0.35) rotate(-6deg);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1) rotate(0);
+      opacity: 1;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -6px;
+    }
+  }
+  @keyframes flicker {
+    from {
+      transform: scale(1, 1) rotate(-3deg);
+      opacity: 0.85;
+    }
+    to {
+      transform: scale(0.88, 1.12) rotate(3deg);
+      opacity: 1;
+    }
+  }
+  @keyframes wag {
+    from {
+      transform: rotate(-12deg);
+    }
+    to {
+      transform: rotate(14deg);
+    }
+  }
+  @keyframes hop {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    35% {
+      transform: translateY(-14px) scale(1.04, 0.97);
+    }
+    65% {
+      transform: translateY(0) scale(1.03, 0.96);
+    }
+  }
+  @keyframes bubble-up {
+    0% {
+      transform: translateY(8px) scale(0.8);
+      opacity: 0;
+    }
+    12% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    75% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-26px);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {
@@ -121,6 +283,11 @@
 @utility sticker {
   filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
     drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 4px rgb(90 58 74 / 0.22));
+}
+
+/* Hình chibi đã có sẵn viền trắng trong ảnh: chỉ thêm bóng mờ màu mận */
+@utility sticker-art {
+  filter: drop-shadow(0 6px 8px rgb(90 58 74 / 0.22));
 }
 
 /* Hàng cuộn ngang không hiện thanh cuộn (hàng tin nhanh) */

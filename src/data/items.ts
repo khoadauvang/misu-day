@@ -47,6 +47,8 @@ export const ITEMS: Item[] = [
   { id: 'muji-notebook', name: 'Muji notebook', emoji: '📓', category: 'souvenirs' },
   { id: 'ticket-stub', name: 'Movie ticket stub', emoji: '🎟️', category: 'souvenirs' },
   { id: 'lightstick', name: 'Concert lightstick', emoji: '🪄', category: 'souvenirs' },
+  // Sticker đặc biệt: quà sinh nhật lần mở game đầu tiên (xem src/data/birthday.ts)
+  { id: 'birthday-cake-19', name: '19th birthday cake', emoji: '🎂', category: 'souvenirs' },
 ]
 
 export const ITEM_BY_ID: Record<string, Item> = Object.fromEntries(ITEMS.map((item) => [item.id, item]))

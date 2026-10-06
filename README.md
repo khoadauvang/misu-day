@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons). Tiếp theo: nhận nuôi Golden, hình + giao diện, M7.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden. Tiếp theo (8/10): giá thật, lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -19,6 +19,9 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Tin nhanh, câu trả lời của Chằm Chằm | `src/data/messages.ts` | Mỗi loại tin có câu riêng theo việc anh đang làm |
 | Love Coupons | `src/data/coupons.ts` | Thêm dòng mới ở cuối; không đổi `id` phiếu cũ |
 | Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
+| Thư sinh nhật, quà mở đầu | `src/data/birthday.ts` | Mỗi chuỗi trong `pages` là một trang; giữ tiếng Việt như bạn viết |
+| Cún Golden: tên gợi ý, đồ ăn, độ no/vui | `src/data/pet.ts` | Giá nhận nuôi + giá đồ ăn ở Pet Shop trong `src/data/places.ts` |
+| Hình chibi | `public/chibi/` | Chép file mới đè lên, giữ nguyên tên (`misu.webp`, `husband.webp`, `*-head.webp`) |
 
 Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
 
@@ -31,6 +34,8 @@ Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc tr
 - **+1 hour / Next morning:** tua giờ để thử năng lượng hồi và tiền buổi sáng
 - **+10,000,000₫ / +500 XP / Refill energy:** để thử đồ đắt và nơi bị khóa
 - **Reset time / Reset game**
+- **Replay birthday 🎂:** xem lại màn thư sinh nhật như lần mở đầu
+- **Puppy hungry 🥺 / Remove puppy:** thử cún đói, bỏ cún để nhận nuôi lại
 
 Tin nhắn gửi ở chế độ này vẫn thành email thật, tiêu đề có **🧪 [Test]**.
 
@@ -80,7 +85,7 @@ Tin nhắn → email cần 2 biến trong Vercel → Settings → Environment Va
 misu-day/
 ├─ index.html            trang gốc + thẻ meta cho iPhone
 ├─ vite.config.ts        cấu hình build + PWA (tên app, icon, chạy offline)
-├─ public/               icon app, sticker thỏ
+├─ public/               icon app, sticker thỏ, ảnh chibi (chibi/)
 ├─ docs/SPEC.md          spec game
 ├─ api/message.js        hàm Vercel: tin nhắn trong game → email (Resend)
 └─ src/
@@ -108,5 +113,6 @@ misu-day/
 | M7 | Sự kiện ngẫu nhiên | 6/10 nếu kịp |
 | M9 | Tin nhắn thành email | ✅ |
 | M10 | Love Coupons | ✅ |
-| | Nhận nuôi Golden | |
-| | Hình + giao diện · Nội dung · Test + khóa code | 6–8/10 |
+| | Nhận nuôi + chăm cún Golden | ✅ |
+| | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
+| | Giá thật · Lời nhắn buổi sáng · Test + khóa code | 8/10 |

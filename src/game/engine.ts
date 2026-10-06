@@ -1,4 +1,5 @@
 import { HUSBAND_NAME } from '../config.ts'
+import { BIRTHDAY_DIARY, BIRTHDAY_GIFT, BIRTHDAY_STICKER } from '../data/birthday.ts'
 import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
 import { COUPONS, COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
@@ -9,6 +10,7 @@ import { formatMoney } from './format.ts'
 import { husbandStatus } from './husband.ts'
 import { levelInfo } from './level.ts'
 import { askedExtraToday, canSendMore, pickReply } from './messages.ts'
+import { applyPetEffect, cleanPetName, fillPet } from './pet.ts'
 import { activityKey, checkActivity } from './rules.ts'
 import { unlocksBetween } from './unlocks.ts'
 import type { Activity, ActivityResult, ChatMessage, Delivery, DiaryEntry, MessageKind, Place, SaveData } from './types.ts'
@@ -34,6 +36,9 @@ export function newSave(t: number): SaveData {
     extraDay: null,
     lastItem: null,
     coupons: {},
+    birthdayAt: null,
+    pet: null,
+    pantry: {},
   }
 }
 
@@ -81,11 +86,22 @@ export function collectAllowance(save: SaveData, t: number): SaveData {
 
 export type ActivityOutcome = { save: SaveData; result?: ActivityResult; error?: string }
 
-/** Misu làm một hoạt động: trừ tiền và năng lượng, cộng XP, nhận đồ, ghi nhật ký */
-export function applyActivity(save: SaveData, place: Place | null, activity: Activity, t: number): ActivityOutcome {
+/** Thông tin thêm cho một số hoạt động: tên cún khi nhận nuôi */
+export type ActivityOptions = { petName?: string }
+
+/** Misu làm một hoạt động: trừ tiền và năng lượng, cộng XP, nhận đồ, chăm cún, ghi nhật ký */
+export function applyActivity(
+  save: SaveData,
+  place: Place | null,
+  activity: Activity,
+  t: number,
+  options: ActivityOptions = {},
+): ActivityOutcome {
   const current = applyTick(save, t) // cập nhật năng lượng tới đúng thời điểm này trước
   const check = checkActivity(current, place, activity, t)
   if (!check.ok) return { save: current, error: check.reason }
+  const petName = activity.pet?.adopt ? cleanPetName(options.petName) : ''
+  if (activity.pet?.adopt && !petName) return { save: current, error: 'Pick a name first' }
 
   const energyBefore = currentEnergy(current, t)
   const energy = Math.min(MAX_ENERGY, Math.max(0, energyBefore - activity.energy))
@@ -93,10 +109,14 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
   const collection = item
     ? { ...current.collection, [item.id]: (current.collection[item.id] ?? 0) + 1 }
     : current.collection
-  const text = activity.diary[Math.floor(Math.random() * activity.diary.length)] ?? activity.name
+  const petStep = applyPetEffect(current, activity.pet, t, petName)
+  const line = activity.diary[Math.floor(Math.random() * activity.diary.length)] ?? activity.name
+  const text = fillPet(line, petStep.pet?.name ?? '')
 
   const next: SaveData = {
     ...current,
+    pet: petStep.pet,
+    pantry: petStep.pantry,
     money: current.money - activity.cost,
     energy,
     energyAt: t,
@@ -124,7 +144,8 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
   return {
     save: leveled.save,
     result: {
-      placeName: place?.name ?? 'Home',
+      // Chăm cún ở nhà: popup hiện tên cún thay cho "Home"
+      placeName: place?.name ?? (activity.pet && petStep.pet ? petStep.pet.name : 'Home'),
       activity,
       text,
       money: -activity.cost,
@@ -137,7 +158,24 @@ export function applyActivity(save: SaveData, place: Place | null, activity: Act
       levelReward: leveled.reward,
       newCoupons: leveled.coupons.length > 0 ? leveled.coupons : undefined,
       unlocked: levelAfter > levelBefore ? unlocksBetween(levelBefore, levelAfter) : undefined,
+      pet: petStep.change,
     },
+  }
+}
+
+/**
+ * Lần mở game đầu tiên: Misu đọc xong thư sinh nhật và mở quà.
+ * Nhận 9,100,000₫ + sticker bánh sinh nhật, ghi nhật ký. Chỉ nhận một lần.
+ */
+export function claimBirthday(save: SaveData, t: number): SaveData {
+  if (save.birthdayAt !== null) return save
+  const item = ITEM_BY_ID[BIRTHDAY_STICKER]
+  return {
+    ...save,
+    birthdayAt: t,
+    money: save.money + BIRTHDAY_GIFT,
+    collection: item ? { ...save.collection, [item.id]: (save.collection[item.id] ?? 0) + 1 } : save.collection,
+    diary: addDiary(save.diary, { at: t, emoji: '🎂', text: BIRTHDAY_DIARY, money: BIRTHDAY_GIFT }),
   }
 }
 

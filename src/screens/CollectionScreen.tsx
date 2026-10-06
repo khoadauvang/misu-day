@@ -1,8 +1,33 @@
 import { Sticker } from '../components/Sticker.tsx'
+import { HUSBAND_NAME } from '../config.ts'
 import { CATEGORIES } from '../data/categories.ts'
 import { ITEMS } from '../data/items.ts'
 import { useGame } from '../game/store.ts'
+import { useUi } from '../game/ui.ts'
 import { CouponsSection } from './CouponsSection.tsx'
+
+/** Đọc lại thư sinh nhật */
+function LetterCard() {
+  const birthdayAt = useGame((s) => s.save.birthdayAt)
+  const setLetterOpen = useUi((s) => s.setLetterOpen)
+  if (birthdayAt === null) return null
+  return (
+    <button
+      type="button"
+      onClick={() => setLetterOpen(true)}
+      className="press mt-5 flex w-full items-center gap-3 rounded-[24px] bg-petal p-3.5 text-left ring-1 ring-peony/40"
+    >
+      <Sticker emoji="💌" className="text-[34px]" />
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-[18px] leading-tight font-bold">Your birthday letter</span>
+        <span className="mt-0.5 block text-[13px] font-bold text-plum-soft">From {HUSBAND_NAME} · Read it again</span>
+      </span>
+      <span aria-hidden className="text-[24px] leading-none text-plum-soft">
+        ›
+      </span>
+    </button>
+  )
+}
 
 // Sổ sticker: mỗi món đã mua/nhận hiện màu, món chưa có là ô trống viền đứt.
 
@@ -19,6 +44,7 @@ export function CollectionScreen() {
           : `${owned} of ${ITEMS.length} stickers collected`}
       </p>
 
+      <LetterCard />
       <CouponsSection />
 
       {CATEGORIES.map((category) => {

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { GAME_NAME } from '../config.ts'
+import { ART } from '../data/art.ts'
 
 /** Biểu tượng Share của iOS (hình hộp có mũi tên lên) */
 function ShareIcon() {
@@ -41,7 +42,11 @@ export function InstallGate() {
   return (
     <main className="paper-dots h-full overflow-y-auto px-6 pt-[max(env(safe-area-inset-top),56px)] pb-12">
       <div className="mx-auto flex max-w-sm flex-col items-center text-center">
-        <img src="/stickers/bunny.svg" alt="" className="h-36 w-36" />
+        {/* Misu và Chằm Chằm đứng cạnh nhau (anh liếc sang Misu) */}
+        <div aria-hidden className="flex items-end justify-center">
+          <img src={ART.misu.full} alt="" draggable={false} className="sticker-art relative z-10 h-48 w-auto -rotate-3" />
+          <img src={ART.husband.full} alt="" draggable={false} className="sticker-art -ml-5 h-48 w-auto rotate-2" />
+        </div>
         <h1 className="mt-5 font-display text-[32px] leading-[1.05] font-bold text-balance">
           {GAME_NAME} lives on your Home Screen
         </h1>

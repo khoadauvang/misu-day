@@ -28,6 +28,8 @@ export function ActivityChips({ activity }: { activity: Activity }) {
       )}
       {xp > 0 && <Chip className="bg-lavender/70">+{xp} XP</Chip>}
       {activity.item && <Chip className="bg-petal">+ sticker</Chip>}
+      {activity.pet?.buy && <Chip className="bg-peach">+{activity.pet.buy.servings} to pantry</Chip>}
+      {activity.pet?.happiness ? <Chip className="bg-peach">+{activity.pet.happiness} 💛</Chip> : null}
     </>
   )
 }

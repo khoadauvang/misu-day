@@ -22,6 +22,8 @@ export type MessagePayload = {
     stickers: number
     /** Chằm Chằm đang làm gì trong game */
     status: string
+    /** Cún Golden ra sao, ví dụ "Mochi · 84% full · 92% happy" (chưa nuôi thì bỏ trống) */
+    pet?: string
     /** Nhật ký hôm nay, mới nhất ở trên */
     diary: { time: string; text: string }[]
   }

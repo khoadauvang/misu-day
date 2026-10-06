@@ -23,7 +23,7 @@ const COUPON_KIND = 'coupon'
  *   test: boolean, game: string, player: string, husband: string,
  *   kind: string, text: string, item: { emoji: string, name: string } | null,
  *   money: number, reply: string, sentAt: number,
- *   snapshot: { level: number, money: number, energy: number, stickers: number, status: string, diary: DiaryLine[] }
+ *   snapshot: { level: number, money: number, energy: number, stickers: number, status: string, pet: string, diary: DiaryLine[] }
  * }} MessagePayload
  */
 
@@ -72,6 +72,7 @@ export function parsePayload(body) {
       energy: num(snapshot.energy),
       stickers: num(snapshot.stickers),
       status: str(snapshot.status, 80),
+      pet: str(snapshot.pet, 80),
       diary: diary
         .map((line) => ({ time: str(line?.time, 12), text: str(line?.text, 160) }))
         .filter((line) => line.text),
@@ -149,6 +150,7 @@ ${
 <div style="font-size:13px;font-weight:800;color:#8A6877;">${e(p.player)} right now</div>
 <div style="margin-top:6px;">⭐ Level ${s.level} · 💰 ${money(s.money)} · ⚡ ${Math.floor(s.energy)}/100 · 🎀 ${s.stickers} stickers</div>
 ${s.status ? `<div>${e(p.husband)} in the game: ${e(s.status)}</div>` : ''}
+${s.pet ? `<div>🐶 ${e(s.pet)}</div>` : ''}
 <div style="margin-top:12px;font-size:13px;font-weight:800;color:#8A6877;">Today so far</div>
 ${diaryHtml}
 </div></td></tr>
@@ -166,6 +168,7 @@ ${diaryHtml}
     '',
     `${p.player} right now: Level ${s.level} · ${money(s.money)} · Energy ${Math.floor(s.energy)}/100 · ${s.stickers} stickers`,
     ...(s.status ? [`${p.husband} in the game: ${s.status}`] : []),
+    ...(s.pet ? [`Puppy: ${s.pet}`] : []),
     '',
     'Today so far:',
     ...(s.diary.length ? s.diary.map((d) => `- ${d.time ? `${d.time} · ` : ''}${d.text}`) : ['- Nothing yet today.']),
