@@ -4,12 +4,14 @@ import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERG
 import { COUPONS, COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { MESSAGE_HISTORY_LIMIT, MESSAGE_MAX_LENGTH, QUICK_MESSAGES } from '../data/messages.ts'
+import { MOVIE_BY_ID, MOVIE_NIGHT } from '../data/movies.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { formatMoney } from './format.ts'
 import { husbandStatus } from './husband.ts'
 import { levelInfo } from './level.ts'
 import { askedExtraToday, canSendMore, pickReply } from './messages.ts'
+import { movieActivity, timesWatched } from './movies.ts'
 import { applyPetEffect, cleanPetName, fillPet } from './pet.ts'
 import { activityKey, checkActivity } from './rules.ts'
 import { unlocksBetween } from './unlocks.ts'
@@ -39,6 +41,7 @@ export function newSave(t: number): SaveData {
     birthdayAt: null,
     pet: null,
     pantry: {},
+    movies: {},
   }
 }
 
@@ -159,6 +162,28 @@ export function applyActivity(
       newCoupons: leveled.coupons.length > 0 ? leveled.coupons : undefined,
       unlocked: levelAfter > levelBefore ? unlocksBetween(levelBefore, levelAfter) : undefined,
       pet: petStep.change,
+    },
+  }
+}
+
+/**
+ * Movie night: Misu xem một phim ở nhà.
+ * Tính như một hoạt động ở nhà (năng lượng, XP, nhật ký, lên level), rồi ghi thêm số lần đã xem phim đó.
+ */
+export function applyMovie(save: SaveData, movieId: string, t: number): ActivityOutcome {
+  const movie = MOVIE_BY_ID[movieId]
+  if (!movie) return { save, error: 'Coming soon' }
+  const before = timesWatched(save, movie.id)
+  const firstTime = before === 0
+  const outcome = applyActivity(save, null, movieActivity(movie, firstTime), t)
+  if (!outcome.result) return outcome
+  const count = before + 1
+  return {
+    save: { ...outcome.save, movies: { ...outcome.save.movies, [movie.id]: count } },
+    result: {
+      ...outcome.result,
+      placeName: MOVIE_NIGHT.name,
+      movie: { id: movie.id, count, bonusXp: firstTime ? MOVIE_NIGHT.firstWatchXp : 0 },
     },
   }
 }

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { TabId } from '../components/tabs.ts'
 import { PLACE_BY_ID } from '../data/places.ts'
+import type { GifPick } from '../lib/giphy.ts'
 import { gameNow } from './clock.ts'
 import type { ActivityResult, DistrictId } from './types.ts'
 
@@ -15,7 +16,9 @@ type UiStore = {
   setNow: (t: number) => void
   /** Kết quả hoạt động vừa làm, hiện trong popup */
   result: ActivityResult | null
-  showResult: (result: ActivityResult) => void
+  /** GIF phim đi kèm popup Movie night (đang tải hoặc đã có); null nếu không có */
+  resultGif: Promise<GifPick | null> | null
+  showResult: (result: ActivityResult, gif?: Promise<GifPick | null> | null) => void
   closeResult: () => void
   /** Tab đang mở ở thanh dưới */
   tab: TabId
@@ -41,8 +44,9 @@ export const useUi = create<UiStore>()((set, get) => ({
   now: gameNow(),
   setNow: (now) => set({ now }),
   result: null,
-  showResult: (result) => set({ result }),
-  closeResult: () => set({ result: null }),
+  resultGif: null,
+  showResult: (result, gif = null) => set({ result, resultGif: gif }),
+  closeResult: () => set({ result: null, resultGif: null }),
   tab: 'home',
   setTab: (tab) => set({ tab }),
   mapTarget: null,

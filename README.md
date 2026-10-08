@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden. Tiếp theo (8/10): giá thật, lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF). Tiếp theo (8/10): giá thật, lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -21,6 +21,7 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
 | Thư sinh nhật, quà mở đầu | `src/data/birthday.ts` | Mỗi chuỗi trong `pages` là một trang; giữ tiếng Việt như bạn viết |
 | Cún Golden: tên gợi ý, đồ ăn, độ no/vui | `src/data/pet.ts` | Giá nhận nuôi + giá đồ ăn ở Pet Shop trong `src/data/places.ts` |
+| Movie night: phim, câu giới thiệu, XP | `src/data/movies.ts` | Thêm phim ở bất kỳ đâu trong danh sách; không đổi `id` phim cũ. GIF sai: thêm `gif.q` hoặc `gif.ids` |
 | Hình chibi | `public/chibi/` | Chép file mới đè lên, giữ nguyên tên (`misu.webp`, `husband.webp`, `*-head.webp`) |
 
 Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
@@ -36,6 +37,7 @@ Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc tr
 - **Reset time / Reset game**
 - **Replay birthday 🎂:** xem lại màn thư sinh nhật như lần mở đầu
 - **Puppy hungry 🥺 / Remove puppy:** thử cún đói, bỏ cún để nhận nuôi lại
+- **Movie night GIFs 🎬:** lướt GIF của từng phim (‹ Prev · Another · Next ›) để bắt GIF sai; **Forget watched movies** xóa danh sách phim đã xem
 
 Tin nhắn gửi ở chế độ này vẫn thành email thật, tiêu đề có **🧪 [Test]**.
 
@@ -66,6 +68,8 @@ Mở http://localhost:5173. Mỗi lần lưu file, trang tự cập nhật. Xem 
 Mỗi lần push lên nhánh `main` (Sync Changes), Vercel tự build lại trong khoảng 1 phút. Nếu build lỗi, Vercel giữ nguyên bản đang chạy.
 
 Tin nhắn → email cần 2 biến trong Vercel → Settings → Environment Variables (Production): `RESEND_API_KEY` (key của Resend) và `MESSAGE_TO` (email của bạn, trùng email đăng ký Resend). Email đầu tiên có thể vào Spam: đánh dấu "Not spam".
+
+GIF phim ở Movie night cần biến `VITE_GIPHY_KEY` (Production + Preview): tạo key miễn phí ở [developers.giphy.com](https://developers.giphy.com) → Create an API Key. Thêm hoặc đổi key xong phải vào Deployments → ⋯ → **Redeploy**, vì key được đóng vào bản build. Chưa có key thì game hiện emoji thay GIF. Chạy trên Mac: tạo file `.env.local` với dòng `VITE_GIPHY_KEY=...` (file này không được đẩy lên GitHub).
 
 > Vercel gói Hobby chặn deploy nếu email tác giả commit không gắn với tài khoản GitHub của bạn. Trên Mac, đặt `git config user.email` đúng email GitHub của bạn.
 
@@ -99,7 +103,7 @@ misu-day/
    ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
    ├─ screens/           Home, Map (+ map/), Messages, Collection
    ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
-   └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, đo bàn phím
+   └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, GIF từ GIPHY, đo bàn phím
 ```
 
 ## Lộ trình module
@@ -115,4 +119,5 @@ misu-day/
 | M10 | Love Coupons | ✅ |
 | | Nhận nuôi + chăm cún Golden | ✅ |
 | | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
+| | Movie night: 80 phim/series + GIF (GIPHY) | ✅ |
 | | Giá thật · Lời nhắn buổi sáng · Test + khóa code | 8/10 |

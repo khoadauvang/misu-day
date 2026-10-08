@@ -95,6 +95,25 @@ export type Place = {
   activities: Activity[]
 }
 
+export type MovieKind = 'romcom' | 'comedy' | 'series'
+
+/** Một phim hoặc series trong Movie night (xem src/data/movies.ts) */
+export type Movie = {
+  id: string
+  title: string
+  /** Năm ra mắt; series thì là năm của mùa đầu */
+  year: number
+  from: 'US' | 'UK'
+  kind: MovieKind
+  emoji: string
+  /** Một câu giới thiệu ngắn, hiện khi chọn phim và trong popup */
+  line: string
+  /** Phim Misu thích: lên đầu danh sách, có ⭐ */
+  fav?: true
+  /** GIF trên GIPHY: id tự chọn, hoặc từ khóa tìm kiếm riêng */
+  gif?: { q?: string; ids?: string[] }
+}
+
 /** Kết quả sau khi làm một hoạt động, hiện trong popup */
 export type ActivityResult = {
   placeName: string
@@ -117,6 +136,8 @@ export type ActivityResult = {
   newCoupons?: string[]
   /** Hoạt động có cún: cún sau khi làm + phần thay đổi */
   pet?: PetChange
+  /** Movie night: phim vừa xem, đã xem tổng cộng mấy lần, XP thưởng xem lần đầu */
+  movie?: { id: string; count: number; bonusXp: number }
 }
 
 export type PetChange = {
@@ -224,4 +245,6 @@ export type SaveData = {
   pet: PetState | null
   /** Tủ đồ ăn của cún: id đồ ăn → số phần còn lại */
   pantry: Record<string, number>
+  /** Movie night: id phim → số lần đã xem */
+  movies: Record<string, number>
 }

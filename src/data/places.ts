@@ -1023,30 +1023,11 @@ export const PLACES: Place[] = [
   },
 ]
 
-/** Hoạt động ở nhà, miễn phí (hiện ở tab Home) */
+/**
+ * Hoạt động ở nhà, miễn phí (hiện ở tab Home).
+ * Xem phim / series nằm riêng ở ô Movie night (danh sách phim trong movies.ts).
+ */
 export const HOME_ACTIVITIES: Activity[] = [
-  {
-    id: 'sitcom',
-    name: 'Binge a sitcom',
-    emoji: '📺',
-    cost: 0,
-    energy: 10,
-    xp: 10,
-    diary: [
-      'Rewatched Friends. Still funny every time.',
-      'A Brooklyn 99 marathon on the sofa.',
-      'Gossip Girl night with snacks.',
-    ],
-  },
-  {
-    id: 'romcom-in',
-    name: 'Rom-com night in',
-    emoji: '🍿',
-    cost: 0,
-    energy: 10,
-    xp: 15,
-    diary: ['How to Lose a Guy in 10 Days, again. It never gets old.'],
-  },
   {
     id: 'home-workout',
     name: 'Home workout',

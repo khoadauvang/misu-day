@@ -1,10 +1,13 @@
 import { useState, type ReactNode } from 'react'
+import { MovieGifFrame } from '../components/MovieGif.tsx'
 import { Sheet } from '../components/Sheet.tsx'
 import { MAX_ENERGY } from '../data/economy.ts'
+import { MOVIES } from '../data/movies.ts'
 import { addDevOffset, clearDevOffset, gameNow, getDevOffset, nextDayStart } from '../game/clock.ts'
 import { useGame } from '../game/store.ts'
 import { useUi } from '../game/ui.ts'
 import { refreshClock } from '../game/useGameClock.ts'
+import { gifQuery, hasGiphy, takeMovieGif } from '../lib/giphy.ts'
 
 function DevButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return (
@@ -15,6 +18,49 @@ function DevButton({ onClick, children }: { onClick: () => void; children: React
     >
       {children}
     </button>
+  )
+}
+
+/**
+ * Lướt qua GIF của từng phim trong Movie night để bắt GIF sai trước khi trao quà.
+ * GIF sai: thêm gif.q (từ khóa khác) hoặc gif.ids (id GIF tự chọn) cho phim đó trong src/data/movies.ts.
+ */
+function GifCheck() {
+  const [index, setIndex] = useState(0)
+  const [round, setRound] = useState(0)
+  const movie = MOVIES[index]
+  // Mỗi lần đổi phim hoặc bấm "Another" thì lấy GIF mới
+  const [gif, setGif] = useState(() => takeMovieGif(movie))
+  const go = (next: number) => {
+    const i = (next + MOVIES.length) % MOVIES.length
+    setIndex(i)
+    setGif(takeMovieGif(MOVIES[i]))
+    setRound((r) => r + 1)
+  }
+
+  if (!hasGiphy()) {
+    return (
+      <p className="mt-2 rounded-[18px] bg-petal px-4 py-3 text-[14px] leading-snug font-bold">
+        No GIPHY key yet. Add VITE_GIPHY_KEY in Vercel → Settings → Environment Variables, then redeploy.
+      </p>
+    )
+  }
+  return (
+    <div className="mt-2 rounded-[22px] bg-white px-4 py-4 ring-1 ring-petal">
+      <p className="text-[13px] font-extrabold text-plum-soft">
+        {index + 1} / {MOVIES.length}
+      </p>
+      <p className="font-display text-[18px] leading-tight font-bold">{movie.title}</p>
+      <p className="mt-0.5 text-[12px] font-bold text-plum-soft select-text">
+        {movie.gif?.ids ? `ids: ${movie.gif.ids.join(', ')}` : `search: "${gifQuery(movie)}"`}
+      </p>
+      {gif && <MovieGifFrame key={round} movie={movie} gif={gif} className="mt-3" />}
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <DevButton onClick={() => go(index - 1)}>‹ Prev</DevButton>
+        <DevButton onClick={() => go(index)}>Another</DevButton>
+        <DevButton onClick={() => go(index + 1)}>Next ›</DevButton>
+      </div>
+    </div>
   )
 }
 
@@ -98,6 +144,12 @@ export function DevPanel() {
           </DevButton>
           <DevButton onClick={() => devPatch({ pet: null, pantry: {} })}>Remove puppy</DevButton>
         </div>
+        <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Movie night GIFs 🎬</p>
+        <GifCheck />
+        <div className="mt-2 grid">
+          <DevButton onClick={() => devPatch({ movies: {} })}>Forget watched movies</DevButton>
+        </div>
+
         <button
           type="button"
           onClick={() => {

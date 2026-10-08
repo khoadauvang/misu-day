@@ -1,6 +1,6 @@
-# Misu's Day — Spec v1.3
+# Misu's Day — Spec v1.4
 
-*Cập nhật 07/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+*Cập nhật 08/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
 - **Link game:** https://misuxinhdep.vercel.app (đã chốt, không đổi sau 9/10)
 - **Code:** GitHub `khoadauvang/misu-day`, nhánh `main` → Vercel tự deploy
@@ -52,7 +52,7 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 ### Home ✅
 - Lời chào theo giờ + ngày; chibi Misu (chạm vào thì nhún nhảy); Level + thanh XP; ví tiền 💰; năng lượng ⚡ (kèm "Full in 2h 30m").
 - Lời nhắn hôm nay của Chằm Chằm, dạng tờ giấy dán băng keo.
-- **At home:** hoạt động miễn phí ở nhà — xem sitcom, rom-com, tập ở nhà, đọc sách (cần mua sách trước), chợp mắt (1 lần/ngày, hồi 30 năng lượng).
+- **At home:** hoạt động miễn phí ở nhà — ô **Movie night 🍿** (xem phim, series; mục 8b), tập ở nhà, đọc sách (cần mua sách trước), chợp mắt (1 lần/ngày, hồi 30 năng lượng).
 - **Today's diary:** nhật ký trong ngày, mới nhất ở trên.
 - Thẻ trạng thái của Chằm Chằm theo giờ (M8 ✅): avatar chibi + emoji trạng thái, đang làm gì + "until 5:45 PM"; nền mint khi đang ở bên Misu.
 - Dưới thanh XP: "🔓 New places at Level X" (level kế tiếp có mở khóa).
@@ -177,6 +177,30 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - Email Misu gửi có thêm dòng "🐶 Mochi · 84% full · 92% happy".
 - Mèo, các giống chó khác, cún lớn lên, dắt cún đi chơi ở các quận: sau v1.
 
+## 8b. Movie night: xem phim ở nhà ✅
+
+**Cách chơi:**
+- Home → At home → ô **Movie night 🍿** ("12/80 watched") → sheet danh sách **80 phim và series Mỹ/Anh**: 46 rom-com, 14 phim hài, 20 series.
+  - Lọc: All · 💕 Rom-coms · 😂 Comedies · 📺 Series (hàng lọc dính trên đầu khi cuộn).
+  - Thứ tự: 4 phim ⭐ Misu thích (Friends, Brooklyn Nine-Nine, Gossip Girl, How to Lose a Guy in 10 Days) → phim chưa xem → phim đã xem (nhãn ✓ ×2) xuống cuối.
+  - **🎲 Surprise me:** chọn ngẫu nhiên một phim chưa xem trong nhóm đang lọc.
+- Chạm một phim → emoji, năm, 🇺🇸/🇬🇧, loại, một câu giới thiệu + nút **Watch 🎬**.
+- Miễn phí · −10⚡ · +15 XP (rom-com, phim hài) hoặc +10 XP (series). Xem phim nào lần đầu thì **+5 XP thưởng** ("✨ First watch bonus").
+- Popup: **GIF của phim** trong khung sticker + dòng "Powered by GIPHY", câu giới thiệu, "First watch: +5 bonus XP" hoặc "Watched N times 💗", "N of 80 movies & shows watched", nút **Loved it 🍿**.
+- Nhật ký: "Movie night in: Notting Hill (1999). Snacks were involved. 🍿" (series: 📺). Dòng này cũng đi theo email gửi bạn.
+
+**GIF (GIPHY):**
+- Gọi API GIPHY thẳng từ iPhone (GIPHY yêu cầu tìm kiếm từ phía người dùng). Key: biến `VITE_GIPHY_KEY` trên Vercel (Production + Preview). Thêm hoặc đổi key thì phải **Redeploy**, vì key được đóng vào bản build.
+- Key beta: 100 lần gọi mỗi giờ. Mỗi phim chỉ gọi 1 lần cho tới khi tắt app; lần xem sau chọn GIF khác trong danh sách đã có.
+- Tìm "<tên phim> movie" (series: "<tên phim> tv show"), lấy 8 kết quả đầu (rating PG), chọn ngẫu nhiên. Phim nào ra GIF sai: thêm `gif.q` (từ khóa khác) hoặc `gif.ids` (id GIF tự chọn trên giphy.com) trong `src/data/movies.ts`.
+- Hiện ảnh động WebP bằng `<img>` (không dùng video: iPhone bật Chế độ nguồn điện thấp sẽ không tự chạy video). Bản gốc nặng quá 2,5 MB thì dùng bản nhỏ.
+- GIF được tải trước ngay khi Misu mở giới thiệu phim. Không có key, mất mạng, GIPHY lỗi hoặc chờ quá 7 giây → hiện emoji của phim; popup không bao giờ phải chờ GIF.
+- Không tải đoạn phim về rồi tự host (bản quyền của hãng phim).
+
+**Sửa nội dung:** `src/data/movies.ts` (danh sách phim, câu giới thiệu, XP, câu nhật ký; không đổi `id` phim đã có vì số lần xem lưu theo id). Kiểm tra GIF: `?preview&dev` → 🛠 Dev → **Movie night GIFs 🎬** (‹ Prev · Another · Next ›).
+
+**Code:** luật trong `src/game/movies.ts` + `applyMovie` trong `src/game/engine.ts`; gọi GIPHY trong `src/lib/giphy.ts`; khung GIF `src/components/MovieGif.tsx`; giao diện `src/screens/home/MovieNight.tsx`. Save thêm trường `movies` (id phim → số lần đã xem).
+
 ## 9. Tin nhắn thành email thật (MFe2–MFe3) ✅
 
 - Misu gửi tin trong game → `POST /api/message` (Vercel Function, file `api/message.js`) → Resend → email về hộp thư của bạn.
@@ -218,7 +242,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - App trên màn hình chính và tab Safari có dữ liệu tách riêng, nên game chặn chơi trong tab Safari.
 - WebKit miễn quy tắc tự xóa dữ liệu sau 7 ngày cho app trên màn hình chính. Game cũng xin trình duyệt giữ dữ liệu lâu dài.
 - Xóa icon khỏi màn hình chính là mất dữ liệu.
-- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định (ví dụ bản 7/10 thêm `birthdayAt`, `pet`, `pantry`).
+- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định (ví dụ bản 7/10 thêm `birthdayAt`, `pet`, `pantry`; bản 8/10 thêm `movies`).
 
 ## 12. Nội dung sinh nhật ✅
 
@@ -237,23 +261,23 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 ## 13. Kỹ thuật
 
 - Vite 8 + React 19 + TypeScript + Tailwind CSS 4 + vite-plugin-pwa + Zustand.
-- Vercel (gói Hobby, miễn phí) để host, Vercel Functions (`/api`) và Resend để gửi email.
+- Vercel (gói Hobby, miễn phí) để host, Vercel Functions (`/api`) và Resend để gửi email. GIPHY cho GIF phim (mục 8b).
 
 ```
 api/message.js     Vercel Function: tin nhắn → email (Resend)
 src/
 ├─ config.ts       tên game, Misu, Chằm Chằm, bè chẽ
 ├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số,
-│                  thư sinh nhật (birthday.ts), cún Golden (pet.ts), đường dẫn hình chibi (art.ts)
-├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, cún (pet.ts), lưu dữ liệu
-├─ components/     nút, sheet, hộp thoại, sticker, thanh tab, avatar, cún Golden, bánh kem, pháo hoa
+│                  thư sinh nhật (birthday.ts), cún Golden (pet.ts), phim (movies.ts), đường dẫn hình chibi (art.ts)
+├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, cún (pet.ts), phim (movies.ts), lưu dữ liệu
+├─ components/     nút, sheet, hộp thoại, sticker, thanh tab, avatar, cún Golden, bánh kem, pháo hoa, khung GIF phim
 ├─ overlays/       hộp tiền buổi sáng, popup kết quả, thư sinh nhật, đặt tên cún, công cụ dev
-├─ lib/            nhận biết iPhone, gọi /api, đo bàn phím
-└─ screens/        Home (+ home/ thẻ cún), Map (+ map/), Messages, Collection
+├─ lib/            nhận biết iPhone, gọi /api, GIF từ GIPHY, đo bàn phím
+└─ screens/        Home (+ home/ thẻ cún, Movie night), Map (+ map/), Messages, Collection
 public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 ```
 
-**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game, xem lại màn sinh nhật (Replay birthday 🎂), làm cún đói (Puppy hungry 🥺), bỏ cún để thử nhận nuôi lại (Remove puppy). Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
+**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game, xem lại màn sinh nhật (Replay birthday 🎂), làm cún đói (Puppy hungry 🥺), bỏ cún để thử nhận nuôi lại (Remove puppy), lướt GIF từng phim (Movie night GIFs 🎬), xóa danh sách phim đã xem (Forget watched movies). Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
 
 ## 14. Lộ trình
 
@@ -268,6 +292,7 @@ public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 | T3 6/10 | Nhận nuôi Golden · Hình chibi, hiệu ứng | ✅ 7/10 |
 | T4 7/10 | **M10** Love Coupons | ✅ 7/10 |
 | T4 7/10 | Nội dung sinh nhật: thư + pháo hoa + quà | ✅ 7/10 |
+| T5 8/10 | **Movie night:** 80 phim/series + GIF (GIPHY) | ✅ 8/10 |
 | T5 8/10 | Giá thật từng món/hoạt động (file của bạn) · lời nhắn buổi sáng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
@@ -288,12 +313,14 @@ Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ng�
 10. Mini-game đố vui về phim và TV show
 11. Nhạc nền
 12. Bản đồ GPS thật
+13. Movie night: trailer YouTube chính thức cho phim ⭐, kệ vé xem phim trong Collection, dùng chung danh sách phim cho Cinema (D9)
 
 ## 16. Đang chờ bạn
 
 - [x] MFe4 Love Coupons (sửa/thêm phiếu trong `src/data/coupons.ts`)
 - [x] Hình chibi Misu + Chằm Chằm
 - [x] Thư sinh nhật
+- [ ] Tạo key GIPHY (developers.giphy.com → Create an API Key), thêm `VITE_GIPHY_KEY` trên Vercel rồi **Redeploy**; lướt **Movie night GIFs 🎬** trong Dev để sửa GIF sai — 8/10
 - [ ] Lời nhắn buổi sáng (`src/data/morningNotes.ts`) — 8/10
 - [ ] File nội dung sản phẩm + hoạt động kèm giá thị trường → sửa `src/data/places.ts` — 8/10 (Pet Shop đã có giá ước, xem mục 8)
 - [ ] Đọc lại thư trên iPhone thật, sửa chữ nếu muốn (`src/data/birthday.ts`)

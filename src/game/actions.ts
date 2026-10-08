@@ -4,6 +4,7 @@ import { ITEM_BY_ID } from '../data/items.ts'
 import { PLACES } from '../data/places.ts'
 import { postMessage, type MessagePayload } from '../lib/api.ts'
 import { isDevMode } from '../lib/device.ts'
+import { takeMovieGif } from '../lib/giphy.ts'
 import { gameDayKey, gameNow } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { diaryForDay, type MessageInput } from './engine.ts'
@@ -13,7 +14,7 @@ import { levelInfo } from './level.ts'
 import { SENDING_TIMEOUT_MS, shownDelivery } from './messages.ts'
 import { petStats } from './pet.ts'
 import { useGame } from './store.ts'
-import type { Activity, ChatMessage, Delivery, Place, SaveData } from './types.ts'
+import type { Activity, ChatMessage, Delivery, Movie, Place, SaveData } from './types.ts'
 import { useUi } from './ui.ts'
 
 // Các việc có "tác dụng phụ": hiện popup, gọi mạng… Luật chơi thuần nằm ở engine.ts.
@@ -22,6 +23,15 @@ import { useUi } from './ui.ts'
 export function runActivity(place: Place | null, activity: Activity) {
   const outcome = useGame.getState().doActivity(place, activity)
   if (outcome.result) useUi.getState().showResult(outcome.result)
+  return outcome
+}
+
+// --- Movie night ---
+
+/** Misu bấm Watch: xem phim rồi hiện popup kèm GIF của phim (GIF tải ngầm, chưa có thì hiện emoji) */
+export function runMovie(movie: Movie) {
+  const outcome = useGame.getState().watchMovie(movie.id)
+  if (outcome.result) useUi.getState().showResult(outcome.result, takeMovieGif(movie))
   return outcome
 }
 

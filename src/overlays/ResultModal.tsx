@@ -1,12 +1,15 @@
 import { Chip } from '../components/Chip.tsx'
 import { GoldenPup } from '../components/GoldenPup.tsx'
 import { Modal } from '../components/Modal.tsx'
+import { MovieGifFrame } from '../components/MovieGif.tsx'
 import { Sticker } from '../components/Sticker.tsx'
 import { HUSBAND_NAME } from '../config.ts'
 import { COUPON_BY_ID } from '../data/coupons.ts'
 import { DISTRICT_BY_ID } from '../data/districts.ts'
+import { MOVIE_BY_ID } from '../data/movies.ts'
 import { PET_FOOD_BY_ID, PET_STARTER_PANTRY } from '../data/pet.ts'
 import { formatMoney } from '../game/format.ts'
+import { moviesWatched } from '../game/movies.ts'
 import { useGame } from '../game/store.ts'
 import type { ActivityResult, PetChange } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
@@ -32,6 +35,19 @@ function PetBox({ pet }: { pet: PetChange }) {
           {pet.happinessGain > 0 ? `+${pet.happinessGain} 💛` : 'feeling great 💛'}
         </p>
       )}
+    </div>
+  )
+}
+
+/** Movie night: thưởng xem lần đầu, hoặc đã xem mấy lần */
+function MovieBox({ count, bonusXp }: { count: number; bonusXp: number }) {
+  const { watched, total } = moviesWatched(useGame((s) => s.save))
+  return (
+    <div className="mt-4 rounded-[20px] bg-white px-4 py-3 text-[14px] leading-snug font-bold ring-1 ring-petal">
+      {bonusXp > 0 ? <p>✨ First watch: +{bonusXp} bonus XP</p> : <p>Watched {count} times 💗</p>}
+      <p className="mt-0.5 text-plum-soft">
+        🎬 {watched} of {total} movies & shows watched
+      </p>
     </div>
   )
 }
@@ -100,6 +116,7 @@ function LevelUpBox({ result }: { result: ActivityResult }) {
 /** Popup sau khi làm một hoạt động: nhật ký, tiền, năng lượng, XP, sticker mới */
 export function ResultModal() {
   const result = useUi((s) => s.result)
+  const resultGif = useUi((s) => s.resultGif)
   const close = useUi((s) => s.closeResult)
   const setTab = useUi((s) => s.setTab)
   if (!result) return null
@@ -107,19 +124,22 @@ export function ResultModal() {
   const { activity, item, itemCount } = result
   const levelUp = result.levelAfter > result.levelBefore
   const adopted = result.pet?.adopted ? result.pet : undefined
+  const movie = result.movie ? MOVIE_BY_ID[result.movie.id] : undefined
 
   return (
     <Modal labelledBy="result-title" onClose={close}>
       {adopted ? (
         <GoldenPup mood="happy" className="mx-auto block h-36 w-36 animate-hop" />
+      ) : movie && resultGif ? (
+        <MovieGifFrame movie={movie} gif={resultGif} className="mt-1" />
       ) : (
-        <Sticker emoji={item?.emoji ?? activity.emoji} className="text-[64px]" />
+        <Sticker emoji={movie?.emoji ?? item?.emoji ?? activity.emoji} className="text-[64px]" />
       )}
       <p className="mt-3 text-[14px] font-bold text-plum-soft">{result.placeName}</p>
       <h2 id="result-title" className="font-display text-[26px] leading-tight font-bold text-balance">
         {adopted ? `Welcome home, ${adopted.name}!` : activity.name}
       </h2>
-      <p className="mt-2.5 text-[16px] leading-relaxed text-pretty">{result.text}</p>
+      <p className="mt-2.5 text-[16px] leading-relaxed text-pretty">{movie ? movie.line : result.text}</p>
 
       <div className="mt-4 flex flex-wrap justify-center gap-1.5">
         {result.money < 0 && <Chip className="bg-butter">−{formatMoney(-result.money)}</Chip>}
@@ -140,6 +160,7 @@ export function ResultModal() {
         </p>
       )}
       {result.pet && <PetBox pet={result.pet} />}
+      {result.movie && <MovieBox count={result.movie.count} bonusXp={result.movie.bonusXp} />}
       {levelUp && <LevelUpBox result={result} />}
 
       <button
@@ -150,7 +171,7 @@ export function ResultModal() {
         }}
         className="press mt-6 w-full rounded-full bg-peony py-3.5 text-[17px] font-extrabold"
       >
-        {adopted ? `Go home with ${adopted.name} 🏠` : 'Nice!'}
+        {adopted ? `Go home with ${adopted.name} 🏠` : movie ? 'Loved it 🍿' : 'Nice!'}
       </button>
     </Modal>
   )

@@ -18,6 +18,7 @@ import { checkActivity } from '../game/rules.ts'
 import { useGame } from '../game/store.ts'
 import type { Activity, SaveData } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+import { MovieNightTile } from './home/MovieNight.tsx'
 import { PetSection } from './home/PetSection.tsx'
 
 function greeting(hour: number) {
@@ -181,6 +182,7 @@ export function HomeScreen() {
           At home
         </h2>
         <div className="mt-3 grid grid-cols-2 gap-2.5">
+          <MovieNightTile save={save} now={now} />
           {HOME_ACTIVITIES.map((activity) => (
             <HomeTile key={activity.id} activity={activity} save={save} now={now} />
           ))}

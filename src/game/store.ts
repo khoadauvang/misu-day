@@ -4,6 +4,7 @@ import { gameNow } from './clock.ts'
 import {
   applyActivity,
   applyMessage,
+  applyMovie,
   applyTick,
   claimBirthday,
   collectAllowance,
@@ -36,6 +37,8 @@ type GameStore = {
   collectAllowance: () => void
   /** Làm một hoạt động; place = null là hoạt động ở nhà (kể cả chăm cún) */
   doActivity: (place: Place | null, activity: Activity, options?: ActivityOptions) => Omit<ActivityOutcome, 'save'>
+  /** Movie night: xem một phim ở nhà */
+  watchMovie: (movieId: string) => Omit<ActivityOutcome, 'save'>
   /** Đọc xong thư sinh nhật: nhận quà (chỉ một lần) */
   claimBirthday: () => void
   /** Misu gửi tin cho Chằm Chằm (Module 9) */
@@ -73,6 +76,11 @@ export const useGame = create<GameStore>()(
       collectAllowance: () => set((s) => ({ save: collectAllowance(s.save, gameNow()) })),
       doActivity: (place, activity, options) => {
         const { save, ...outcome } = applyActivity(get().save, place, activity, gameNow(), options)
+        set({ save })
+        return outcome
+      },
+      watchMovie: (movieId) => {
+        const { save, ...outcome } = applyMovie(get().save, movieId, gameNow())
         set({ save })
         return outcome
       },
