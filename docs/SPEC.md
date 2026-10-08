@@ -1,4 +1,4 @@
-# Misu's Day — Spec v1.4
+# Misu's Day — Spec v1.5
 
 *Cập nhật 08/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
@@ -122,7 +122,19 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 
 ## 6. Kinh tế và tiến trình
 
-- **Giá tạm:** mọi sản phẩm/dịch vụ đều **500,000₫** (`PRICE` trong `src/data/economy.ts`), trừ Pet Shop đã có giá ước theo thị trường (mục 8). Bạn sẽ soạn file nội dung + giá thật cho từng món/hoạt động rồi sửa trong `src/data/places.ts`. Hoạt động miễn phí giữ nguyên 0₫: học ở RMIT, đọc ở thư viện, đọc sách ở góc nhà sách, ngắm đồ ở Luxury Boulevard, chơi với cún ở Pet Shop, hoạt động ở nhà, chăm cún ở nhà.
+- **Giá (chốt 08/10 theo bảng giá của bạn):** 69 hoạt động tốn tiền, sửa ở `cost` trong `src/data/places.ts`. Giá gần giá thật ở Sài Gòn (tham khảo Onitsuka Tiger, Chanel, Apple, Sony, Rolex, PNJ, Highlands…); hàng xa xỉ giảm nhẹ để cân bằng: Chanel Classic Mini 163,8 triệu → 150 triệu, Rolex Oyster Perpetual 36 191,5 triệu → 175 triệu.
+
+  | Nhóm | Giá |
+  |---|---|
+  | Ăn vặt, đồ uống: GMI Tea, Bánh Tráng Trộn A Lâm, Dairy Queen, Garden Café | 30,000–145,000₫ |
+  | Bữa ăn: Japanese Corner, Korea Town, Dim Sum, Hot Pot, Roast Duck | 120,000–750,000₫ |
+  | Làm đẹp, spa, gym, bar, rạp phim, bảo tàng | 70,000–850,000₫ |
+  | Sách, hoa, gấu bông, Miniso/Muji, đồ trang trí, son, ốp iPhone | 90,000–1,100,000₫ |
+  | Giày, nước hoa, AirPods, tai nghe Sony, concert | 2,500,000–7,400,000₫ |
+  | Trang sức, túi hiệu, đồng hồ | Necklace 12tr · Gucci 45tr · Diamond ring 47tr · Chanel 150tr · Rolex 175tr |
+  | Pet Shop (mục 8), vé máy bay (mục 5) | giữ nguyên |
+
+  Năng lượng chỉ đủ khoảng 8–10 hoạt động mỗi ngày nên ngày nào cũng dư tiền; tiền dư để dành cho đồ hiệu, trang sức, công nghệ và vé máy bay. Để dành hết 5 triệu mỗi ngày (4tr + 1tr xin thêm, chưa tính thưởng level) thì Chanel mất khoảng 30 ngày, Rolex khoảng 35 ngày. Nơi mở ở level cao thường đắt hơn. Hoạt động miễn phí giữ 0₫: học ở RMIT, đọc ở thư viện, đọc sách ở góc nhà sách, ngắm đồ ở Luxury Boulevard, chơi với cún ở Pet Shop, hoạt động ở nhà, chăm cún ở nhà.
 - **Allowance:** 4,000,000₫ lúc 6:00 sáng, Misu bấm Collect. Vắng N ngày thì nhận đủ N lần.
 - **Energy:** tối đa 100, hồi +10 mỗi giờ kể cả khi tắt app. Ăn uống 5–10, mua sắm 10–15, gym 25, concert 30. Massage, gội đầu dưỡng sinh và chợp mắt thì **hồi** năng lượng.
 - **XP / Level:** từ level n lên n+1 cần 100 × n XP. Chơi đều thì khoảng 1 tuần tới Lv5, 3–4 tuần tới Lv10.
@@ -293,7 +305,8 @@ public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 | T4 7/10 | **M10** Love Coupons | ✅ 7/10 |
 | T4 7/10 | Nội dung sinh nhật: thư + pháo hoa + quà | ✅ 7/10 |
 | T5 8/10 | **Movie night:** 80 phim/series + GIF (GIPHY) | ✅ 8/10 |
-| T5 8/10 | Giá thật từng món/hoạt động (file của bạn) · lời nhắn buổi sáng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
+| T5 8/10 | Giá thật từng món/hoạt động (bảng giá của bạn) | ✅ 8/10 |
+| T5 8/10 | Lời nhắn buổi sáng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
 | T6 9/10 | 🎂 Trao quà | |
 
@@ -322,7 +335,7 @@ Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ng�
 - [x] Thư sinh nhật
 - [ ] Tạo key GIPHY (developers.giphy.com → Create an API Key), thêm `VITE_GIPHY_KEY` trên Vercel rồi **Redeploy**; lướt **Movie night GIFs 🎬** trong Dev để sửa GIF sai — 8/10
 - [ ] Lời nhắn buổi sáng (`src/data/morningNotes.ts`) — 8/10
-- [ ] File nội dung sản phẩm + hoạt động kèm giá thị trường → sửa `src/data/places.ts` — 8/10 (Pet Shop đã có giá ước, xem mục 8)
+- [x] Bảng giá thật cho từng món/hoạt động (đã vào `src/data/places.ts` 8/10)
 - [ ] Đọc lại thư trên iPhone thật, sửa chữ nếu muốn (`src/data/birthday.ts`)
 - [ ] Tên game hiển thị (tạm "Misu's Day"; đổi tên không ảnh hưởng địa chỉ web)
 - [ ] (Tùy chọn) Hình cún Golden cùng phong cách chibi để thay hình SVG

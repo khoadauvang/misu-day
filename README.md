@@ -2,14 +2,13 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF). Tiếp theo (8/10): giá thật, lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
 | Muốn sửa | Mở file | Ghi chú |
 |---|---|---|
-| Giá một món | `src/data/places.ts` | Thay `cost: PRICE` bằng số, ví dụ `cost: 65_000` |
-| Đổi giá tạm cho tất cả | `src/data/economy.ts` | `PRICE = 500_000` |
+| Giá một món | `src/data/places.ts` | Sửa số ở `cost` của hoạt động đó, ví dụ `cost: 65_000` (0 là miễn phí) |
 | Lời nhắn buổi sáng | `src/data/morningNotes.ts` | Thêm câu vào cuối danh sách, viết tiếng Anh |
 | Tên gọi (Chằm Chằm, bè chẽ, tên game) | `src/config.ts` | |
 | Tiền mỗi sáng, năng lượng, nhịp lên level | `src/data/economy.ts` | |
@@ -120,4 +119,5 @@ misu-day/
 | | Nhận nuôi + chăm cún Golden | ✅ |
 | | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
 | | Movie night: 80 phim/series + GIF (GIPHY) | ✅ |
-| | Giá thật · Lời nhắn buổi sáng · Test + khóa code | 8/10 |
+| | Giá thật cho 69 hoạt động tốn tiền (bảng giá 8/10) | ✅ |
+| | Lời nhắn buổi sáng · Test + khóa code | 8/10 |

@@ -1,7 +1,5 @@
 // Các con số cân bằng game. Sửa ở đây để đổi nhịp chơi.
-
-/** Giá tạm cho mọi sản phẩm/dịch vụ. Muốn sửa giá từng món thì sửa trong places.ts */
-export const PRICE = 500_000
+// Giá từng món/hoạt động nằm ở `cost` trong places.ts.
 
 /** Tiền Chằm Chằm gửi mỗi sáng */
 export const DAILY_ALLOWANCE = 4_000_000
