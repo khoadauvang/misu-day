@@ -6,6 +6,7 @@ import { useGame } from './game/store.ts'
 import { useUi } from './game/ui.ts'
 import { useGameClock } from './game/useGameClock.ts'
 import { isDevMode, shouldShowInstallGate } from './lib/device.ts'
+import { initSound, setMusicOn, setSoundsOn } from './lib/sound.ts'
 import { AdoptModal } from './overlays/AdoptModal.tsx'
 import { AllowanceModal } from './overlays/AllowanceModal.tsx'
 import { BirthdayIntro } from './overlays/BirthdayIntro.tsx'
@@ -33,7 +34,19 @@ function Game() {
   // Lần mở game đầu tiên: thư sinh nhật hiện trước, hộp tiền buổi sáng chờ đọc xong thư
   const birthdayPending = useGame((s) => s.save.birthdayAt === null)
   const scrollRef = useRef<HTMLElement>(null)
+  const { music, sounds } = useGame((s) => s.save.settings)
   useGameClock()
+
+  // Nhạc nền + tiếng hiệu ứng (bắt đầu sau lần chạm đầu tiên, xem src/lib/sound.ts)
+  useEffect(() => {
+    initSound()
+  }, [])
+  useEffect(() => {
+    setMusicOn(music)
+  }, [music])
+  useEffect(() => {
+    setSoundsOn(sounds)
+  }, [sounds])
 
   // Module 9: tin nào chưa tới hộp thư của Chằm Chằm thì gửi lại khi mở app và khi có mạng lại
   useEffect(() => {

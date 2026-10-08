@@ -7,6 +7,7 @@ import { couponDelivery, deliverCoupon, redeemLoveCoupon } from '../game/actions
 import { useGame } from '../game/store.ts'
 import type { CouponState } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+import { playSfx } from '../lib/sound.ts'
 
 // Module 10: Love Coupons trong tab Collection.
 // Phiếu đi qua 3 bước: Ready (bấm Use) → Waiting (email đã báo Chằm Chằm) → Done (Misu bấm "It happened").
@@ -57,7 +58,10 @@ function CouponCard({ id, coupon, onUse }: { id: string; coupon: CouponState; on
         <div className="mt-3">
           <button
             type="button"
-            onClick={() => markDone(id)}
+            onClick={() => {
+              markDone(id)
+              playSfx('chime')
+            }}
             className="press w-full rounded-full bg-mint py-2.5 text-[15px] font-extrabold ring-1 ring-mint"
           >
             It happened 💗

@@ -18,7 +18,7 @@ import {
   type MessageInput,
   type MessageOutcome,
 } from './engine.ts'
-import type { Activity, Delivery, Place, SaveData } from './types.ts'
+import type { Activity, Delivery, Place, SaveData, SoundSettings } from './types.ts'
 
 // Kho dữ liệu của game. Mọi thay đổi đều tự lưu vào localStorage của điện thoại,
 // tắt app mở lại là đọc ra chơi tiếp.
@@ -48,6 +48,8 @@ type GameStore = {
   redeemCoupon: (id: string) => void
   markCouponDone: (id: string) => void
   setCouponDelivery: (id: string, delivery: Delivery) => void
+  /** Bật/tắt nhạc nền, tiếng hiệu ứng */
+  setSettings: (patch: Partial<SoundSettings>) => void
   /** Chỉ dùng trong chế độ ?dev */
   devPatch: (patch: Partial<SaveData>) => void
 }
@@ -94,6 +96,7 @@ export const useGame = create<GameStore>()(
       redeemCoupon: (id) => set((s) => ({ save: redeemCoupon(s.save, id, gameNow()) })),
       markCouponDone: (id) => set((s) => ({ save: markCouponDone(s.save, id, gameNow()) })),
       setCouponDelivery: (id, delivery) => set((s) => ({ save: setCouponDelivery(s.save, id, delivery, gameNow()) })),
+      setSettings: (patch) => set((s) => ({ save: { ...s.save, settings: { ...s.save.settings, ...patch } } })),
       devPatch: (patch) => set((s) => ({ save: { ...s.save, ...patch } })),
     }),
     {

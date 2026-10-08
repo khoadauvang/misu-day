@@ -13,6 +13,7 @@ import { askedExtraToday, canSendMore, shownDelivery } from '../game/messages.ts
 import { useGame } from '../game/store.ts'
 import type { ChatMessage } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+import { playSfx } from '../lib/sound.ts'
 import { useKeyboardInset } from '../lib/useKeyboardInset.ts'
 
 // Module 9: chat kiểu iMessage với Chằm Chằm. Mỗi tin Misu gửi thành một email thật.
@@ -124,10 +125,14 @@ export function MessagesScreen() {
     firstScroll.current = false
   }, [messages.length, typingId, keyboard])
 
-  // Ẩn ba chấm "đang gõ…" sau một lúc
+  // Ẩn ba chấm "đang gõ…" sau một lúc, câu trả lời hiện ra kèm tiếng "ting-tong" (có tiền thì tiếng xu)
   useEffect(() => {
     if (!typingId) return
-    const timer = setTimeout(() => setTypingId(null), TYPING_MS)
+    const timer = setTimeout(() => {
+      setTypingId(null)
+      const reply = useGame.getState().save.messages.find((m) => m.id === typingId)
+      playSfx(reply?.money ? 'collect' : 'receive')
+    }, TYPING_MS)
     return () => clearTimeout(timer)
   }, [typingId])
 

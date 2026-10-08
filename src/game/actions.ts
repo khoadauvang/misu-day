@@ -5,6 +5,7 @@ import { PLACES } from '../data/places.ts'
 import { postMessage, type MessagePayload } from '../lib/api.ts'
 import { isDevMode } from '../lib/device.ts'
 import { takeMovieGif } from '../lib/giphy.ts'
+import { playSfx, type SfxName } from '../lib/sound.ts'
 import { gameDayKey, gameNow } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { diaryForDay, type MessageInput } from './engine.ts'
@@ -14,15 +15,26 @@ import { levelInfo } from './level.ts'
 import { SENDING_TIMEOUT_MS, shownDelivery } from './messages.ts'
 import { petStats } from './pet.ts'
 import { useGame } from './store.ts'
-import type { Activity, ChatMessage, Delivery, Movie, Place, SaveData } from './types.ts'
+import type { Activity, ActivityResult, ChatMessage, Delivery, Movie, Place, SaveData } from './types.ts'
 import { useUi } from './ui.ts'
 
-// Các việc có "tác dụng phụ": hiện popup, gọi mạng… Luật chơi thuần nằm ở engine.ts.
+// Các việc có "tác dụng phụ": hiện popup, phát tiếng, gọi mạng… Luật chơi thuần nằm ở engine.ts.
+
+/** Tiếng đi kèm popup kết quả: lên level / nhận nuôi > mua đồ có sticker > trả tiền > miễn phí */
+function resultSound(result: ActivityResult): SfxName {
+  if (result.levelAfter > result.levelBefore || result.activity.pet?.adopt) return 'levelUp'
+  if (result.item) return 'buy'
+  if (result.money < 0) return 'pay'
+  return 'chime'
+}
 
 /** Làm hoạt động rồi hiện popup kết quả (place = null là hoạt động ở nhà) */
 export function runActivity(place: Place | null, activity: Activity) {
   const outcome = useGame.getState().doActivity(place, activity)
-  if (outcome.result) useUi.getState().showResult(outcome.result)
+  if (outcome.result) {
+    useUi.getState().showResult(outcome.result)
+    playSfx(resultSound(outcome.result))
+  }
   return outcome
 }
 
@@ -31,7 +43,10 @@ export function runActivity(place: Place | null, activity: Activity) {
 /** Misu bấm Watch: xem phim rồi hiện popup kèm GIF của phim (GIF tải ngầm, chưa có thì hiện emoji) */
 export function runMovie(movie: Movie) {
   const outcome = useGame.getState().watchMovie(movie.id)
-  if (outcome.result) useUi.getState().showResult(outcome.result, takeMovieGif(movie))
+  if (outcome.result) {
+    useUi.getState().showResult(outcome.result, takeMovieGif(movie))
+    playSfx(resultSound(outcome.result))
+  }
   return outcome
 }
 
@@ -42,8 +57,13 @@ export function runPetCare(activity: Activity) {
   const outcome = useGame.getState().doActivity(null, activity)
   const result = outcome.result
   if (!result) return outcome
-  if (result.levelAfter > result.levelBefore) useUi.getState().showResult(result)
-  else useUi.getState().showPetReaction({ emoji: activity.emoji, text: result.xp > 0 ? `+${result.xp} XP` : '💛' })
+  if (result.levelAfter > result.levelBefore) {
+    useUi.getState().showResult(result)
+    playSfx('levelUp')
+  } else {
+    useUi.getState().showPetReaction({ emoji: activity.emoji, text: result.xp > 0 ? `+${result.xp} XP` : '💛' })
+    playSfx('squeak')
+  }
   return outcome
 }
 
@@ -64,6 +84,7 @@ export function adoptGolden(name: string) {
   if (outcome.result) {
     useUi.getState().setAdoptOpen(false)
     useUi.getState().showResult(outcome.result)
+    playSfx(resultSound(outcome.result))
   }
   return outcome
 }
@@ -132,7 +153,10 @@ export async function deliverMessage(id: string) {
 /** Misu gửi tin: Chằm Chằm trả lời ngay trong game, còn email đi ngầm phía sau */
 export function sendToHusband(input: MessageInput) {
   const outcome = useGame.getState().sendMessage(input)
-  if (outcome.message) void deliverMessage(outcome.message.id)
+  if (outcome.message) {
+    playSfx('send')
+    void deliverMessage(outcome.message.id)
+  }
   return outcome
 }
 
@@ -191,5 +215,6 @@ export async function deliverCoupon(id: string) {
 /** Misu bấm Use một phiếu */
 export function redeemLoveCoupon(id: string) {
   useGame.getState().redeemCoupon(id)
+  playSfx('sparkle')
   void deliverCoupon(id)
 }

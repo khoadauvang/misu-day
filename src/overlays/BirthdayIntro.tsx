@@ -17,6 +17,7 @@ import { ITEM_BY_ID } from '../data/items.ts'
 import { formatMoney } from '../game/format.ts'
 import { useGame } from '../game/store.ts'
 import { useUi } from '../game/ui.ts'
+import { playBirthdaySong, playSfx, prepareBirthdaySong } from '../lib/sound.ts'
 
 // Thư sinh nhật (lần mở game đầu tiên, hoặc đọc lại từ Collection).
 // party: game mờ đi, pháo hoa, bánh kem nhảy ra góc trái, Chằm Chằm trượt vào góc phải, thư trái tim hiện ra
@@ -316,19 +317,28 @@ export function BirthdayIntro({ mode }: { mode: Mode }) {
     if (to < 0 || to > LAST) return
     setTurn({ from, dir })
     setPage(to)
+    playSfx('page')
     // Phòng khi hiệu ứng bị ngắt (ví dụ thoát app giữa chừng): tự mở khóa lật trang
     window.setTimeout(() => setTurn((t) => (t?.from === from ? null : t)), TURN_FALLBACK_MS)
   }
 
   const openLetter = () => {
     setOpening(true)
+    playSfx('sparkle')
     window.setTimeout(() => setStage('letter'), OPEN_MS)
   }
 
   const finishLetter = () => {
-    if (mode === 'first') setStage('gift')
-    else close()
+    if (mode === 'first') {
+      setStage('gift')
+      playBirthdaySong() // hộp nhạc Happy Birthday lúc mở quà
+    } else close()
   }
+
+  // Thu sẵn bài Happy Birthday trong lúc Misu đọc thư
+  useEffect(() => {
+    if (mode === 'first') prepareBirthdaySong()
+  }, [mode])
 
   const close = () => {
     setClosing(true)

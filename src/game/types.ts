@@ -247,4 +247,8 @@ export type SaveData = {
   pantry: Record<string, number>
   /** Movie night: id phim → số lần đã xem */
   movies: Record<string, number>
+  /** Bật/tắt nhạc nền và tiếng hiệu ứng (nút ở đầu tab Home) */
+  settings: SoundSettings
 }
+
+export type SoundSettings = { music: boolean; sounds: boolean }

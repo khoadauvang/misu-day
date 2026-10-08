@@ -12,6 +12,7 @@ import { checkActivity } from '../../game/rules.ts'
 import { useGame } from '../../game/store.ts'
 import type { Activity, PetState, SaveData } from '../../game/types.ts'
 import { useUi } from '../../game/ui.ts'
+import { playSfx } from '../../lib/sound.ts'
 
 // Cún Golden ở tab Home: chưa nhận nuôi thì hiện lời mời, có cún rồi thì hiện thẻ chăm cún.
 
@@ -157,6 +158,7 @@ function PetCard({ pet, save, now }: { pet: PetState; save: SaveData; now: numbe
   const pat = () => {
     const line = PET_TAP_LINES[Math.floor(Math.random() * PET_TAP_LINES.length)]
     showPetReaction({ emoji: '', text: line })
+    playSfx('squeak')
   }
 
   return (

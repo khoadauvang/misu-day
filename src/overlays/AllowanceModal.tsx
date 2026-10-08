@@ -4,6 +4,7 @@ import { HUSBAND_NAME } from '../config.ts'
 import { noteForDay } from '../data/morningNotes.ts'
 import { formatMoney } from '../game/format.ts'
 import { useGame } from '../game/store.ts'
+import { playSfx } from '../lib/sound.ts'
 
 /** Mỗi sáng: lời nhắn + tiền của Chằm Chằm. Misu bấm Collect để nhận. */
 export function AllowanceModal() {
@@ -31,7 +32,10 @@ export function AllowanceModal() {
       </p>
       <button
         type="button"
-        onClick={collect}
+        onClick={() => {
+          collect()
+          playSfx('collect')
+        }}
         className="press mt-6 w-full rounded-full bg-peony py-3.5 text-[17px] font-extrabold"
       >
         Collect

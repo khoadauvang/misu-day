@@ -8,6 +8,8 @@ import { useGame } from '../game/store.ts'
 import { useUi } from '../game/ui.ts'
 import { refreshClock } from '../game/useGameClock.ts'
 import { gifQuery, hasGiphy, takeMovieGif } from '../lib/giphy.ts'
+import { SFX_NAMES } from '../lib/sfx.ts'
+import { playBirthdaySong, playSfx, soundStatus } from '../lib/sound.ts'
 
 function DevButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return (
@@ -18,6 +20,44 @@ function DevButton({ onClick, children }: { onClick: () => void; children: React
     >
       {children}
     </button>
+  )
+}
+
+/** Nghe thử từng tiếng hiệu ứng + xem âm thanh đang chạy chưa (iPhone gạt im lặng thì không có tiếng) */
+function SoundCheck() {
+  const [status, setStatus] = useState(soundStatus)
+  const refresh = () => window.setTimeout(() => setStatus(soundStatus()), 400)
+  return (
+    <div className="mt-2 rounded-[22px] bg-white px-4 py-3 ring-1 ring-petal">
+      <p className="text-[12px] font-bold text-plum-soft">
+        Audio: {status.state} · music {status.music} · sounds ready {status.effects}
+      </p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {SFX_NAMES.map((name) => (
+          <button
+            key={name}
+            type="button"
+            onClick={() => {
+              playSfx(name)
+              refresh()
+            }}
+            className="press rounded-full bg-petal px-3 py-1.5 text-[13px] font-extrabold"
+          >
+            {name}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => {
+            playBirthdaySong()
+            refresh()
+          }}
+          className="press rounded-full bg-butter px-3 py-1.5 text-[13px] font-extrabold"
+        >
+          Happy Birthday 🎂
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -144,6 +184,8 @@ export function DevPanel() {
           </DevButton>
           <DevButton onClick={() => devPatch({ pet: null, pantry: {} })}>Remove puppy</DevButton>
         </div>
+        <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Sounds 🔊</p>
+        <SoundCheck />
         <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Movie night GIFs 🎬</p>
         <GifCheck />
         <div className="mt-2 grid">

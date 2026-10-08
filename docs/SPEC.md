@@ -1,6 +1,6 @@
-# Misu's Day — Spec v1.5
+# Misu's Day — Spec v1.6
 
-*Cập nhật 08/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
+*Cập nhật 09/10/2026 · "Misu's Day" là tên tạm, đổi được · Cập nhật file này mỗi khi có quyết định mới.*
 
 - **Link game:** https://misuxinhdep.vercel.app (đã chốt, không đổi sau 9/10)
 - **Code:** GitHub `khoadauvang/misu-day`, nhánh `main` → Vercel tự deploy
@@ -56,6 +56,7 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 - **Today's diary:** nhật ký trong ngày, mới nhất ở trên.
 - Thẻ trạng thái của Chằm Chằm theo giờ (M8 ✅): avatar chibi + emoji trạng thái, đang làm gì + "until 5:45 PM"; nền mint khi đang ở bên Misu.
 - Dưới thanh XP: "🔓 New places at Level X" (level kế tiếp có mở khóa).
+- Góc phải trên: 2 nút tròn 🎵 nhạc nền và 🔔 tiếng hiệu ứng, chạm để bật/tắt (mục 8c).
 - Thẻ cún Golden ✅ (mục 8): chưa đủ Lv5 thì hiện mờ "Someone fluffy is waiting"; đủ level thì "A puppy is waiting for you" + nút sang Pet Shop; nhận nuôi rồi thì hiện thẻ chăm cún.
 
 ### Map ✅
@@ -213,6 +214,16 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 
 **Code:** luật trong `src/game/movies.ts` + `applyMovie` trong `src/game/engine.ts`; gọi GIPHY trong `src/lib/giphy.ts`; khung GIF `src/components/MovieGif.tsx`; giao diện `src/screens/home/MovieNight.tsx`. Save thêm trường `movies` (id phim → số lần đã xem).
 
+## 8c. Âm thanh: nhạc nền + tiếng hiệu ứng ✅
+
+- **Nhạc nền** dễ thương, chill: 16 ô nhịp (~48 giây) lặp liền mạch, giọng Đô trưởng, 80 nhịp/phút. Tiếng hộp nhạc chơi giai điệu, piano điện đệm hợp âm, bass tròn, shaker + trống rất nhẹ. Game tự "chơi" từng nốt bằng code: không dùng file nhạc nên không lo bản quyền, app vẫn nhẹ, chạy được khi mất mạng. Nốt và hợp âm sửa trong `src/data/music.ts` (cách viết: `'A5:1.5 G5:.5'` = tên nốt : số phách).
+- **Tiếng hiệu ứng:** mọi nút có tiếng "póc" nhỏ. Trả tiền: "ting-ting" đồng xu · mua đồ có sticker: đồng xu + lấp lánh · hoạt động miễn phí, xem phim: chuông hộp nhạc · lên level, nhận nuôi cún: kèn nhỏ · nhận tiền buổi sáng, Chằm Chằm gửi thêm: ba đồng xu · gửi tin: "blúp" · Chằm Chằm trả lời: "ting-tong" · chạm/chăm cún: đồ chơi "chít" · chạm chibi Misu: lò xo "boing" · mở thư, dùng Love Coupon: lấp lánh · lật trang thư: "sột". Công thức từng tiếng: `src/lib/sfx.ts`.
+- **Mở quà sinh nhật:** hộp nhạc chơi Happy Birthday (nhịp 3/4, giai điệu đã hết bản quyền), nhạc nền nhỏ lại trong lúc phát.
+- **Bật/tắt:** 2 nút ở đầu tab Home, lưu trong save (`settings`), mặc định bật cả hai.
+- **Trên iPhone:** chỉ phát tiếng sau lần chạm đầu tiên (nhạc nhỏ dần lên trong 2,5 giây). Gạt nút im lặng của iPhone là game im. Phát chung được với nhạc của app khác. Thoát ra màn hình chính thì tạm dừng, mở lại phát tiếp.
+- Âm lượng: `MUSIC_VOLUME`, `SFX_VOLUME` trong `src/data/music.ts`. Mở game thì nhạc được "thu" sẵn một lần (chia nhỏ từng đoạn để giao diện không bị giật), lúc chơi chỉ phát lại.
+- **Code:** bộ tổng hợp âm thanh `src/lib/synth.ts`, tiếng hiệu ứng `src/lib/sfx.ts`, phát + bật/tắt `src/lib/sound.ts`. Nghe thử: `?preview&dev` → 🛠 Dev → **Sounds 🔊** (dòng "Audio: running · music playing" cho biết âm thanh đang chạy).
+
 ## 9. Tin nhắn thành email thật (MFe2–MFe3) ✅
 
 - Misu gửi tin trong game → `POST /api/message` (Vercel Function, file `api/message.js`) → Resend → email về hộp thư của bạn.
@@ -254,7 +265,7 @@ Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng h
 - App trên màn hình chính và tab Safari có dữ liệu tách riêng, nên game chặn chơi trong tab Safari.
 - WebKit miễn quy tắc tự xóa dữ liệu sau 7 ngày cho app trên màn hình chính. Game cũng xin trình duyệt giữ dữ liệu lâu dài.
 - Xóa icon khỏi màn hình chính là mất dữ liệu.
-- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định (ví dụ bản 7/10 thêm `birthdayAt`, `pet`, `pantry`; bản 8/10 thêm `movies`).
+- Save có số phiên bản (`SAVE_VERSION`) và hàm `migrateSave()` trong `src/game/store.ts`. Bản sau thêm trường mới thì save cũ tự lấy giá trị mặc định (ví dụ bản 7/10 thêm `birthdayAt`, `pet`, `pantry`; bản 8/10 thêm `movies`; bản 9/10 thêm `settings` bật/tắt âm thanh).
 
 ## 12. Nội dung sinh nhật ✅
 
@@ -280,16 +291,16 @@ api/message.js     Vercel Function: tin nhắn → email (Resend)
 src/
 ├─ config.ts       tên game, Misu, Chằm Chằm, bè chẽ
 ├─ data/           NỘI DUNG: quận, địa điểm + hoạt động, đồ sưu tầm, World, lời nhắn, các con số,
-│                  thư sinh nhật (birthday.ts), cún Golden (pet.ts), phim (movies.ts), đường dẫn hình chibi (art.ts)
+│                  thư sinh nhật (birthday.ts), cún Golden (pet.ts), phim (movies.ts), nhạc (music.ts), đường dẫn hình chibi (art.ts)
 ├─ game/           LUẬT CHƠI: đồng hồ, năng lượng, level, kiểm tra hoạt động, cún (pet.ts), phim (movies.ts), lưu dữ liệu
 ├─ components/     nút, sheet, hộp thoại, sticker, thanh tab, avatar, cún Golden, bánh kem, pháo hoa, khung GIF phim
 ├─ overlays/       hộp tiền buổi sáng, popup kết quả, thư sinh nhật, đặt tên cún, công cụ dev
-├─ lib/            nhận biết iPhone, gọi /api, GIF từ GIPHY, đo bàn phím
+├─ lib/            nhận biết iPhone, gọi /api, GIF từ GIPHY, đo bàn phím, âm thanh (synth, sfx, sound)
 └─ screens/        Home (+ home/ thẻ cún, Movie night), Map (+ map/), Messages, Collection
 public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 ```
 
-**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game, xem lại màn sinh nhật (Replay birthday 🎂), làm cún đói (Puppy hungry 🥺), bỏ cún để thử nhận nuôi lại (Remove puppy), lướt GIF từng phim (Movie night GIFs 🎬), xóa danh sách phim đã xem (Forget watched movies). Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
+**Chế độ thử:** mở `https://misuxinhdep.vercel.app/?preview&dev` trong tab Safari. Dữ liệu ở đó tách riêng với app đã cài. Nút 🛠 Dev (góc phải trên) cho phép tua giờ (+1 hour, Next morning), thêm tiền, thêm XP, hồi năng lượng, reset game, xem lại màn sinh nhật (Replay birthday 🎂), làm cún đói (Puppy hungry 🥺), bỏ cún để thử nhận nuôi lại (Remove puppy), lướt GIF từng phim (Movie night GIFs 🎬), xóa danh sách phim đã xem (Forget watched movies), nghe thử từng tiếng (Sounds 🔊). Tin nhắn gửi ở chế độ này vẫn thành email thật, có chữ [Test].
 
 ## 14. Lộ trình
 
@@ -308,6 +319,7 @@ public/chibi/      ảnh chibi Misu + Chằm Chằm (toàn thân + đầu)
 | T5 8/10 | Giá thật từng món/hoạt động (bảng giá của bạn) | ✅ 8/10 |
 | T5 8/10 | Lời nhắn buổi sáng · **M7** sự kiện ngẫu nhiên (nếu kịp) | |
 | T5 8/10 | Test trên iPhone thật, sửa lỗi, **khóa code tối nay** | |
+| T6 9/10 | Nhạc nền + tiếng hiệu ứng | ✅ 9/10 |
 | T6 9/10 | 🎂 Trao quà | |
 
 Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ngày khóa code.
@@ -324,9 +336,8 @@ Nếu trễ, cắt theo thứ tự M10 → M7 → hiệu ứng. Không dời ng�
 8. Thông báo đẩy buổi sáng
 9. Sao lưu cloud, chơi trên nhiều máy
 10. Mini-game đố vui về phim và TV show
-11. Nhạc nền
-12. Bản đồ GPS thật
-13. Movie night: trailer YouTube chính thức cho phim ⭐, kệ vé xem phim trong Collection, dùng chung danh sách phim cho Cinema (D9)
+11. Bản đồ GPS thật
+12. Movie night: trailer YouTube chính thức cho phim ⭐, kệ vé xem phim trong Collection, dùng chung danh sách phim cho Cinema (D9)
 
 ## 16. Đang chờ bạn
 

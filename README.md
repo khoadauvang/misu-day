@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -21,6 +21,8 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Thư sinh nhật, quà mở đầu | `src/data/birthday.ts` | Mỗi chuỗi trong `pages` là một trang; giữ tiếng Việt như bạn viết |
 | Cún Golden: tên gợi ý, đồ ăn, độ no/vui | `src/data/pet.ts` | Giá nhận nuôi + giá đồ ăn ở Pet Shop trong `src/data/places.ts` |
 | Movie night: phim, câu giới thiệu, XP | `src/data/movies.ts` | Thêm phim ở bất kỳ đâu trong danh sách; không đổi `id` phim cũ. GIF sai: thêm `gif.q` hoặc `gif.ids` |
+| Nhạc nền, bài Happy Birthday, âm lượng | `src/data/music.ts` | Nốt viết `'A5:1.5'` = tên nốt : số phách; mỗi ô nhịp phải đủ phách |
+| Tiếng hiệu ứng (xu, chuông, lên level…) | `src/lib/sfx.ts` | Mỗi tiếng một công thức: nốt, khoảng cách (giây), `level` to/nhỏ |
 | Hình chibi | `public/chibi/` | Chép file mới đè lên, giữ nguyên tên (`misu.webp`, `husband.webp`, `*-head.webp`) |
 
 Sửa xong: Source Control → Commit → **Sync Changes**. Khoảng 1 phút sau, app trên iPhone hiện "A new update is ready".
@@ -36,6 +38,7 @@ Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc tr
 - **Reset time / Reset game**
 - **Replay birthday 🎂:** xem lại màn thư sinh nhật như lần mở đầu
 - **Puppy hungry 🥺 / Remove puppy:** thử cún đói, bỏ cún để nhận nuôi lại
+- **Sounds 🔊:** nghe thử từng tiếng + Happy Birthday; dòng Audio cho biết âm thanh đang chạy chưa (iPhone gạt im lặng thì không có tiếng)
 - **Movie night GIFs 🎬:** lướt GIF của từng phim (‹ Prev · Another · Next ›) để bắt GIF sai; **Forget watched movies** xóa danh sách phim đã xem
 
 Tin nhắn gửi ở chế độ này vẫn thành email thật, tiêu đề có **🧪 [Test]**.
@@ -102,7 +105,7 @@ misu-day/
    ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
    ├─ screens/           Home, Map (+ map/), Messages, Collection
    ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
-   └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, GIF từ GIPHY, đo bàn phím
+   └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, GIF từ GIPHY, đo bàn phím, âm thanh
 ```
 
 ## Lộ trình module
@@ -119,5 +122,6 @@ misu-day/
 | | Nhận nuôi + chăm cún Golden | ✅ |
 | | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
 | | Movie night: 80 phim/series + GIF (GIPHY) | ✅ |
+| | Nhạc nền + tiếng hiệu ứng (tự tạo bằng code) | ✅ |
 | | Giá thật cho 69 hoạt động tốn tiền (bảng giá 8/10) | ✅ |
 | | Lời nhắn buổi sáng · Test + khóa code | 8/10 |

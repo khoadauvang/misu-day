@@ -18,6 +18,8 @@ import { checkActivity } from '../game/rules.ts'
 import { useGame } from '../game/store.ts'
 import type { Activity, SaveData } from '../game/types.ts'
 import { useUi } from '../game/ui.ts'
+import { isDevMode } from '../lib/device.ts'
+import { playSfx, setMusicOn, setSoundsOn } from '../lib/sound.ts'
 import { MovieNightTile } from './home/MovieNight.tsx'
 import { PetSection } from './home/PetSection.tsx'
 
@@ -65,11 +67,51 @@ function HusbandCard({ now }: { now: number }) {
   )
 }
 
+/** Hai nút tròn bật/tắt nhạc nền và tiếng hiệu ứng (lưu lại cho lần mở sau) */
+function SoundToggles() {
+  const settings = useGame((s) => s.save.settings)
+  const setSettings = useGame((s) => s.setSettings)
+  const toggle = (key: 'music' | 'sounds') => {
+    const on = !settings[key]
+    // Đổi ngay trong lúc chạm, để iPhone cho phép phát tiếng
+    if (key === 'music') setMusicOn(on)
+    else setSoundsOn(on)
+    setSettings({ [key]: on })
+  }
+  const buttons = [
+    { key: 'music', label: 'Music', on: settings.music, emoji: '🎵' },
+    { key: 'sounds', label: 'Sounds', on: settings.sounds, emoji: settings.sounds ? '🔔' : '🔕' },
+  ] as const
+  return (
+    // Chế độ ?dev: chừa chỗ cho nút 🛠 Dev ở góc phải
+    <div className={`flex shrink-0 gap-2 ${isDevMode() ? 'mr-[86px]' : ''}`}>
+      {buttons.map((b) => (
+        <button
+          key={b.key}
+          type="button"
+          onClick={() => toggle(b.key)}
+          aria-pressed={b.on}
+          aria-label={`${b.label} ${b.on ? 'on' : 'off'}`}
+          className={`press grid h-10 w-10 place-items-center rounded-full ring-1 transition-colors ${
+            b.on ? 'bg-petal ring-peony/60' : 'bg-white ring-petal'
+          }`}
+        >
+          <Sticker emoji={b.emoji} className={`text-[19px] ${b.on ? '' : 'opacity-40 grayscale'}`} />
+        </button>
+      ))}
+    </div>
+  )
+}
+
 /** Chibi Misu: chạm vào thì nhún nhảy một cái */
 function MisuChibi() {
   const [hops, setHops] = useState(0)
+  const hop = () => {
+    setHops((n) => n + 1)
+    playSfx('boing')
+  }
   return (
-    <button type="button" onClick={() => setHops((n) => n + 1)} aria-label={PLAYER_NAME} className="shrink-0">
+    <button type="button" onClick={hop} aria-label={PLAYER_NAME} className="shrink-0">
       <img
         key={hops}
         src={ART.misu.full}
@@ -119,7 +161,10 @@ export function HomeScreen() {
   return (
     <div className="mx-auto max-w-md">
       <header>
-        <p className="text-[14px] font-bold text-plum-soft">{date}</p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[14px] font-bold text-plum-soft">{date}</p>
+          <SoundToggles />
+        </div>
         <h1 className="mt-1 font-display text-[34px] leading-[1.02] font-bold text-balance">
           {greeting(new Date(now).getHours())}, {PLAYER_NAME}
         </h1>

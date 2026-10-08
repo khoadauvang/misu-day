@@ -42,6 +42,7 @@ export function newSave(t: number): SaveData {
     pet: null,
     pantry: {},
     movies: {},
+    settings: { music: true, sounds: true },
   }
 }
 
