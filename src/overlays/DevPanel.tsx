@@ -7,7 +7,7 @@ import { addDevOffset, clearDevOffset, gameNow, getDevOffset, nextDayStart } fro
 import { useGame } from '../game/store.ts'
 import { useUi } from '../game/ui.ts'
 import { refreshClock } from '../game/useGameClock.ts'
-import { gifQuery, hasGiphy, takeMovieGif } from '../lib/giphy.ts'
+import { gifQueries, hasGiphy, takeMovieGif } from '../lib/giphy.ts'
 import { SFX_NAMES } from '../lib/sfx.ts'
 import { playBirthdaySong, playSfx, soundStatus } from '../lib/sound.ts'
 
@@ -63,7 +63,7 @@ function SoundCheck() {
 
 /**
  * Lướt qua GIF của từng phim trong Movie night để bắt GIF sai trước khi trao quà.
- * GIF sai: thêm gif.q (từ khóa khác) hoặc gif.ids (id GIF tự chọn) cho phim đó trong src/data/movies.ts.
+ * GIF sai hoặc toàn emoji: sửa stars, thêm gif.aka / gif.q (từ khóa khác) hoặc gif.ids (id GIF tự chọn) cho phim đó trong src/data/movies.ts.
  */
 function GifCheck() {
   const [index, setIndex] = useState(0)
@@ -92,7 +92,7 @@ function GifCheck() {
       </p>
       <p className="font-display text-[18px] leading-tight font-bold">{movie.title}</p>
       <p className="mt-0.5 text-[12px] font-bold text-plum-soft select-text">
-        {movie.gif?.ids ? `ids: ${movie.gif.ids.join(', ')}` : `search: "${gifQuery(movie)}"`}
+        {movie.gif?.ids ? `ids: ${movie.gif.ids.join(', ')}` : `search: ${gifQueries(movie).map((q) => `"${q}"`).join(' → ')}`}
       </p>
       {gif && <MovieGifFrame key={round} movie={movie} gif={gif} className="mt-3" />}
       <div className="mt-3 grid grid-cols-3 gap-2">

@@ -110,8 +110,10 @@ export type Movie = {
   line: string
   /** Phim Misu thích: lên đầu danh sách, có ⭐ */
   fav?: true
-  /** GIF trên GIPHY: id tự chọn, hoặc từ khóa tìm kiếm riêng */
-  gif?: { q?: string; ids?: string[] }
+  /** Diễn viên chính hoặc nhân vật nổi tiếng (người đầu tiên quan trọng nhất): dùng để tìm và lọc GIF đúng phim */
+  stars: string[]
+  /** GIF trên GIPHY: id tự chọn, từ khóa tìm kiếm riêng, hoặc tên gọi khác của phim (ví dụ "B99") */
+  gif?: { q?: string; ids?: string[]; aka?: string[] }
 }
 
 /** Kết quả sau khi làm một hoạt động, hiện trong popup */

@@ -20,7 +20,7 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
 | Thư sinh nhật, quà mở đầu | `src/data/birthday.ts` | Mỗi chuỗi trong `pages` là một trang; giữ tiếng Việt như bạn viết |
 | Cún Golden: tên gợi ý, đồ ăn, độ no/vui | `src/data/pet.ts` | Giá nhận nuôi + giá đồ ăn ở Pet Shop trong `src/data/places.ts` |
-| Movie night: phim, câu giới thiệu, XP | `src/data/movies.ts` | Thêm phim ở bất kỳ đâu trong danh sách; không đổi `id` phim cũ. GIF sai: thêm `gif.q` hoặc `gif.ids` |
+| Movie night: phim, câu giới thiệu, XP | `src/data/movies.ts` | Thêm phim ở bất kỳ đâu trong danh sách; không đổi `id` phim cũ. Phim mới cần `stars` (diễn viên chính) để tìm đúng GIF. GIF sai hoặc chỉ ra emoji: sửa `stars`, thêm `gif.aka` (tên gọi khác), `gif.q` hoặc `gif.ids` |
 | Nhạc nền, bài Happy Birthday, âm lượng | `src/data/music.ts` | Nốt viết `'A5:1.5'` = tên nốt : số phách; mỗi ô nhịp phải đủ phách |
 | Tiếng hiệu ứng (xu, chuông, lên level…) | `src/lib/sfx.ts` | Mỗi tiếng một công thức: nốt, khoảng cách (giây), `level` to/nhỏ |
 | Hình chibi | `public/chibi/` | Chép file mới đè lên, giữ nguyên tên (`misu.webp`, `husband.webp`, `*-head.webp`) |

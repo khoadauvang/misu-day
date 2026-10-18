@@ -5,15 +5,24 @@ import type { Movie } from '../game/types.ts'
 //   Không có key thì game hiện emoji như cũ, không lỗi gì.
 // - GIPHY yêu cầu gọi tìm kiếm từ máy người chơi, nên app gọi thẳng từ iPhone (không qua /api).
 //   Key nằm trong code chạy trên máy là bình thường; lộ ra thì cùng lắm bị dùng hết lượt gọi.
-// - Key beta: 100 lần gọi mỗi giờ. Mỗi phim chỉ gọi 1 lần cho tới khi tắt app.
+// - Key beta: 100 lần gọi mỗi giờ. Mỗi phim thường chỉ gọi 1 lần (tối đa 3 từ khóa) cho tới khi tắt app.
+// - Tìm theo tên phim hay ra GIF không liên quan (tìm "Friends" ra GIF bạn bè bất kỳ), nên mỗi kết quả
+//   phải nhắc đúng tên phim, và nếu tên phim là từ phổ thông thì phải nhắc thêm diễn viên (movie.stars)
+//   hoặc đến từ kênh chính thức của phim. Không có GIF nào đạt thì hiện emoji, không hiện GIF sai.
 // - Chỗ nào hiện GIF phải ghi "Powered by GIPHY" (điều khoản của GIPHY).
 
 const KEY = import.meta.env.VITE_GIPHY_KEY?.trim() ?? ''
 const API = 'https://api.giphy.com/v1'
 /** Chờ GIPHY trả lời tối đa bao lâu */
 const API_TIMEOUT_MS = 6_000
-/** Lấy bao nhiêu kết quả đầu khi tìm kiếm, rồi chọn ngẫu nhiên một cái */
-const SEARCH_LIMIT = 8
+/** Mỗi lần tìm lấy bao nhiêu kết quả để lọc */
+const SEARCH_LIMIT = 50
+/** Đã có bấy nhiêu GIF đúng phim thì thôi, không tìm từ khóa tiếp (để tiết kiệm lượt gọi) */
+const ENOUGH_GIFS = 3
+/** Giữ bao nhiêu GIF đúng nhất để chọn ngẫu nhiên */
+const KEEP_GIFS = 8
+/** Từ không mang nghĩa riêng, không tính khi xét tên phim có đặc biệt không */
+const STOP_WORDS = new Set(['the', 'a', 'an', 'and', 'of', 'in', 'on', 'at', 'to', 'it', 'up', 'i', 'me', 'my', 'you', 'is', 'be', 'about'])
 /** Bản gốc nặng hơn mức này thì dùng bản nhỏ (cao 200px) cho nhẹ */
 const MAX_ORIGINAL_BYTES = 2_500_000
 
@@ -25,13 +34,76 @@ export function hasGiphy(): boolean {
   return KEY.length > 0
 }
 
-/** Từ khóa tìm GIF của một phim */
-export function gifQuery(movie: Movie): string {
-  return movie.gif?.q ?? `${movie.title} ${movie.kind === 'series' ? 'tv show' : 'movie'}`
+/** Các từ khóa tìm GIF của một phim, thử lần lượt tới khi đủ GIF đúng phim */
+export function gifQueries(movie: Movie): string[] {
+  const kind = movie.kind === 'series' ? 'tv show' : 'movie'
+  const star = movie.stars[0]
+  const queries = [movie.gif?.q, star && `${movie.title} ${star}`, `${movie.title} ${kind}`]
+  return [...new Set(queries.filter((q): q is string => Boolean(q)))]
 }
 
 type Rendition = { url?: string; width?: string; height?: string; webp?: string; webp_size?: string }
-type GiphyGif = { id: string; images?: { original?: Rendition; fixed_height?: Rendition } }
+type GiphyGif = {
+  id: string
+  title?: string
+  slug?: string
+  alt_text?: string
+  username?: string
+  user?: { username?: string; display_name?: string; is_verified?: boolean }
+  images?: { original?: Rendition; fixed_height?: Rendition }
+}
+
+// --- Lọc GIF đúng phim ---
+
+/** Chữ thường, bỏ dấu, bỏ dấu nháy, chỉ giữ chữ và số: "You've Got Mail!" → "youve got mail" */
+function normalize(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replaceAll('&', ' and ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+/** text có chứa nguyên cụm phrase (đủ từ, không tính khớp nửa từ) */
+function hasPhrase(text: string, phrase: string): boolean {
+  return phrase !== '' && ` ${text} `.includes(` ${phrase} `)
+}
+
+/** Tên phim đã chuẩn hóa: tên chính + tên gọi khác, có thêm bản bỏ "the"/"a" ở đầu */
+function movieNames(movie: Movie): string[] {
+  const names = [movie.title, ...(movie.gif?.aka ?? [])].map(normalize)
+  return [...new Set(names.flatMap((name) => [name, name.replace(/^(the|a|an) /, '')]))].filter(Boolean)
+}
+
+/** Tên có từ 2 từ mang nghĩa trở lên ("mean girls") thì nhắc tới là đủ tin; "friends", "the holiday" thì chưa */
+function isDistinctive(name: string): boolean {
+  return name.split(' ').filter((word) => !STOP_WORDS.has(word)).length >= 2
+}
+
+/** Điểm GIF đúng phim: 0 = không chắc là phim này (bỏ), càng cao càng đúng */
+function relevance(gif: GiphyGif, movie: Movie): number {
+  const text = normalize([gif.title, gif.slug, gif.alt_text].join(' '))
+  const channel = normalize(gif.user?.display_name ?? '')
+  const handle = normalize(gif.username || gif.user?.username || '').replaceAll(' ', '')
+  const names = movieNames(movie)
+
+  // Kênh chính thức của phim (ví dụ kênh "Friends", @brooklyn99)
+  const fromChannel = names.some((name) => channel === name || handle === name.replaceAll(' ', ''))
+  const named = names.filter((name) => hasPhrase(text, name) || hasPhrase(channel, name))
+  const starred = movie.stars.some((star) => hasPhrase(text, normalize(star)))
+  const sure = fromChannel || (named.length > 0 && (starred || named.some(isDistinctive)))
+  if (!sure) return 0
+  return (
+    (fromChannel ? 4 : 0) +
+    (named.length > 0 ? 2 : 0) +
+    (starred ? 2 : 0) +
+    (gif.user?.is_verified ? 1 : 0) +
+    (hasPhrase(text, String(movie.year)) ? 1 : 0)
+  )
+}
 
 /**
  * Chọn bản để hiện: ảnh động WebP (nhẹ hơn GIF, iPhone hiện tốt).
@@ -47,38 +119,59 @@ function toPick(gif: GiphyGif): GifPick | null {
   return big ?? make(small, small?.webp) ?? make(small, small?.url)
 }
 
-async function request(path: string, params: Record<string, string>): Promise<GifPick[]> {
+/** Gọi GIPHY; null = lỗi (key sai, hết lượt, mất mạng…) */
+async function request(path: string, params: Record<string, string>): Promise<GiphyGif[] | null> {
   const url = `${API}/${path}?${new URLSearchParams({ api_key: KEY, ...params })}`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS)
   try {
     const res = await fetch(url, { signal: controller.signal })
-    if (!res.ok) return [] // key sai, hết lượt gọi (429)…
+    if (!res.ok) return null // key sai, hết lượt gọi (429)…
     const body = (await res.json()) as { data?: GiphyGif[] }
-    return (body.data ?? []).map(toPick).filter((gif): gif is GifPick => gif !== null)
+    return body.data ?? []
   } catch {
-    return [] // mất mạng, quá thời gian…
+    return null // mất mạng, quá thời gian…
   } finally {
     clearTimeout(timer)
   }
+}
+
+const toPicks = (gifs: GiphyGif[]) => gifs.map(toPick).filter((gif): gif is GifPick => gif !== null)
+
+/** Tìm theo từng từ khóa, chỉ giữ GIF đúng phim, xếp cái đúng nhất lên trước */
+async function searchMovie(movie: Movie): Promise<GifPick[]> {
+  const found = new Map<string, { pick: GifPick; score: number }>()
+  for (const q of gifQueries(movie)) {
+    const gifs = await request('gifs/search', { q, limit: String(SEARCH_LIMIT), rating: 'pg', lang: 'en' })
+    if (gifs === null) break // lỗi thì thôi, lần sau thử lại
+    for (const gif of gifs) {
+      if (found.has(gif.id)) continue
+      const score = relevance(gif, movie)
+      const pick = score > 0 ? toPick(gif) : null
+      if (pick) found.set(gif.id, { pick, score })
+    }
+    if (found.size >= ENOUGH_GIFS) break
+  }
+  // sort giữ nguyên thứ tự của GIPHY khi bằng điểm
+  return [...found.values()]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, KEEP_GIFS)
+    .map((f) => f.pick)
 }
 
 /** Danh sách GIF của từng phim, chỉ nhớ trong lúc mở app (tắt app là quên) */
 const lists = new Map<string, Promise<GifPick[]>>()
 
 function gifsFor(movie: Movie): Promise<GifPick[]> {
-  const ids = movie.gif?.ids ?? []
-  const key = ids.length > 0 ? `ids:${ids.join(',')}` : `q:${gifQuery(movie)}`
-  let list = lists.get(key)
+  let list = lists.get(movie.id)
   if (!list) {
-    list =
-      ids.length > 0
-        ? request('gifs', { ids: ids.join(',') })
-        : request('gifs/search', { q: gifQuery(movie), limit: String(SEARCH_LIMIT), rating: 'pg', lang: 'en' })
-    lists.set(key, list)
+    const ids = movie.gif?.ids ?? []
+    // GIF tự chọn thì tin luôn, không cần lọc
+    list = ids.length > 0 ? request('gifs', { ids: ids.join(',') }).then((gifs) => toPicks(gifs ?? [])) : searchMovie(movie)
+    lists.set(movie.id, list)
     // Lỗi hoặc không tìm thấy: lần sau thử lại
     void list.then((found) => {
-      if (found.length === 0) lists.delete(key)
+      if (found.length === 0) lists.delete(movie.id)
     })
   }
   return list
