@@ -290,8 +290,19 @@ export function Bitexco({ x, w = 54, h = 196, base = BACK }: { x: number; w?: nu
   )
 }
 
+type TubeHouseProps = {
+  x: number
+  w?: number
+  floors?: number
+  fill: string
+  base?: number
+  /** Có thì tầng trệt là tiệm (mái hiên + đồ bày bán), không thì cửa cuốn */
+  goods?: string
+  awning?: string
+}
+
 /** Nhà ống nhiều tầng: ban công, chậu cây, bồn nước inox trên mái (phố Phú Nhuận) */
-export function TubeHouse({ x, w = 46, floors = 3, fill, base = BACK }: { x: number; w?: number; floors?: number; fill: string; base?: number }) {
+export function TubeHouse({ x, w = 46, floors = 3, fill, base = BACK, goods, awning = C.peony }: TubeHouseProps) {
   const floorH = 34
   const top = base - floors * floorH - 6
   return (
@@ -305,7 +316,19 @@ export function TubeHouse({ x, w = 46, floors = 3, fill, base = BACK }: { x: num
         const last = i === floors - 1
         return (
           <g key={i}>
-            {last ? (
+            {last && goods ? (
+              // tầng trệt mở tiệm: mái hiên sọc + đồ bày bán
+              <>
+                <rect x={x + 5} y={fy + 8} width={w - 10} height={floorH - 8} rx={3} fill={C.white} {...thin} />
+                <rect x={x + 2} y={fy + 2} width={w - 4} height={8} rx={3} fill={awning} {...thin} />
+                {Array.from({ length: Math.floor((w - 8) / 8) }, (_, k) => (
+                  <rect key={k} x={x + 6 + k * 8} y={fy + 3.5} width={4} height={5} fill={C.white} opacity={0.85} />
+                ))}
+                <Emoji x={x + w / 2} y={fy + 22} size={14}>
+                  {goods}
+                </Emoji>
+              </>
+            ) : last ? (
               // tầng trệt: cửa cuốn
               <>
                 <rect x={x + 6} y={fy + 4} width={w - 12} height={floorH - 4} rx={3} fill={C.white} {...thin} />

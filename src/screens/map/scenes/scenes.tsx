@@ -14,7 +14,6 @@ import {
   Emoji,
   FptCampus,
   Ground,
-  Label,
   Lamp,
   Lanterns,
   Palm,
@@ -116,7 +115,7 @@ export function District3() {
   )
 }
 
-/** Phú Nhuận: phố local, nhà ống, dây điện, xe đẩy ăn vặt, trà sữa, và biệt thự nhà Misu */
+/** Phú Nhuận: phố local, nhà ống, dây điện, quán ăn vặt + trà sữa san sát, và biệt thự nhà Misu */
 export function PhuNhuan() {
   return (
     <>
@@ -129,8 +128,12 @@ export function PhuNhuan() {
         <Villa x={98} w={128} />
       </Spot>
       <TubeHouse x={238} w={40} floors={4} fill={C.lavender} />
-      <TubeHouse x={278} w={42} floors={3} fill={C.petal} />
-      <TubeHouse x={320} w={40} floors={4} fill={C.hydrangea} />
+      <Spot id="che-corner" label="Chè" sign={[299, 172]}>
+        <TubeHouse x={278} w={42} floors={3} fill={C.petal} goods="🍧" awning={C.mint} />
+      </Spot>
+      <Spot id="xien-que" label="Xiên Que" sign={[322, 128]}>
+        <TubeHouse x={320} w={40} floors={4} fill={C.hydrangea} goods="🍢" awning={C.butter} />
+      </Spot>
       <Wires poles={[4, 88]} />
       <Wires poles={[236, 356]} />
       <Traffic vehicles={['🛵', '🛵', '🛵', '🚕', '🛵']} />
@@ -140,16 +143,12 @@ export function PhuNhuan() {
       <Spot id="banh-trang-a-lam" label="A Lâm" sign={[148, 296]}>
         <Stall x={118} w={60} goods="🥢" umbrella={C.butter} />
       </Spot>
-      {/* quán trà sữa + xe bánh mì cho phố thêm đông vui (chỉ để trang trí) */}
-      <Shop x={196} w={82} wall={C.lavender} awning={C.mint} goods="🧋" />
-      <rect x={206} y={302} width={62} height={16} rx={8} fill={C.white} stroke={C.plum} strokeWidth={1.6} />
-      <Label x={237} y={310.5} size={8.5}>
-        TRÀ SỮA
-      </Label>
-      <Stall x={292} w={56} goods="🥖" umbrella={C.hydrangea} />
-      <Emoji x={338} y={344} size={13}>
-        🍢
-      </Emoji>
+      <Spot id="milk-tea-alley" label="Trà Sữa" sign={[237, 308]}>
+        <Shop x={196} w={82} wall={C.lavender} awning={C.mint} goods="🧋" />
+      </Spot>
+      <Spot id="banh-mi-cart" label="Bánh Mì" sign={[320, 296]}>
+        <Stall x={292} w={56} goods="🥖" umbrella={C.hydrangea} />
+      </Spot>
       <Stool x={102} base={410} />
       <Stool x={182} base={410} fill={C.hydrangea} />
       <Stool x={280} base={410} />

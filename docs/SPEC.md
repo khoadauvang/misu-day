@@ -104,13 +104,13 @@ Mỗi quận một chủ đề, dựa theo tính chất quận ngoài đời nh�
 |---|---|---|
 | D1 | 👜 Luxury & fashion | Sneaker & Lifestyle Store (1) · Beauty Counter (1) · Tech Store (3) · Luxury Boulevard (5) · Watch & Jewelry House (7) |
 | D3 | ☕ Cafés, books & beauty | Garden Café (1) · Bookstore (1) · Beauty Salon: nail, nhuộm tóc, gội đầu dưỡng sinh (1) · Flower Market (1) · Spa & Massage (2) · City Library & History Museum (4) |
-| Phú Nhuận | 🧋 Street snacks | ⭐ GMI Tea: trà sữa bạc hà (1) · ⭐ Bánh Tráng Trộn A Lâm (1) |
+| Phú Nhuận | 🧋 Street snacks | ⭐ GMI Tea: trà sữa bạc hà (1) · ⭐ Bánh Tráng Trộn A Lâm (1) · Milk Tea Alley: trà sữa đường đen, oolong kem cheese, trà đào cam sả 35–40k (1) · Bánh Mì Cart 25–30k (1) · Chè Corner: chè Thái, chè khúc bạch 25–30k (1) · Xiên Que Corner: xiên que chiên, bắp nướng mỡ hành 20–30k (1) |
 | D7 | 🍣 Japan & Korea town | Japanese Corner (1) · Korea Town (1) · Dairy Queen (1) · RMIT Campus: miễn phí, +XP (1) |
 | D5 | 🥟 Chinatown eats | Dim Sum House (1) · Hot Pot (3) · Roast Duck & Noodles (4) |
 | D2 | 🍸 Thảo Điền chill | Fitness Club (1) · Riverside Bar (3) · Home Decor Studio (4) · Pet Shop: nhận nuôi Golden, đồ ăn cho cún, spa cho cún (5) |
 | D9 | 🎤 Concerts & cinema | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (1) · FPT University: miễn phí, +XP (1) · Cinema (2) · Concert Park (5) |
 
-Tổng cộng 28 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
+Tổng cộng 32 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
 
 ## 5. World: các map khác
 
