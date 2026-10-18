@@ -63,16 +63,21 @@ Thanh tab nổi ở đáy: **Home · Map · Messages · Collection**.
 
 ```
 [Saigon | World]
- ├─ Saigon → bản đồ 7 quận → chạm quận → sheet danh sách địa điểm
- │                              → chạm địa điểm → các hoạt động
- │                                  → "Do it" → popup kết quả
- │                                     (tiền, năng lượng, XP, sticker, nhật ký)
+ ├─ Saigon → bản đồ 7 quận (ghim 🏡 nhà Misu ở Phú Nhuận + ghim mặt Misu ở quận đang đứng)
+ │    → chạm quận đang đứng → bản đồ phóng to vào quận → cảnh phố của quận
+ │    → chạm quận khác → sheet gọi xe Xanh SM (km, phút, giá) → Book → màn đi xe → cảnh phố
+ │         → chạm tòa nhà (hoặc dòng trong danh sách dưới cảnh) → sheet địa điểm → các hoạt động
+ │             → "Do it" → popup kết quả (tiền, năng lượng, XP, sticker, nhật ký)
+ │         → "‹ Saigon map" → bản đồ lùi ra
  └─ World: Vietnam · Asia · Europe · Americas (khóa)
         → chạm → yêu cầu (Level + vé máy bay) + "This trip opens in a future update"
 ```
 
+- **Đang ở đâu:** save có trường `location` (mở game lần đầu ở Phú Nhuận, nhà Misu). Chỉ làm được hoạt động của quận đang đứng; hoạt động ở nhà (tab Home) làm ở đâu cũng được.
+- **Đi xe Xanh SM:** giá = 15,000₫ + 14,500₫/km, làm tròn lên nghìn; số km tính từ tọa độ thật của quận × 1.35. Ví dụ từ Phú Nhuận: Q3 ~49k · Q1 ~81k · Q5 ~120k · Q2 ~131k · Q7 ~172k · Q9 ~308k. Tiền xe trừ vào ví, ghi nhật ký, tính vào "đã tiêu". Không đủ tiền thì không đi được. Số liệu ở `RIDE` trong `src/data/economy.ts`, tọa độ quận ở `src/data/districts.ts`.
+- **Cảnh phố từng quận** (vẽ SVG kiểu hoạt hình 2D, `src/screens/map/scenes/`): Q1 chọc trời san sát + tháp Bitexco · Q2 căn hộ cao tầng ven sông, mái vườn, hàng dừa, sông Sài Gòn phía trước · Q3 nhà kiểu Pháp, bảo tàng, chợ hoa · Phú Nhuận nhà ống, dây điện, xe đẩy ăn vặt, trà sữa, **biệt thự nhà Misu** (chạm → về tab Home) · Q5 Chợ Lớn: chùa, cổng chào, đèn lồng đỏ · Q7 trường RMIT, phố Nhật – Hàn · Q9 trường FPT, sân khấu concert, rạp phim, công viên.
 - Địa điểm chưa mở hiện ổ khóa "Lv X"; vào xem vẫn được, nút "Do it" mờ kèm lý do.
-- Lý do không làm được: Reach Level X · Open 5 PM – 2 AM · Done for today · Buy a book first · Not enough money · Need more energy · Coming soon.
+- Lý do không làm được: Ride to District X first · Open 5 PM – 2 AM · Done for today · Buy a book first · Not enough money · Need more energy · Coming soon.
 - Giờ mở cửa: Riverside Bar 17:00–02:00; Concert Park tối thứ Sáu và thứ Bảy 19:00–23:00.
 
 ### Messages ✅
@@ -103,9 +108,9 @@ Mỗi quận một chủ đề, dựa theo tính chất quận ngoài đời nh�
 | D7 | 🍣 Japan & Korea town | Japanese Corner (1) · Korea Town (1) · Dairy Queen (1) · RMIT Campus: miễn phí, +XP (1) |
 | D5 | 🥟 Chinatown eats | Dim Sum House (1) · Hot Pot (3) · Roast Duck & Noodles (4) |
 | D2 | 🍸 Thảo Điền chill | Fitness Club (1) · Riverside Bar (3) · Home Decor Studio (4) · Pet Shop: nhận nuôi Golden, đồ ăn cho cún, spa cho cún (5) |
-| D9 | 🎤 Concerts & cinema | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (1) · Cinema (2) · Concert Park (5) |
+| D9 | 🎤 Concerts & cinema | Cute Shop: gấu bông, Fuggler, Miniso, Moji, Muji (1) · FPT University: miễn phí, +XP (1) · Cinema (2) · Concert Park (5) |
 
-Tổng cộng 27 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
+Tổng cộng 28 địa điểm, khoảng 70 hoạt động. Chi tiết từng hoạt động nằm trong `src/data/places.ts`.
 
 ## 5. World: các map khác
 

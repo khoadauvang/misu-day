@@ -5,6 +5,7 @@ import {
   applyActivity,
   applyMessage,
   applyMovie,
+  applyRide,
   applyTick,
   claimBirthday,
   collectAllowance,
@@ -17,8 +18,9 @@ import {
   type ActivityOutcome,
   type MessageInput,
   type MessageOutcome,
+  type RideOutcome,
 } from './engine.ts'
-import type { Activity, Delivery, Place, SaveData, SoundSettings } from './types.ts'
+import type { Activity, Delivery, DistrictId, Place, SaveData, SoundSettings } from './types.ts'
 
 // Kho dữ liệu của game. Mọi thay đổi đều tự lưu vào localStorage của điện thoại,
 // tắt app mở lại là đọc ra chơi tiếp.
@@ -37,6 +39,8 @@ type GameStore = {
   collectAllowance: () => void
   /** Làm một hoạt động; place = null là hoạt động ở nhà (kể cả chăm cún) */
   doActivity: (place: Place | null, activity: Activity, options?: ActivityOptions) => Omit<ActivityOutcome, 'save'>
+  /** Gọi xe Xanh SM sang quận khác */
+  ride: (to: DistrictId) => Omit<RideOutcome, 'save'>
   /** Movie night: xem một phim ở nhà */
   watchMovie: (movieId: string) => Omit<ActivityOutcome, 'save'>
   /** Đọc xong thư sinh nhật: nhận quà (chỉ một lần) */
@@ -78,6 +82,11 @@ export const useGame = create<GameStore>()(
       collectAllowance: () => set((s) => ({ save: collectAllowance(s.save, gameNow()) })),
       doActivity: (place, activity, options) => {
         const { save, ...outcome } = applyActivity(get().save, place, activity, gameNow(), options)
+        set({ save })
+        return outcome
+      },
+      ride: (to) => {
+        const { save, ...outcome } = applyRide(get().save, to, gameNow())
         set({ save })
         return outcome
       },

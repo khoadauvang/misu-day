@@ -1,3 +1,5 @@
+import { DISTRICT_BY_ID } from '../data/districts.ts'
+import { RIDE } from '../data/economy.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { PET_FOOD_BY_ID, PET_FULL_AT } from '../data/pet.ts'
 import { gameDayKey } from './clock.ts'
@@ -5,7 +7,8 @@ import { currentEnergy } from './energy.ts'
 import { formatHour } from './format.ts'
 import { levelInfo } from './level.ts'
 import { petStats } from './pet.ts'
-import type { Activity, CategoryId, OpenHours, Place, SaveData } from './types.ts'
+import { rideFare } from './travel.ts'
+import type { Activity, CategoryId, DistrictId, OpenHours, Place, SaveData } from './types.ts'
 
 // Luật: khi nào Misu làm được một hoạt động, khi nào không (và vì sao).
 
@@ -67,9 +70,20 @@ function checkPet(save: SaveData, activity: Activity, t: number): Check | null {
   return null
 }
 
+/** Misu đi xe sang quận `to` được không (đang ở đó rồi, hoặc không đủ tiền xe thì không) */
+export function checkRide(save: SaveData, to: DistrictId): Check {
+  if (save.location === to) return { ok: false, icon: '📍', reason: "You're already here" }
+  if (save.money < rideFare(save.location, to)) return { ok: false, icon: '💸', reason: 'Not enough money for the ride' }
+  return { ok: true }
+}
+
 /** Misu có làm được hoạt động này lúc t không; không được thì kèm lý do để hiện lên */
 export function checkActivity(save: SaveData, place: Place | null, activity: Activity, t: number): Check {
   if (activity.comingSoon) return { ok: false, icon: '🎀', reason: 'Coming soon' }
+  // Hoạt động ở quận nào thì phải đang ở quận đó (hoạt động ở nhà thì làm ở đâu cũng được)
+  if (place && place.district !== save.location) {
+    return { ok: false, icon: RIDE.emoji, reason: `Ride to ${DISTRICT_BY_ID[place.district].name} first` }
+  }
 
   const needLevel = Math.max(place?.unlockLevel ?? 1, activity.unlockLevel ?? 1)
   if (levelInfo(save.xp).level < needLevel) return { ok: false, icon: '🔒', reason: `Reach Level ${needLevel}` }

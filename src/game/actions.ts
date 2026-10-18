@@ -15,7 +15,7 @@ import { levelInfo } from './level.ts'
 import { SENDING_TIMEOUT_MS, shownDelivery } from './messages.ts'
 import { petStats } from './pet.ts'
 import { useGame } from './store.ts'
-import type { Activity, ActivityResult, ChatMessage, Delivery, Movie, Place, SaveData } from './types.ts'
+import type { Activity, ActivityResult, ChatMessage, Delivery, DistrictId, Movie, Place, SaveData } from './types.ts'
 import { useUi } from './ui.ts'
 
 // Các việc có "tác dụng phụ": hiện popup, phát tiếng, gọi mạng… Luật chơi thuần nằm ở engine.ts.
@@ -36,6 +36,16 @@ export function runActivity(place: Place | null, activity: Activity) {
     playSfx(resultSound(outcome.result))
   }
   return outcome
+}
+
+// --- Đi xe Xanh SM ---
+
+/** Gọi xe sang quận khác: trừ tiền xe + tiếng đồng xu. Trả về true nếu đi được */
+export function runRide(to: DistrictId): boolean {
+  const outcome = useGame.getState().ride(to)
+  if (outcome.error) return false
+  if (outcome.fare) playSfx('pay')
+  return true
 }
 
 // --- Movie night ---

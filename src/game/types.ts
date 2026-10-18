@@ -251,6 +251,8 @@ export type SaveData = {
   movies: Record<string, number>
   /** Bật/tắt nhạc nền và tiếng hiệu ứng (nút ở đầu tab Home) */
   settings: SoundSettings
+  /** Quận Misu đang ở (đi xe Xanh SM để đổi quận). Chỉ làm được hoạt động của quận này */
+  location: DistrictId
 }
 
 export type SoundSettings = { music: boolean; sounds: boolean }

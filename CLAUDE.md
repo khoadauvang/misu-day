@@ -43,4 +43,6 @@ Tên nhân vật và tên game ở `src/config.ts`; `vite.config.ts` điền ch�
 
 **Biến môi trường:** `RESEND_API_KEY`, `MESSAGE_TO` (chỉ trên Vercel, cho `api/message.js`); `VITE_GIPHY_KEY` (đóng vào bản build, local đặt trong `.env.local`; không có thì hiện emoji thay GIF).
 
+**Map:** Misu đứng ở một quận (`save.location`); làm hoạt động của quận khác phải đi xe Xanh SM trước (`applyRide`, giá trong `src/game/travel.ts`). Cảnh phố từng quận vẽ bằng SVG trong `src/screens/map/scenes/` (khung + màu ở `geometry.ts`, các hình ở `parts.tsx`, bố cục từng quận ở `scenes.tsx`); `<Spot id>` nối tòa nhà với địa điểm trong `src/data/places.ts`.
+
 Âm thanh (nhạc nền + hiệu ứng) tự tạo bằng Web Audio trong `src/lib/synth.ts` / `sfx.ts` / `sound.ts`, bài nhạc viết dạng nốt trong `src/data/music.ts`.

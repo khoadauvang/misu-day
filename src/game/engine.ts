@@ -1,7 +1,8 @@
 import { HUSBAND_NAME } from '../config.ts'
 import { BIRTHDAY_DIARY, BIRTHDAY_GIFT, BIRTHDAY_STICKER } from '../data/birthday.ts'
-import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERGY } from '../data/economy.ts'
+import { DAILY_ALLOWANCE, DIARY_LIMIT, EXTRA_MONEY, LEVEL_REWARD_STEP, MAX_ENERGY, RIDE } from '../data/economy.ts'
 import { COUPONS, COUPON_BY_ID } from '../data/coupons.ts'
+import { DISTRICT_BY_ID, HOME_DISTRICT } from '../data/districts.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { MESSAGE_HISTORY_LIMIT, MESSAGE_MAX_LENGTH, QUICK_MESSAGES } from '../data/messages.ts'
 import { MOVIE_BY_ID, MOVIE_NIGHT } from '../data/movies.ts'
@@ -13,9 +14,20 @@ import { levelInfo } from './level.ts'
 import { askedExtraToday, canSendMore, pickReply } from './messages.ts'
 import { movieActivity, timesWatched } from './movies.ts'
 import { applyPetEffect, cleanPetName, fillPet } from './pet.ts'
-import { activityKey, checkActivity } from './rules.ts'
+import { activityKey, checkActivity, checkRide } from './rules.ts'
+import { rideFare, rideKm } from './travel.ts'
 import { unlocksBetween } from './unlocks.ts'
-import type { Activity, ActivityResult, ChatMessage, Delivery, DiaryEntry, MessageKind, Place, SaveData } from './types.ts'
+import type {
+  Activity,
+  ActivityResult,
+  ChatMessage,
+  Delivery,
+  DiaryEntry,
+  DistrictId,
+  MessageKind,
+  Place,
+  SaveData,
+} from './types.ts'
 
 // Luật chơi viết thành các hàm "thuần": nhận dữ liệu cũ + thời điểm, trả về dữ liệu mới.
 // Không đụng tới giao diện hay bộ nhớ điện thoại, nên dễ đọc và dễ kiểm tra.
@@ -43,6 +55,7 @@ export function newSave(t: number): SaveData {
     pantry: {},
     movies: {},
     settings: { music: true, sounds: true },
+    location: HOME_DISTRICT,
   }
 }
 
@@ -163,6 +176,31 @@ export function applyActivity(
       newCoupons: leveled.coupons.length > 0 ? leveled.coupons : undefined,
       unlocked: levelAfter > levelBefore ? unlocksBetween(levelBefore, levelAfter) : undefined,
       pet: petStep.change,
+    },
+  }
+}
+
+export type RideOutcome = { save: SaveData; fare?: number; error?: string }
+
+/** Misu gọi xe Xanh SM sang quận khác: trừ tiền xe, đổi chỗ đang ở, ghi nhật ký */
+export function applyRide(save: SaveData, to: DistrictId, t: number): RideOutcome {
+  const check = checkRide(save, to)
+  if (!check.ok) return { save, error: check.reason }
+  const fare = rideFare(save.location, to)
+  const where = to === HOME_DISTRICT ? 'home' : `to ${DISTRICT_BY_ID[to].name}`
+  return {
+    fare,
+    save: {
+      ...save,
+      location: to,
+      money: save.money - fare,
+      stats: { ...save.stats, spent: save.stats.spent + fare },
+      diary: addDiary(save.diary, {
+        at: t,
+        emoji: RIDE.emoji,
+        text: `${RIDE.name} ride ${where} (${rideKm(save.location, to)} km).`,
+        money: -fare,
+      }),
     },
   }
 }

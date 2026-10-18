@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { MovieGifFrame } from '../components/MovieGif.tsx'
 import { Sheet } from '../components/Sheet.tsx'
+import { HOME_DISTRICT } from '../data/districts.ts'
 import { MAX_ENERGY } from '../data/economy.ts'
 import { MOVIES } from '../data/movies.ts'
 import { addDevOffset, clearDevOffset, gameNow, getDevOffset, nextDayStart } from '../game/clock.ts'
@@ -190,6 +191,7 @@ export function DevPanel() {
         <GifCheck />
         <div className="mt-2 grid">
           <DevButton onClick={() => devPatch({ movies: {} })}>Forget watched movies</DevButton>
+          <DevButton onClick={() => devPatch({ location: HOME_DISTRICT })}>Teleport home 🏡</DevButton>
         </div>
 
         <button

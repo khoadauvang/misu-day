@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng, cảnh phố riêng từng quận + đi xe Xanh SM. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -12,6 +12,8 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Lời nhắn buổi sáng | `src/data/morningNotes.ts` | Thêm câu vào cuối danh sách, viết tiếng Anh |
 | Tên gọi (Chằm Chằm, bè chẽ, tên game) | `src/config.ts` | |
 | Tiền mỗi sáng, năng lượng, nhịp lên level | `src/data/economy.ts` | |
+| Giá xe Xanh SM giữa các quận | `src/data/economy.ts` | `RIDE`: giá mở cửa, giá mỗi km. Tọa độ quận ở `src/data/districts.ts` |
+| Cảnh phố từng quận (tòa nhà, biệt thự, trường) | `src/screens/map/scenes/scenes.tsx` | Mỗi `<Spot id="…">` là một địa điểm; thêm địa điểm mới thì thêm một `<Spot>` |
 | Thêm món đồ sưu tầm | `src/data/items.ts` | Rồi gắn `item: 'id-món'` vào một hoạt động |
 | Chuyến đi World | `src/data/destinations.ts` | |
 | Lịch của Chằm Chằm, việc ở công ty | `src/data/husband.ts` | |
@@ -103,7 +105,7 @@ misu-day/
    │  └─ store.ts        nơi giữ dữ liệu + tự lưu vào điện thoại
    ├─ components/        nút, sheet, hộp thoại, sticker, thanh tab
    ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
-   ├─ screens/           Home, Map (+ map/), Messages, Collection
+   ├─ screens/           Home, Map (+ map/: bản đồ, cảnh từng quận, đi xe), Messages, Collection
    ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
    └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, GIF từ GIPHY, đo bàn phím, âm thanh
 ```
@@ -115,6 +117,7 @@ misu-day/
 | M1 | Khung app + PWA | ✅ |
 | M2–M3 | Lưu dữ liệu, đồng hồ thế giới (tiền 6:00 sáng, năng lượng hồi) | ✅ |
 | M4–M5 | Bản đồ 7 quận, địa điểm, hoạt động, nhật ký, Collection, World | ✅ |
+| | Cảnh phố riêng từng quận, đi xe Xanh SM giữa các quận, ghim nhà + vị trí Misu | ✅ |
 | M6, M8 | Thưởng khi lên level, trạng thái Chằm Chằm | ✅ |
 | M7 | Sự kiện ngẫu nhiên | 6/10 nếu kịp |
 | M9 | Tin nhắn thành email | ✅ |

@@ -96,6 +96,99 @@
   /* Bong bóng "+5 XP" bay lên rồi mờ dần */
   --animate-bubble-up: bubble-up 2.4s ease-out forwards;
 
+  /* --- Map: vào cảnh quận, đi xe Xanh SM --- */
+  /* Cảnh quận hiện ra (sau khi zoom vào quận trên bản đồ hoặc đi xe tới) */
+  --animate-scene-in: scene-in 480ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  /* Bấm Back: bản đồ Sài Gòn lùi ra từ quận vừa rời */
+  --animate-map-back: map-back 420ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  /* Xe máy, ô tô chạy ngang đường trong cảnh quận (thời gian đặt riêng từng xe) */
+  --animate-drive: drive 9s linear infinite;
+  /* Vạch kẻ đường và phố chạy lùi khi đang đi xe */
+  --animate-road: road 0.45s linear infinite;
+  --animate-skyline: skyline 4s linear infinite;
+  /* Xe nảy nhẹ trên đường */
+  --animate-car-bob: car-bob 0.3s ease-in-out infinite alternate;
+  /* Đèn lồng đung đưa (đặt transform-origin ở dây treo) */
+  --animate-sway: sway 2.4s ease-in-out infinite alternate;
+  /* Vòng sóng lan ra quanh chấm "Misu đang ở đây" */
+  --animate-ping: ping 1.8s ease-out infinite;
+  /* Thanh tiến trình chuyến xe (thời gian đặt bằng style) */
+  --animate-grow-x: grow-x linear forwards;
+
+  @keyframes scene-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92) translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes map-back {
+    from {
+      opacity: 0;
+      transform: scale(1.25);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes drive {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-460px);
+    }
+  }
+  @keyframes road {
+    to {
+      stroke-dashoffset: -40;
+    }
+  }
+  /* 320 = bề rộng khung vẽ màn đi xe (src/screens/map/Ride.tsx) */
+  @keyframes skyline {
+    to {
+      transform: translateX(-320px);
+    }
+  }
+  @keyframes car-bob {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-2.5px);
+    }
+  }
+  @keyframes sway {
+    from {
+      transform: rotate(-6deg);
+    }
+    to {
+      transform: rotate(6deg);
+    }
+  }
+  @keyframes ping {
+    from {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    to {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
   /* Bay hẳn ra khỏi màn hình nên không cần mờ dần (mờ giữa chừng sẽ lộ chữ trang dưới) */
   @keyframes swoosh-out {
     from {
@@ -319,6 +412,31 @@
 }
 .map-district:focus-visible path {
   stroke: var(--color-peony-deep);
+}
+
+/* Tòa nhà / quán trong cảnh quận: chạm thì "lún" nhẹ */
+.scene-spot {
+  cursor: pointer;
+  outline: none;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 140ms ease-out;
+}
+.scene-spot:active {
+  transform: scale(0.96);
+}
+.scene-spot:focus-visible .scene-sign {
+  stroke: var(--color-peony-deep);
+  stroke-width: 3;
+}
+/* Hình SVG xoay/phóng quanh chính nó (đèn lồng, vòng sóng) */
+.svg-self {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.svg-hang {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
