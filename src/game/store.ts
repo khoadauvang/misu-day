@@ -8,6 +8,7 @@ import {
   applyRide,
   applyTick,
   claimBirthday,
+  claimWomensDay,
   collectAllowance,
   markCouponDone,
   newSave,
@@ -45,6 +46,8 @@ type GameStore = {
   watchMovie: (movieId: string) => Omit<ActivityOutcome, 'save'>
   /** Đọc xong thư sinh nhật: nhận quà (chỉ một lần) */
   claimBirthday: () => void
+  /** Mở quà 20/10: nhận cả bộ sưu tập hoa (chỉ một lần) */
+  claimWomensDay: () => void
   /** Misu gửi tin cho Chằm Chằm (Module 9) */
   sendMessage: (input: MessageInput) => Omit<MessageOutcome, 'save'>
   setDelivery: (id: string, delivery: Delivery) => void
@@ -96,6 +99,7 @@ export const useGame = create<GameStore>()(
         return outcome
       },
       claimBirthday: () => set((s) => ({ save: claimBirthday(s.save, gameNow()) })),
+      claimWomensDay: () => set((s) => ({ save: claimWomensDay(s.save, gameNow()) })),
       sendMessage: (input) => {
         const { save, ...outcome } = applyMessage(get().save, input, gameNow())
         set({ save })

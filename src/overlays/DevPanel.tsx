@@ -165,7 +165,7 @@ export function DevPanel() {
           </DevButton>
         </div>
 
-        <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Birthday & puppy</p>
+        <p className="mt-5 text-[13px] font-extrabold text-plum-soft">Letters & puppy</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {/* Xem lại màn mở đầu như lần đầu (quà nhận lại được, chỉ ở chế độ dev) */}
           <DevButton
@@ -175,6 +175,14 @@ export function DevPanel() {
             }}
           >
             Replay birthday 🎂
+          </DevButton>
+          <DevButton
+            onClick={() => {
+              setOpen(false)
+              devPatch({ womensDayAt: null })
+            }}
+          >
+            Replay 20/10 💐
           </DevButton>
           <DevButton
             onClick={() =>

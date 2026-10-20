@@ -6,6 +6,7 @@ import { DISTRICT_BY_ID, HOME_DISTRICT } from '../data/districts.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
 import { MESSAGE_HISTORY_LIMIT, MESSAGE_MAX_LENGTH, QUICK_MESSAGES } from '../data/messages.ts'
 import { MOVIE_BY_ID, MOVIE_NIGHT } from '../data/movies.ts'
+import { WOMENS_DAY_DIARY, WOMENS_DAY_FLOWERS } from '../data/womensDay.ts'
 import { daysBetween, gameDayKey } from './clock.ts'
 import { currentEnergy } from './energy.ts'
 import { formatMoney } from './format.ts'
@@ -51,6 +52,7 @@ export function newSave(t: number): SaveData {
     lastItem: null,
     coupons: {},
     birthdayAt: null,
+    womensDayAt: null,
     pet: null,
     pantry: {},
     movies: {},
@@ -240,6 +242,24 @@ export function claimBirthday(save: SaveData, t: number): SaveData {
     money: save.money + BIRTHDAY_GIFT,
     collection: item ? { ...save.collection, [item.id]: (save.collection[item.id] ?? 0) + 1 } : save.collection,
     diary: addDiary(save.diary, { at: t, emoji: '🎂', text: BIRTHDAY_DIARY, money: BIRTHDAY_GIFT }),
+  }
+}
+
+/**
+ * Quà 20/10: Misu đọc thư và mở hộp quà. Mỗi loài hoa trong bộ sưu tập được thêm 1 bó vào Collection,
+ * ghi nhật ký. Chỉ nhận một lần.
+ */
+export function claimWomensDay(save: SaveData, t: number): SaveData {
+  if (save.womensDayAt !== null) return save
+  const collection = { ...save.collection }
+  for (const id of WOMENS_DAY_FLOWERS) {
+    if (ITEM_BY_ID[id]) collection[id] = (collection[id] ?? 0) + 1
+  }
+  return {
+    ...save,
+    womensDayAt: t,
+    collection,
+    diary: addDiary(save.diary, { at: t, emoji: '💐', text: WOMENS_DAY_DIARY }),
   }
 }
 

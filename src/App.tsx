@@ -11,7 +11,9 @@ import { AdoptModal } from './overlays/AdoptModal.tsx'
 import { AllowanceModal } from './overlays/AllowanceModal.tsx'
 import { BirthdayIntro } from './overlays/BirthdayIntro.tsx'
 import { DevPanel } from './overlays/DevPanel.tsx'
+import { FlowerSheet } from './overlays/FlowerSheet.tsx'
 import { ResultModal } from './overlays/ResultModal.tsx'
+import { WomensDayIntro } from './overlays/WomensDayIntro.tsx'
 import { InstallGate } from './pwa/InstallGate.tsx'
 import { UpdateToast } from './pwa/UpdateToast.tsx'
 import { CollectionScreen } from './screens/CollectionScreen.tsx'
@@ -33,6 +35,9 @@ function Game() {
   const letterOpen = useUi((s) => s.letterOpen)
   // Lần mở game đầu tiên: thư sinh nhật hiện trước, hộp tiền buổi sáng chờ đọc xong thư
   const birthdayPending = useGame((s) => s.save.birthdayAt === null)
+  // Quà 20/10: hiện ngay sau thư sinh nhật (nếu chưa đọc), một lần
+  const womensDayPending = useGame((s) => s.save.womensDayAt === null)
+  const womensLetterOpen = useUi((s) => s.womensLetterOpen)
   const scrollRef = useRef<HTMLElement>(null)
   const { music, sounds } = useGame((s) => s.save.settings)
   useGameClock()
@@ -80,9 +85,13 @@ function Game() {
       {isDevMode() && <DevPanel />}
       <ResultModal />
       <AdoptModal />
-      {!birthdayPending && <AllowanceModal />}
+      <FlowerSheet />
+      {!birthdayPending && !womensDayPending && <AllowanceModal />}
       {(birthdayPending || letterOpen) && (
         <BirthdayIntro key={birthdayPending ? 'first' : 'reread'} mode={birthdayPending ? 'first' : 'reread'} />
+      )}
+      {!birthdayPending && (womensDayPending || womensLetterOpen) && (
+        <WomensDayIntro key={womensDayPending ? 'first' : 'reread'} mode={womensDayPending ? 'first' : 'reread'} />
       )}
     </div>
   )

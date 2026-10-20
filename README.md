@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng, cảnh phố riêng từng quận + đi xe Xanh SM. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, thư 20/10 + bộ sưu tập hoa, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng, cảnh phố riêng từng quận + đi xe Xanh SM. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -21,6 +21,8 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Love Coupons | `src/data/coupons.ts` | Thêm dòng mới ở cuối; không đổi `id` phiếu cũ |
 | Thưởng lên level, tiền xin thêm | `src/data/economy.ts` | `LEVEL_REWARD_STEP`, `EXTRA_MONEY` |
 | Thư sinh nhật, quà mở đầu | `src/data/birthday.ts` | Mỗi chuỗi trong `pages` là một trang; giữ tiếng Việt như bạn viết |
+| Thư 20/10, các loài hoa trong quà | `src/data/womensDay.ts` | Mỗi phần tử trong `WOMENS_DAY_PAGES` là một trang; `big` là dòng chữ to |
+| Ý nghĩa từng loài hoa (bấm hoa trong Collection) | `src/data/flowers.ts` | Hình bông + bó hoa vẽ ở `src/components/Flowers.tsx` |
 | Cún Golden: tên gợi ý, đồ ăn, độ no/vui | `src/data/pet.ts` | Giá nhận nuôi + giá đồ ăn ở Pet Shop trong `src/data/places.ts` |
 | Movie night: phim, câu giới thiệu, XP | `src/data/movies.ts` | Thêm phim ở bất kỳ đâu trong danh sách; không đổi `id` phim cũ. Phim mới cần `stars` (diễn viên chính) để tìm đúng GIF. GIF sai hoặc chỉ ra emoji: sửa `stars`, thêm `gif.aka` (tên gọi khác), `gif.q` hoặc `gif.ids` |
 | Nhạc nền, bài Happy Birthday, âm lượng | `src/data/music.ts` | Nốt viết `'A5:1.5'` = tên nốt : số phách; mỗi ô nhịp phải đủ phách |
@@ -39,6 +41,7 @@ Mở **https://misuxinhdep.vercel.app/?preview&dev** trong tab Safari (hoặc tr
 - **+10,000,000₫ / +500 XP / Refill energy:** để thử đồ đắt và nơi bị khóa
 - **Reset time / Reset game**
 - **Replay birthday 🎂:** xem lại màn thư sinh nhật như lần mở đầu
+- **Replay 20/10 💐:** xem lại thư 20/10 + mở hộp quà hoa (mỗi lần mở lại được thêm 1 bó mỗi loài)
 - **Puppy hungry 🥺 / Remove puppy:** thử cún đói, bỏ cún để nhận nuôi lại
 - **Sounds 🔊:** nghe thử từng tiếng + Happy Birthday; dòng Audio cho biết âm thanh đang chạy chưa (iPhone gạt im lặng thì không có tiếng)
 - **Movie night GIFs 🎬:** lướt GIF của từng phim (‹ Prev · Another · Next ›) để bắt GIF sai; **Forget watched movies** xóa danh sách phim đã xem
@@ -124,6 +127,7 @@ misu-day/
 | M10 | Love Coupons | ✅ |
 | | Nhận nuôi + chăm cún Golden | ✅ |
 | | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
+| | Thư 20/10 + hộp quà bộ sưu tập hoa, xem bó hoa + ý nghĩa trong Collection | ✅ |
 | | Movie night: 80 phim/series + GIF (GIPHY) | ✅ |
 | | Nhạc nền + tiếng hiệu ứng (tự tạo bằng code) | ✅ |
 | | Giá thật cho 69 hoạt động tốn tiền (bảng giá 8/10) | ✅ |

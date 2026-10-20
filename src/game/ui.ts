@@ -30,6 +30,12 @@ type UiStore = {
   /** Đọc lại thư sinh nhật (nút trong Collection) */
   letterOpen: boolean
   setLetterOpen: (open: boolean) => void
+  /** Đọc lại thư 20/10 (nút trong Collection) */
+  womensLetterOpen: boolean
+  setWomensLetterOpen: (open: boolean) => void
+  /** Bó hoa đang xem chi tiết (id hoa), null = đóng */
+  flowerOpen: string | null
+  setFlowerOpen: (id: string | null) => void
   /** Hộp đặt tên khi nhận nuôi cún */
   adoptOpen: boolean
   setAdoptOpen: (open: boolean) => void
@@ -57,6 +63,10 @@ export const useUi = create<UiStore>()((set, get) => ({
   clearMapTarget: () => set({ mapTarget: null }),
   letterOpen: false,
   setLetterOpen: (letterOpen) => set({ letterOpen }),
+  womensLetterOpen: false,
+  setWomensLetterOpen: (womensLetterOpen) => set({ womensLetterOpen }),
+  flowerOpen: null,
+  setFlowerOpen: (flowerOpen) => set({ flowerOpen }),
   adoptOpen: false,
   setAdoptOpen: (adoptOpen) => set({ adoptOpen }),
   petReaction: null,

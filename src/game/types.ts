@@ -243,6 +243,8 @@ export type SaveData = {
   coupons: Record<string, CouponState>
   /** Lúc Misu đọc xong thư sinh nhật và nhận quà (null = chưa mở lần nào) */
   birthdayAt: number | null
+  /** Lúc Misu mở quà 20/10 (bộ sưu tập hoa); null = chưa mở */
+  womensDayAt: number | null
   /** Cún Golden (null = chưa nhận nuôi) */
   pet: PetState | null
   /** Tủ đồ ăn của cún: id đồ ăn → số phần còn lại */

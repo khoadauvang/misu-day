@@ -88,6 +88,17 @@
   /* Lửa nến lung linh */
   --animate-flicker: flicker 0.7s ease-in-out infinite alternate;
 
+  /* --- Quà 20/10 --- */
+  /* Hoa rơi từ trên xuống, đung đưa qua lại (thời gian đặt riêng từng bông) */
+  --animate-petal-fall: petal-fall linear infinite;
+  --animate-petal-sway: petal-sway ease-in-out infinite alternate;
+  /* Hộp quà nghỉ một chút rồi lắc lắc */
+  --animate-gift-shake: gift-shake 1.7s ease-in-out infinite;
+  /* Nắp hộp bật tung lên */
+  --animate-lid-pop: lid-pop 650ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  /* Hoa bay ra từ hộp tới vị trí --dx, --dy */
+  --animate-flower-burst: flower-burst 900ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+
   /* --- Cún Golden --- */
   /* Đuôi vẫy (đặt transform-origin ở gốc đuôi) */
   --animate-wag: wag 0.45s ease-in-out infinite alternate;
@@ -280,6 +291,63 @@
     }
     to {
       transform: scale(0.88, 1.12) rotate(3deg);
+      opacity: 1;
+    }
+  }
+  @keyframes petal-fall {
+    from {
+      transform: translateY(-40px);
+    }
+    to {
+      transform: translateY(110vh);
+    }
+  }
+  @keyframes petal-sway {
+    from {
+      transform: translateX(-16px) rotate(-30deg);
+    }
+    to {
+      transform: translateX(16px) rotate(40deg);
+    }
+  }
+  @keyframes gift-shake {
+    0%,
+    50%,
+    100% {
+      transform: rotate(0) scale(1);
+    }
+    56% {
+      transform: rotate(-9deg) scale(1.04, 0.97);
+    }
+    63% {
+      transform: rotate(8deg) scale(0.98, 1.04);
+    }
+    70% {
+      transform: rotate(-6deg);
+    }
+    77% {
+      transform: rotate(5deg);
+    }
+    84% {
+      transform: rotate(-2deg);
+    }
+  }
+  @keyframes lid-pop {
+    to {
+      transform: translateY(-150px) rotate(-28deg);
+      opacity: 0;
+    }
+  }
+  @keyframes flower-burst {
+    from {
+      transform: translate(0, 0) scale(0.2) rotate(-90deg);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    to {
+      transform: translate(var(--dx), var(--dy)) scale(1) rotate(0);
       opacity: 1;
     }
   }
