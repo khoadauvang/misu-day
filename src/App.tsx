@@ -1,7 +1,8 @@
 import { useEffect, useRef, type ComponentType } from 'react'
 import { TabBar } from './components/TabBar.tsx'
 import type { TabId } from './components/tabs.ts'
-import { retryUndelivered } from './game/actions.ts'
+import { HOME_DISTRICT } from './data/districts.ts'
+import { goHome, retryUndelivered } from './game/actions.ts'
 import { useGame } from './game/store.ts'
 import { useUi } from './game/ui.ts'
 import { useGameClock } from './game/useGameClock.ts'
@@ -13,6 +14,7 @@ import { BirthdayIntro } from './overlays/BirthdayIntro.tsx'
 import { DevPanel } from './overlays/DevPanel.tsx'
 import { FlowerSheet } from './overlays/FlowerSheet.tsx'
 import { ResultModal } from './overlays/ResultModal.tsx'
+import { RideHome } from './overlays/RideHome.tsx'
 import { WomensDayIntro } from './overlays/WomensDayIntro.tsx'
 import { InstallGate } from './pwa/InstallGate.tsx'
 import { UpdateToast } from './pwa/UpdateToast.tsx'
@@ -20,15 +22,17 @@ import { CollectionScreen } from './screens/CollectionScreen.tsx'
 import { HomeScreen } from './screens/HomeScreen.tsx'
 import { MapScreen } from './screens/MapScreen.tsx'
 import { MessagesScreen } from './screens/MessagesScreen.tsx'
+import { ProfileScreen } from './screens/ProfileScreen.tsx'
 
 const SCREENS: Record<TabId, ComponentType> = {
   home: HomeScreen,
   map: MapScreen,
   messages: MessagesScreen,
   collection: CollectionScreen,
+  profile: ProfileScreen,
 }
 
-/** Game chính: 4 tab + các hộp thoại */
+/** Game chính: 5 tab + các hộp thoại */
 function Game() {
   const tab = useUi((s) => s.tab)
   const setTab = useUi((s) => s.setTab)
@@ -38,6 +42,7 @@ function Game() {
   // Quà 20/10: hiện ngay sau thư sinh nhật (nếu chưa đọc), một lần
   const womensDayPending = useGame((s) => s.save.womensDayAt === null)
   const womensLetterOpen = useUi((s) => s.womensLetterOpen)
+  const atHome = useGame((s) => s.save.location === HOME_DISTRICT)
   const scrollRef = useRef<HTMLElement>(null)
   const { music, sounds } = useGame((s) => s.save.settings)
   useGameClock()
@@ -66,9 +71,11 @@ function Game() {
     scrollRef.current?.scrollTo({ top: 0 })
   }, [tab])
 
-  const Screen = SCREENS[tab]
+  // Phòng chỉ mở khi đang ở nhà (phòng hờ: ví dụ tua save trong ?dev)
+  const Screen = SCREENS[tab === 'home' && !atHome ? 'profile' : tab]
   const changeTab = (next: TabId) => {
-    setTab(next)
+    if (next === 'home' && tab !== 'home') goHome() // ở quận khác thì hỏi gọi xe về trước
+    else setTab(next)
     scrollRef.current?.scrollTo({ top: 0 }) // bấm lại tab đang mở cũng cuộn lên đầu
   }
 
@@ -86,6 +93,7 @@ function Game() {
       <ResultModal />
       <AdoptModal />
       <FlowerSheet />
+      <RideHome />
       {!birthdayPending && !womensDayPending && <AllowanceModal />}
       {(birthdayPending || letterOpen) && (
         <BirthdayIntro key={birthdayPending ? 'first' : 'reread'} mode={birthdayPending ? 'first' : 'reread'} />

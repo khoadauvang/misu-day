@@ -1,6 +1,7 @@
 import { GAME_NAME, HUSBAND_NAME, PLAYER_NAME } from '../config.ts'
 import { COUPON_BY_ID } from '../data/coupons.ts'
 import { ITEM_BY_ID } from '../data/items.ts'
+import { HOME_DISTRICT } from '../data/districts.ts'
 import { PLACES } from '../data/places.ts'
 import { postMessage, type MessagePayload } from '../lib/api.ts'
 import { isDevMode } from '../lib/device.ts'
@@ -46,6 +47,13 @@ export function runRide(to: DistrictId): boolean {
   if (outcome.error) return false
   if (outcome.fare) playSfx('pay')
   return true
+}
+
+/** Bấm tab Home: đang ở Phú Nhuận thì vào nhà, ở quận khác thì hỏi gọi xe về trước */
+export function goHome() {
+  const ui = useUi.getState()
+  if (useGame.getState().save.location === HOME_DISTRICT) ui.setTab('home')
+  else ui.setRideHomeOpen(true)
 }
 
 // --- Movie night ---

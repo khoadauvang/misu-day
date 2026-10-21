@@ -167,7 +167,7 @@ export function ResultModal() {
         type="button"
         onClick={() => {
           close()
-          if (adopted) setTab('home') // vừa nhận nuôi: về nhà gặp cún
+          if (adopted) setTab('profile') // vừa nhận nuôi: sang Profile gặp cún
         }}
         className="press mt-6 w-full rounded-full bg-peony py-3.5 text-[17px] font-extrabold"
       >

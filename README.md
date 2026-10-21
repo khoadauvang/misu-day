@@ -2,7 +2,7 @@
 
 Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec đầy đủ ở [docs/SPEC.md](docs/SPEC.md).
 
-**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, thư 20/10 + bộ sưu tập hoa, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng, cảnh phố riêng từng quận + đi xe Xanh SM. Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
+**Trạng thái:** xong Module 1–6, 8–10 (khung app, lưu dữ liệu, đồng hồ, bản đồ, hoạt động + Collection, thưởng level, trạng thái Chằm Chằm, tin nhắn → email, Love Coupons), hình chibi, thư sinh nhật lần mở đầu, thư 20/10 + bộ sưu tập hoa, nhận nuôi + chăm cún Golden, Movie night (80 phim/series + GIF), giá thật cho mọi hoạt động, nhạc nền + tiếng hiệu ứng, cảnh phố riêng từng quận + đi xe Xanh SM, tab Home là căn phòng của Misu (bản demo, chờ bố cục thật). Tiếp theo (8/10): lời nhắn buổi sáng, M7 nếu kịp, test trên iPhone.
 
 ## Sửa nội dung thường gặp
 
@@ -14,6 +14,7 @@ Game PWA làm quà sinh nhật cho Misu: https://misuxinhdep.vercel.app · Spec 
 | Tiền mỗi sáng, năng lượng, nhịp lên level | `src/data/economy.ts` | |
 | Giá xe Xanh SM giữa các quận | `src/data/economy.ts` | `RIDE`: giá mở cửa, giá mỗi km. Tọa độ quận ở `src/data/districts.ts` |
 | Cảnh phố từng quận (tòa nhà, biệt thự, trường) | `src/screens/map/scenes/scenes.tsx` | Mỗi `<Spot id="…">` là một địa điểm; thêm địa điểm mới thì thêm một `<Spot>` |
+| Căn phòng (tab Home): đồ chạm được, câu Misu nói, thư bồ câu | `src/data/room.ts` | Hình vẽ phòng ở `src/screens/room/RoomArt.tsx`, khung + kích thước ở `src/screens/room/geometry.ts` |
 | Thêm món đồ sưu tầm | `src/data/items.ts` | Rồi gắn `item: 'id-món'` vào một hoạt động |
 | Chuyến đi World | `src/data/destinations.ts` | |
 | Lịch của Chằm Chằm, việc ở công ty | `src/data/husband.ts` | |
@@ -108,7 +109,7 @@ misu-day/
    │  └─ store.ts        nơi giữ dữ liệu + tự lưu vào điện thoại
    ├─ components/        nút, sheet, hộp thoại, sticker, thanh tab
    ├─ overlays/          hộp tiền buổi sáng, popup kết quả, công cụ dev
-   ├─ screens/           Home, Map (+ map/: bản đồ, cảnh từng quận, đi xe), Messages, Collection
+   ├─ screens/           Home (căn phòng, + room/: hình vẽ), Map (+ map/: bản đồ, cảnh từng quận, đi xe), Messages, Collection, Profile
    ├─ pwa/               màn hướng dẫn cài, thông báo cập nhật
    └─ lib/               nhận biết iPhone + chế độ dev, gọi /api, GIF từ GIPHY, đo bàn phím, âm thanh
 ```
@@ -127,6 +128,7 @@ misu-day/
 | M10 | Love Coupons | ✅ |
 | | Nhận nuôi + chăm cún Golden | ✅ |
 | | Hình chibi · Thư sinh nhật + quà mở đầu | ✅ |
+| | Tab Home = căn phòng kiểu Tuber Simulator (demo), ở quận khác thì gọi xe về · Profile = trang trạng thái | ✅ demo |
 | | Thư 20/10 + hộp quà bộ sưu tập hoa, xem bó hoa + ý nghĩa trong Collection | ✅ |
 | | Movie night: 80 phim/series + GIF (GIPHY) | ✅ |
 | | Nhạc nền + tiếng hiệu ứng (tự tạo bằng code) | ✅ |

@@ -3,6 +3,7 @@ import { Chip } from '../../components/Chip.tsx'
 import { Sticker } from '../../components/Sticker.tsx'
 import { colorVar, DISTRICT_BY_ID } from '../../data/districts.ts'
 import { PLACE_BY_ID } from '../../data/places.ts'
+import { goHome } from '../../game/actions.ts'
 import { levelInfo } from '../../game/level.ts'
 import { isOpenAt } from '../../game/rules.ts'
 import { useGame } from '../../game/store.ts'
@@ -25,7 +26,6 @@ export function DistrictScene({ districtId, onBack, onPickPlace }: DistrictScene
   const district = DISTRICT_BY_ID[districtId]
   const Scene = SCENES[districtId]
   const now = useUi((s) => s.now)
-  const setTab = useUi((s) => s.setTab)
   const level = levelInfo(useGame((s) => s.save.xp)).level
   const here = useGame((s) => s.save.location) === districtId
   const rootRef = useRef<HTMLDivElement>(null)
@@ -37,15 +37,15 @@ export function DistrictScene({ districtId, onBack, onPickPlace }: DistrictScene
 
   const scene = useMemo<SceneApi>(
     () => ({
-      // Biệt thự nhà Misu: về tab Home (xem phim, chơi với cún, chợp mắt…)
-      pick: (id) => (id === HOME_SPOT ? setTab('home') : onPickPlace(id)),
+      // Biệt thự nhà Misu: vào phòng (tab Home)
+      pick: (id) => (id === HOME_SPOT ? goHome() : onPickPlace(id)),
       status: (id) => {
         const place = PLACE_BY_ID[id]
         const locked = level < (place?.unlockLevel ?? 1)
         return { locked, closed: !locked && !isOpenAt(place?.open, now), unlockLevel: place?.unlockLevel ?? 1 }
       },
     }),
-    [level, now, onPickPlace, setTab],
+    [level, now, onPickPlace],
   )
 
   return (

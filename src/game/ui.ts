@@ -23,6 +23,9 @@ type UiStore = {
   /** Tab đang mở ở thanh dưới */
   tab: TabId
   setTab: (tab: TabId) => void
+  /** Sheet hỏi gọi xe về nhà (bấm tab Home khi đang ở quận khác) */
+  rideHomeOpen: boolean
+  setRideHomeOpen: (open: boolean) => void
   /** Sang tab Map và mở sẵn một địa điểm (ví dụ nút "Go to the Pet Shop") */
   mapTarget: { district: DistrictId; place: string } | null
   goToPlace: (placeId: string) => void
@@ -53,8 +56,10 @@ export const useUi = create<UiStore>()((set, get) => ({
   resultGif: null,
   showResult: (result, gif = null) => set({ result, resultGif: gif }),
   closeResult: () => set({ result: null, resultGif: null }),
-  tab: 'home',
+  tab: 'profile',
   setTab: (tab) => set({ tab }),
+  rideHomeOpen: false,
+  setRideHomeOpen: (rideHomeOpen) => set({ rideHomeOpen }),
   mapTarget: null,
   goToPlace: (placeId) => {
     const place = PLACE_BY_ID[placeId]

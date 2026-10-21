@@ -9,7 +9,7 @@ import { checkActivity } from '../../game/rules.ts'
 import type { Movie, MovieKind, SaveData } from '../../game/types.ts'
 import { prefetchMovieGif } from '../../lib/giphy.ts'
 
-// Movie night ở tab Home: chạm ô → danh sách phim (lọc theo loại) → chạm phim → Watch → popup kèm GIF.
+// Movie night (máy tính trong phòng, tab Home): chạm ô → danh sách phim (lọc theo loại) → chạm phim → Watch → popup kèm GIF.
 
 type Filter = MovieKind | 'all'
 

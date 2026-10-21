@@ -126,6 +126,53 @@
   /* Thanh tiến trình chuyến xe (thời gian đặt bằng style) */
   --animate-grow-x: grow-x linear forwards;
 
+  /* --- Phòng của Misu (tab Home) --- */
+  /* Vào nhà: cửa mở hai cánh, máy quay tiến vào rồi mờ đi */
+  --animate-door-zoom: door-zoom 1050ms cubic-bezier(0.5, 0, 0.7, 0.4) forwards;
+  --animate-door-open: door-open 520ms 150ms cubic-bezier(0.3, 0.8, 0.4, 1) forwards;
+  /* Bồ câu đưa thư bay ngang phòng */
+  --animate-fly-across: fly-across 9s linear forwards;
+  /* Tim nhỏ bay lên từ đồ đạc */
+  --animate-heart-rise: heart-rise 2.2s ease-out forwards;
+
+  @keyframes door-zoom {
+    0%,
+    35% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(3.4);
+      opacity: 0;
+    }
+  }
+  @keyframes door-open {
+    to {
+      transform: scaleX(0.12);
+    }
+  }
+  @keyframes fly-across {
+    from {
+      left: -18%;
+    }
+    to {
+      left: 108%;
+    }
+  }
+  @keyframes heart-rise {
+    0% {
+      transform: translateY(6px) scale(0.6);
+      opacity: 0;
+    }
+    15% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-34px) scale(0.9);
+      opacity: 0;
+    }
+  }
   @keyframes scene-in {
     from {
       opacity: 0;
